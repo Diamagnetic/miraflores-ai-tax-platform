@@ -38,3 +38,41 @@
 - **Rationale**:
   - In-app role switching and view navigation happen purely in React memory without page reloads, fully preserving multi-user workflows live during user exploration.
   - Cleanly resets to baseline pristine fixtures on browser refresh, eliminating stale cache bugs and LocalStorage serialization overhead.
+
+---
+
+## 2. Foundational Data Modeling & State Management (Phase 2)
+
+### Decision 2.1: Unified Multi-Entity Avengers Dataset Model
+- **Context**: The platform needs realistic, diverse tax scenarios covering individuals, high-net-worth investors, S-Corporations, and partnerships with high document volume.
+- **Decision**: Created 8 interconnected returns:
+  - Tony Stark (Form 1040 / Schedule C / Schedule D / 1099-DIV / 1099-B)
+  - Stark Industries Inc. (Form 1120-S)
+  - Peter Parker (Form 1040 W-2 + Freelance 1099-NEC)
+  - Natasha Romanoff (Form 1040 Foreign Earned Income Form 2555)
+  - Wakanda Tech & Design LLC (Form 1065 + 150+ receipt ledger items)
+  - Dr. Bruce Banner (Form 1040 Personal Return Mode)
+  - Pym Quantum Solutions Inc. (Form 1120-S R&D credit)
+  - Avengers Compound LLC (Form 1065 multi-partner facility)
+- **Rationale**: Provides immediate, tangible testing ground for all 10 product challenges with deterministic numbers and coordinates.
+
+### Decision 2.2: Dual-Role Mode Switching (Preparer, Reviewer, Client, Personal Return)
+- **Context**: CPAs also file their own personal tax returns as employees of the firm, creating a distinct user experience need.
+- **Decision**: Implemented 4 switcher options in `Header.tsx`:
+  1. `tax_preparer` (Sam Wilson CPA - firm workspace)
+  2. `tax_reviewer` (Steve Rogers Senior Tax Director - firm workspace)
+  3. `individual_client` (Tony Stark - external taxpayer portal)
+  4. `personal_return` (Dr. Bruce Banner - firm employee personal return portal)
+- **Rationale**: Demonstrates clear role-gated UI boundaries and prevents confidential internal firm notes from leaking into client views while allowing staff to file their personal returns.
+
+### Decision 2.3: Deterministic Triage Scoring Algorithm
+- **Context**: Preparers and Reviewers need automated work queue prioritization without manual sorting.
+- **Decision**: Implemented formula in `src/store/triageLogic.ts`:
+  `TriageScore = Base(50) + DeadlineWeight(0-30) + BlockerPenalty(15) + StatusWeight(4-20) + IssueWeight(0-15) + VolumeWeight(8)`.
+- **Rationale**: Produces intuitive Critical, High, Medium, and Low urgency badges that dynamically recalculate upon status changes or blocker toggles.
+
+### Decision 2.4: 5-Tier Return Field Affordance Hierarchy
+- **Context**: Users must instantly distinguish between AI extractions, CPA verifications, manual edits, and calculated totals.
+- **Decision**: Implemented 5 distinct affordance states (`ai_extracted`, `verified`, `user_edited`, `calculated_locked`, `requires_approval`).
+- **Rationale**: Prevents accidental editing of IRS formula lines while giving immediate visual confidence on source verification status.
+

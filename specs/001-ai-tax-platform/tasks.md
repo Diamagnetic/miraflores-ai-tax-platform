@@ -23,13 +23,13 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T005 [P] Implement core TypeScript interfaces in src/types/index.ts (TaxReturn, ReturnField, SourceDocument, BoundingBox, CollaborationThread, Message, UserRoleType, AffordanceState)
-- [ ] T006 [P] Implement deterministic mock dataset generator in src/data/mockReturns.ts (8 Avengers returns: Tony Stark 1040/Sched C, Stark Industries 1120S, Peter Parker 1040, Natasha Romanoff 1040, Wakanda Tech 1065, Bruce Banner 1040 employee personal, Pym Quantum 1120S, Avengers Compound 1065)
-- [ ] T007 [P] Implement source documents and bounding box generator in src/data/mockDocuments.ts (120+ documents: W-2s, 1099-NEC, 1099-DIV, K-1s, 150+ receipts with exact coordinates)
-- [ ] T008 [P] Implement mock contextual threads and action requests in src/data/mockThreads.ts (pre-seeded internal notes and client action requests)
-- [ ] T009 Implement triage priority scoring algorithm in src/store/triageLogic.ts (urgency formula based on deadline, blockers, complexity, and reviewer status)
-- [ ] T010 Implement pure in-memory ephemeral Zustand store with session isolation, role selectors, and synchronous real-time mutation actions (zero LocalStorage/SessionStorage complexity) in src/store/usePlatformStore.ts
-- [ ] T011 Create master navigation layout with top-bar Role Switcher and breadcrumb context in src/components/common/Header.tsx
+- [X] T005 [P] Implement core TypeScript interfaces in src/types/index.ts (TaxReturn, ReturnField, SourceDocument, BoundingBox, CollaborationThread, Message, UserRoleType, AffordanceState)
+- [X] T006 [P] Implement deterministic mock dataset generator in src/data/mockReturns.ts (8 Avengers returns: Tony Stark 1040/Sched C, Stark Industries 1120S, Peter Parker 1040, Natasha Romanoff 1040, Wakanda Tech 1065, Bruce Banner 1040 employee personal, Pym Quantum 1120S, Avengers Compound 1065)
+- [X] T007 [P] Implement source documents and bounding box generator in src/data/mockDocuments.ts (120+ documents: W-2s, 1099-NEC, 1099-DIV, K-1s, 150+ receipts with exact coordinates)
+- [X] T008 [P] Implement mock contextual threads and action requests in src/data/mockThreads.ts (pre-seeded internal notes and client action requests)
+- [X] T009 Implement triage priority scoring algorithm in src/store/triageLogic.ts (urgency formula based on deadline, blockers, complexity, and reviewer status)
+- [X] T010 Implement pure in-memory ephemeral Zustand store with session isolation, role selectors, and synchronous real-time mutation actions (zero LocalStorage/SessionStorage complexity) in src/store/usePlatformStore.ts
+- [X] T011 Create master navigation layout with top-bar Role Switcher and breadcrumb context in src/components/common/Header.tsx
 
 **Checkpoint**: Foundation ready — pure in-memory mock store and layout operational.
 
