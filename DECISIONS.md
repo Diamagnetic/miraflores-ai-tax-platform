@@ -17,11 +17,12 @@
 - **Alternatives Considered**:
   - *Next.js / Remix SSR*: Rejected due to zero backend requirement and unnecessary server hydration overhead for client-side prototype.
 
-### Decision 1.2: shadcn/ui Preset `buHOvz6` & Tailwind CSS v4.3
+### Decision 1.2: shadcn/ui Preset `buHOvz6` & Sharp-Corner Design Contract
 - **Context**: Need high-craft, professional financial tooling interface that resists generic UI slop and maintains consistent visual hierarchy.
-- **Decision**: Configured shadcn/ui preset `buHOvz6` (Slate palette, border variables, Radix UI accessibility primitives).
+- **Decision**: Configured shadcn/ui preset `buHOvz6` with `--radius: 0rem` (strict sharp corners, Slate palette, border variables, Radix UI accessibility primitives).
 - **Rationale**:
-  - Accessible, fully customizable unstyled primitives (Radix UI) styled with Tailwind CSS tokens.
+  - Crisp, sharp zero-radius geometry conveys architectural precision and density suitable for professional financial ledgers.
+  - Standardizes all interactive primitives (buttons, cards, badges, tabs, tooltips, progress bars) on sharp corners and theme-default primary color tokens.
   - Avoids bloated UI component libraries with rigid themes.
 
 ### Decision 1.3: Viewport Strategy & Container Horizontal Scrolling

@@ -10,7 +10,7 @@ export default function App() {
         <header className="flex items-center justify-between border-b border-slate-200 pb-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-violet-600" />
+              <Sparkles className="h-6 w-6 text-primary" />
               MiraFlores AI Tax Platform
             </h1>
             <p className="text-sm text-slate-500">
@@ -42,7 +42,7 @@ export default function App() {
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-violet-600" />
+                <Sparkles className="h-4 w-4 text-primary" />
                 Pure Ephemeral
               </CardTitle>
               <CardDescription>In-Memory Zustand Store</CardDescription>
