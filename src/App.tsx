@@ -1,4 +1,4 @@
-﻿import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sparkles, ShieldCheck, FileSpreadsheet } from 'lucide-react';
@@ -71,7 +71,7 @@ export default function App() {
         </div>
 
         <div className="flex justify-end pt-4">
-          <Button variant="violet" className="gap-2">
+          <Button variant="default" className="gap-2">
             <Sparkles className="h-4 w-4" />
             Ready for Phase 2 (Foundational Data)
           </Button>
