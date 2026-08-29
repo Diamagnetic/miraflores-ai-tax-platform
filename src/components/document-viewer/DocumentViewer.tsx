@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { SourceDocument } from '@/types';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { Button } from '@/components/ui/button';
@@ -254,12 +254,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                 </p>
                 <p className="text-slate-600 text-[10px] truncate">10880 Wilshire Blvd, Suite 1400</p>
                 
-                {/* EIN with Gapped Dashed Border */}
-                <div className="mt-1">
-                  <div className="inline-block border border-dashed border-slate-400 bg-slate-100/70 text-slate-900 px-1.5 py-0.5 font-mono text-[10px] font-semibold">
-                    EIN: 12-3456789
-                  </div>
-                </div>
+                <p className="font-mono text-slate-700 text-[10px] mt-1">EIN: 12-3456789</p>
               </div>
 
               <div className="min-w-0 overflow-hidden border-l border-slate-300 pl-2.5">
