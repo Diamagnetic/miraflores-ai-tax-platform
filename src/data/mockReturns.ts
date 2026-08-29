@@ -29,7 +29,7 @@ export const mockTaxReturns: TaxReturn[] = [
     id: 'ret-stark-1120s',
     taxYear: 2025,
     returnType: '1120S',
-    taxpayerName: 'Virginia "Pepper" Potts',
+    taxpayerName: 'Pepper Potts',
     taxpayerEmail: 'pepper.potts@starkenterprises.com',
     entityName: 'Stark Industries Inc.',
     assignedPreparerId: 'prep-sam-wilson',
@@ -451,4 +451,5 @@ export const mockReturnFields: ReturnField[] = [
     },
   },
 ];
+
 

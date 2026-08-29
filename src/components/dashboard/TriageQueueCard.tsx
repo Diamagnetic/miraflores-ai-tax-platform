@@ -201,10 +201,10 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                             e.stopPropagation();
                             onSelectReturn(ret.id);
                           }}
-                          className="h-7 text-xs font-semibold gap-1"
+                          className="h-7 w-24 text-xs font-semibold gap-1 justify-center inline-flex"
                         >
                           <span>{isBlocked ? 'Resolve' : ret.status === 'REVIEW' ? 'Review' : ret.status === 'PREPARATION' ? 'Prepare' : 'Open'}</span>
-                          <ArrowRight className="h-3 w-3" />
+                          <ArrowRight className="h-3 w-3 shrink-0" />
                         </Button>
                       </td>
                     </tr>

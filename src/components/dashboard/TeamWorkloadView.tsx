@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { TaxReturn } from '@/types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +12,6 @@ interface TeamWorkloadViewProps {
 
 interface StaffWorkload {
   name: string;
-  role: string;
   totalReturns: number;
   inPrep: number;
   inReview: number;
@@ -29,7 +28,6 @@ export const TeamWorkloadView: React.FC<TeamWorkloadViewProps> = ({
   const staffMap: { [name: string]: StaffWorkload } = {
     'Sam Wilson': {
       name: 'Sam Wilson',
-      role: 'Lead Tax Preparer',
       totalReturns: 0,
       inPrep: 0,
       inReview: 0,
@@ -39,7 +37,6 @@ export const TeamWorkloadView: React.FC<TeamWorkloadViewProps> = ({
     },
     'Steve Rogers': {
       name: 'Steve Rogers',
-      role: 'Senior Reviewer & Partner',
       totalReturns: 0,
       inPrep: 0,
       inReview: 0,
@@ -49,7 +46,6 @@ export const TeamWorkloadView: React.FC<TeamWorkloadViewProps> = ({
     },
     'Natasha Romanoff': {
       name: 'Natasha Romanoff',
-      role: 'International Tax Specialist',
       totalReturns: 0,
       inPrep: 0,
       inReview: 0,
@@ -59,7 +55,6 @@ export const TeamWorkloadView: React.FC<TeamWorkloadViewProps> = ({
     },
     'Bruce Banner': {
       name: 'Bruce Banner',
-      role: 'Corporate Tax Specialist',
       totalReturns: 0,
       inPrep: 0,
       inReview: 0,
@@ -112,14 +107,11 @@ export const TeamWorkloadView: React.FC<TeamWorkloadViewProps> = ({
               className="p-3.5 border border-border bg-muted/10 flex flex-col justify-between space-y-3"
             >
               <div>
-                <div className="flex items-start justify-between gap-1">
-                  <div className="min-w-0">
-                    <p className="font-bold text-xs text-foreground truncate">{staff.name}</p>
-                    <p className="text-[10px] text-muted-foreground truncate">{staff.role}</p>
-                  </div>
+                <div className="flex items-center justify-between gap-1">
+                  <p className="font-bold text-xs text-foreground truncate">{staff.name}</p>
                   <Badge
                     variant={isNearCapacity ? 'destructive' : 'secondary'}
-                    className="font-mono text-[9px] px-1 py-0"
+                    className="font-mono text-[9px] px-1.5 py-0"
                   >
                     {staff.totalReturns}/{staff.capacityLimit} returns
                   </Badge>
