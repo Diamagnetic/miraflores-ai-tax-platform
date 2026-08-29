@@ -59,7 +59,7 @@
 
 **Independent Test**: Navigate to CPA Dashboard as Steve Rogers (Reviewer) -> Verify triage ranking (Pym Quantum Tech ranked #1 due to <48h deadline) -> Filter by "Blocked on Client" -> Instant filter response across all returns -> Click "Start Review" to jump directly into return.
 
-- [ ] T019 [P] [US2] Build urgency metric KPI summary cards in src/components/dashboard/TriageKpiCards.tsx
+- [X] T019 [P] [US2] Build urgency metric KPI summary cards in src/components/dashboard/TriageKpiCards.tsx
 - [ ] T020 [P] [US2] Build actionable triage queue card with container horizontal scroll (overflow-x-auto) and fixed column widths in src/components/dashboard/TriageQueueCard.tsx
 - [ ] T021 [US2] Build multi-faceted return search and filter bar (by status, deadline, assigned preparer, blocker) in src/components/dashboard/DashboardFilters.tsx
 - [ ] T022 [US2] Build team workload distribution view for managers in src/components/dashboard/TeamWorkloadView.tsx
