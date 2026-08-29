@@ -33,7 +33,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
     selectDocument,
   } = usePlatformStore();
 
-  // Full-height inspection drawer state: opens on click and covers navbar
+  // Full-height inspection drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [activeDrawerTab, setActiveDrawerTab] = useState<'document' | 'explainability'>('document');
 
@@ -43,12 +43,21 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
     returns[0];
 
   const activeField = fields.find((f) => f.id === activeFieldId);
-  const returnDocs = documents.filter((d) => d.returnId === activeReturn?.id);
+  const activeDoc = documents.find((d) => d.id === activeDocumentId) || documents[0];
 
   const urgency = getTriageUrgency(activeReturn?.triageScore || 0);
   const urgencyStyle = getUrgencyBadgeStyle(urgency);
 
-  const handleOpenInspection = () => {
+  const handleOpenInspection = (fieldId: string, initialTab: 'document' | 'explainability' = 'document', targetDocId?: string) => {
+    if (targetDocId) {
+      selectDocument(targetDocId);
+    } else if (fieldId) {
+      const field = fields.find((f) => f.id === fieldId);
+      if (field?.sourceDocumentIds && field.sourceDocumentIds.length > 0) {
+        selectDocument(field.sourceDocumentIds[0]);
+      }
+    }
+    setActiveDrawerTab(initialTab);
     setIsDrawerOpen(true);
   };
 
@@ -122,7 +131,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
         <TaxFormViewer onOpenInspection={handleOpenInspection} />
       </div>
 
-      {/* Full-Height Document Inspection Drawer (Portaled to document.body: 0px top offset, covers navbar) */}
+      {/* Full-Height Document Inspection Drawer (Portaled to document.body) */}
       {isDrawerOpen &&
         typeof document !== 'undefined' &&
         createPortal(
@@ -134,25 +143,31 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
               aria-label="Close document drawer overlay (Esc)"
             />
 
-            {/* Full-Height Drawer Spanning from top: 0 to bottom: 0 */}
+            {/* Full-Height Drawer */}
             <div
               role="dialog"
               aria-modal="true"
               aria-labelledby="drawer-title"
-              className="fixed top-0 bottom-0 right-0 z-50 h-screen w-full sm:w-[640px] lg:w-[720px] xl:w-[800px] bg-card border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
+              className="fixed top-0 bottom-0 right-0 z-50 h-screen w-full sm:w-[640px] lg:w-[740px] xl:w-[820px] bg-card border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
             >
-              {/* Immersive Dark / Primary Drawer Header */}
+              {/* Clean Drawer Header: Document Name & Taxpayer Owner */}
               <div className="bg-slate-900 text-white p-3.5 flex items-center justify-between border-b border-slate-800 shrink-0">
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="flex h-7 w-7 items-center justify-center bg-primary text-primary-foreground font-bold">
-                    <FileText className="h-4 w-4" />
+                  <div className="flex h-7 w-7 items-center justify-center bg-primary text-primary-foreground font-bold shrink-0">
+                    {activeDrawerTab === 'document' ? (
+                      <FileText className="h-4 w-4" />
+                    ) : (
+                      <Sparkles className="h-4 w-4" />
+                    )}
                   </div>
                   <div className="min-w-0">
                     <h3 id="drawer-title" className="text-xs font-bold tracking-tight truncate text-white">
-                      Source Document Traceability & AI Defensibility
+                      {activeDrawerTab === 'document'
+                        ? activeDoc?.fileName || 'Source Document'
+                        : `${activeField?.formCode || 'Form 1040'} ${activeField?.lineNumber || ''}: ${activeField?.label || 'AI Explainability'}`}
                     </h3>
                     <p className="text-[11px] text-slate-400 font-mono truncate">
-                      {activeReturn?.taxpayerName} • Tax Year {activeReturn?.taxYear}
+                      {activeReturn?.taxpayerName} • {activeDoc?.vendor || 'Tax Workpapers'}
                     </p>
                   </div>
                 </div>
@@ -171,7 +186,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
                 </div>
               </div>
 
-              {/* Tab Navigation Toolbar */}
+              {/* Tab Switcher Toolbar */}
               <div className="flex items-center justify-between border-b border-border bg-muted/40 p-2 shrink-0">
                 <div className="flex items-center gap-1.5">
                   <Button
@@ -185,7 +200,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
                     }`}
                   >
                     <FileText className="h-3.5 w-3.5 text-primary" />
-                    Source Document ({returnDocs.length})
+                    Source Document
                   </Button>
 
                   <Button
@@ -202,34 +217,15 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
                     AI Explainability
                   </Button>
                 </div>
-
-                {/* Source Document Picker */}
-                {activeDrawerTab === 'document' && (
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] text-muted-foreground font-medium hidden sm:inline">File:</span>
-                    <select
-                      aria-label="Select source document to inspect"
-                      value={activeDocumentId || ''}
-                      onChange={(e) => selectDocument(e.target.value)}
-                      className="h-7 bg-card border border-border px-2 text-xs font-medium text-foreground focus:outline-none max-w-[180px] sm:max-w-[220px] truncate"
-                    >
-                      {returnDocs.map((d) => (
-                        <option key={d.id} value={d.id}>
-                          {d.fileName}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
               </div>
 
-              {/* Scrollable Drawer Body Content */}
+              {/* Scrollable Drawer Body */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {activeDrawerTab === 'document' ? (
-                  <DocumentViewer />
+                  <DocumentViewer document={activeDoc} />
                 ) : (
                   <div className="space-y-4">
-                    <AIExplainabilityCard />
+                    <AIExplainabilityCard field={activeField} />
                     {activeField?.formula && <FormulaBreakdown field={activeField} />}
                   </div>
                 )}

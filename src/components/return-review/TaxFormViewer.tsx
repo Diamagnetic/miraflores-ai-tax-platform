@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 interface TaxFormViewerProps {
-  onOpenInspection?: (fieldId: string) => void;
+  onOpenInspection?: (fieldId: string, initialTab: 'document' | 'explainability', targetDocId?: string) => void;
   className?: string;
 }
 
@@ -100,11 +100,19 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
       .forEach((f) => verifyField(f.id));
   };
 
-  const handleInspectClick = (fieldId: string) => {
+  const handleOpenDoc = (fieldId: string, docId?: string) => {
     setHoveredDocInfo(null);
     selectField(fieldId);
     if (onOpenInspection) {
-      onOpenInspection(fieldId);
+      onOpenInspection(fieldId, 'document', docId);
+    }
+  };
+
+  const handleOpenExplainability = (fieldId: string) => {
+    setHoveredDocInfo(null);
+    selectField(fieldId);
+    if (onOpenInspection) {
+      onOpenInspection(fieldId, 'explainability');
     }
   };
 
@@ -162,16 +170,16 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
     setHoveredDocInfo(null);
   };
 
-  // Render separate affordance badge with click-to-inspect
+  // Render separate affordance badge: clicking opens AI Explainability tab directly
   const renderAffordanceBadge = (field: ReturnField) => {
     switch (field.state) {
       case 'ai_extracted':
         return (
           <button
             type="button"
-            onClick={() => handleInspectClick(field.id)}
+            onClick={() => handleOpenExplainability(field.id)}
             className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/60 dark:hover:bg-purple-900/80 border border-purple-300 dark:border-purple-700 text-purple-950 dark:text-purple-200 text-[11px] font-semibold font-mono transition-colors cursor-pointer"
-            title="Click to view AI extraction explainability"
+            title="Click to view AI Explainability in drawer"
           >
             <Sparkles className="h-3 w-3 text-purple-700 dark:text-purple-400 shrink-0" />
             <span>AI Extracted</span>
@@ -187,7 +195,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         return (
           <button
             type="button"
-            onClick={() => handleInspectClick(field.id)}
+            onClick={() => handleOpenExplainability(field.id)}
             className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/80 border border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 text-[11px] font-semibold font-mono transition-colors cursor-pointer"
             title="Click to view verification audit trail"
           >
@@ -200,7 +208,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         return (
           <button
             type="button"
-            onClick={() => handleInspectClick(field.id)}
+            onClick={() => handleOpenExplainability(field.id)}
             className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/60 dark:hover:bg-amber-900/80 border border-amber-400 dark:border-amber-700 text-amber-950 dark:text-amber-200 text-[11px] font-semibold font-mono transition-colors cursor-pointer"
             title="Click to view manual edit audit history"
           >
@@ -213,7 +221,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         return (
           <button
             type="button"
-            onClick={() => handleInspectClick(field.id)}
+            onClick={() => handleOpenExplainability(field.id)}
             className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-[11px] font-semibold font-mono transition-colors cursor-pointer"
             title="Click to view formula calculation breakdown"
           >
@@ -226,7 +234,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         return (
           <button
             type="button"
-            onClick={() => handleInspectClick(field.id)}
+            onClick={() => handleOpenExplainability(field.id)}
             className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/60 dark:hover:bg-rose-900/80 border border-rose-300 dark:border-rose-700 text-rose-950 dark:text-rose-200 text-[11px] font-semibold font-mono animate-pulse transition-colors cursor-pointer"
             title="Click to view QA discrepancy details"
           >
@@ -314,7 +322,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         </div>
       </div>
 
-      {/* Horizontal Scroll Safe Data Table without Redundant Action Column */}
+      {/* Horizontal Scroll Safe Data Table */}
       <div className="overflow-x-auto min-w-full">
         <table className="w-full text-left border-collapse min-w-[720px]">
           <thead>
@@ -402,21 +410,21 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                             {formattedDisplayValue}
                           </td>
 
-                          {/* Separate Column: Affordance Badge (Clickable) */}
+                          {/* Separate Column: Affordance Badge (Opens AI Explainability tab) */}
                           <td className="py-1.5 px-3 whitespace-nowrap">
                             {renderAffordanceBadge(field)}
                           </td>
 
-                          {/* Source Document Button (Center Aligned, Clickable) */}
+                          {/* Source Document Button (Opens Source Document tab) */}
                           <td className="py-2 px-3 text-center whitespace-nowrap">
                             {hasDocs && firstDoc ? (
                               <button
                                 type="button"
-                                onClick={() => handleInspectClick(field.id)}
+                                onClick={() => handleOpenDoc(field.id, firstDoc.id)}
                                 onMouseEnter={(e) => handleDocMouseEnter(field, firstDoc, e)}
                                 onMouseLeave={handleDocMouseLeave}
                                 className="inline-flex items-center gap-1 px-2.5 py-0.5 border border-purple-300 bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/60 dark:hover:bg-purple-900/80 text-purple-950 dark:text-purple-200 text-[10px] font-mono font-bold transition-colors cursor-pointer"
-                                title="Click to inspect source document in drawer"
+                                title="Click to view this source document in drawer"
                               >
                                 <FileText className="h-3 w-3 text-purple-700 dark:text-purple-400" />
                                 <span>{docLabel}</span>
@@ -424,7 +432,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                             ) : field.formula ? (
                               <button
                                 type="button"
-                                onClick={() => handleInspectClick(field.id)}
+                                onClick={() => handleOpenExplainability(field.id)}
                                 className="inline-flex items-center gap-1 px-2 py-0.5 border border-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-[10px] font-mono font-semibold transition-colors cursor-pointer"
                                 title="Click to inspect formula calculation tree"
                               >

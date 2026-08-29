@@ -1,7 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { SourceDocument } from '@/types';
 import { usePlatformStore } from '@/store/usePlatformStore';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   ZoomIn,
@@ -11,9 +10,6 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
-  ShieldCheck,
-  Building,
-  Calendar,
   Layers,
   ArrowRight,
 } from 'lucide-react';
@@ -39,10 +35,9 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  // Default to Single-Focus mode (only active row bounding box visible to avoid visual clutter)
   const [showAllBoxes, setShowAllBoxes] = useState<boolean>(false);
 
-  // Active document resolution
+  // Active document resolution: strictly display the specified document
   const doc =
     propDoc ||
     documents.find((d) => d.id === activeDocumentId) ||
@@ -97,25 +92,23 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
     return false;
   };
 
+  const documentOwner = doc.uploadedBy || 'Tony Stark';
+  const documentIssuer = doc.vendor || 'Stark Industries LLC';
+
   return (
     <div className={`flex flex-col border border-border bg-card shadow-xs ${className}`}>
-      {/* Top Controls Toolbar */}
+      {/* Clean Toolbar: Document Name, Whose It Is, Zoom Controls */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-muted/40 p-2.5 text-xs">
-        {/* Document Meta */}
+        {/* Document Meta: Name & Owner Only */}
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <FileText className="h-4 w-4 text-primary shrink-0" />
-          <span className="font-semibold text-foreground truncate max-w-[200px]" title={doc.fileName}>
+          <span className="font-semibold text-foreground truncate max-w-[240px]" title={doc.fileName}>
             {doc.fileName}
           </span>
-          <Badge variant="outline" className="font-mono text-[10px] uppercase">
-            {doc.docType.replace('_', ' ')}
-          </Badge>
-          {doc.status === 'processed' && (
-            <Badge variant="outline" className="hidden sm:inline-flex gap-1 text-[10px] text-emerald-700 border-emerald-200 bg-emerald-50/50">
-              <ShieldCheck className="h-3 w-3" />
-              OCR Verified
-            </Badge>
-          )}
+          <span className="text-muted-foreground">•</span>
+          <span className="text-muted-foreground text-[11px] truncate">
+            {documentOwner} ({documentIssuer})
+          </span>
         </div>
 
         {/* Zoom & View Actions */}
@@ -125,10 +118,10 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
             size="sm"
             onClick={() => setShowAllBoxes((prev) => !prev)}
             className={`h-7 px-2 text-xs gap-1 border border-border ${showAllBoxes ? 'bg-primary/10 text-primary border-primary/30 font-semibold' : 'text-muted-foreground'}`}
-            title="Toggle between Single Focus box and All OCR Boxes"
+            title="Toggle between Single Focus and All OCR Boxes"
           >
             <Layers className="h-3.5 w-3.5" />
-            <span className="hidden md:inline">{showAllBoxes ? 'Show Single Box' : 'Show All Boxes'}</span>
+            <span className="hidden md:inline">{showAllBoxes ? 'Single Box' : 'All Boxes'}</span>
           </Button>
 
           <div className="h-4 w-px bg-border mx-0.5" />
@@ -250,12 +243,12 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
             <div className="grid grid-cols-2 gap-2.5 border border-slate-400 p-2 bg-slate-50/50">
               <div className="min-w-0 overflow-hidden">
                 <p className="text-[9px] font-bold text-slate-500 uppercase">PAYER / EMPLOYER</p>
-                <p className="font-bold text-slate-900 text-xs mt-0.5 truncate" title={doc.vendor || 'Stark Industries LLC'}>
-                  {doc.vendor || 'Stark Industries LLC'}
+                <p className="font-bold text-slate-900 text-xs mt-0.5 truncate" title={documentIssuer}>
+                  {documentIssuer}
                 </p>
                 <p className="text-slate-600 text-[10px] truncate">10880 Wilshire Blvd, Suite 1400</p>
                 
-                {/* EIN with Gapped Dashed Border (Consistent across all docs) */}
+                {/* EIN with Gapped Dashed Border */}
                 <div className="mt-1">
                   <div className="inline-block border border-dashed border-slate-400 bg-slate-100/70 text-slate-900 px-1.5 py-0.5 font-mono text-[10px] font-semibold">
                     EIN: 12-3456789
@@ -265,8 +258,8 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
               <div className="min-w-0 overflow-hidden border-l border-slate-300 pl-2.5">
                 <p className="text-[9px] font-bold text-slate-500 uppercase">RECIPIENT / TAXPAYER</p>
-                <p className="font-bold text-slate-900 text-xs mt-0.5 truncate" title={doc.uploadedBy || 'Tony Stark'}>
-                  {doc.uploadedBy || 'Tony Stark'}
+                <p className="font-bold text-slate-900 text-xs mt-0.5 truncate" title={documentOwner}>
+                  {documentOwner}
                 </p>
                 <p className="text-slate-600 text-[10px] truncate">10880 Malibu Point, CA 90265</p>
                 <p className="font-mono text-slate-700 text-[10px] mt-1">SSN: ***-**-9999</p>
@@ -575,27 +568,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
               <span className="text-emerald-700 font-bold shrink-0">Confidence: 98%</span>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Document Footer Summary */}
-      <div className="border-t border-border bg-card p-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
-        <div className="flex items-center gap-3 text-muted-foreground min-w-0 flex-1">
-          <span className="flex items-center gap-1 truncate">
-            <Building className="h-3.5 w-3.5 text-foreground shrink-0" />
-            <strong className="text-foreground truncate">{doc.vendor || 'Stark Industries'}</strong>
-          </span>
-          <span className="hidden sm:flex items-center gap-1 shrink-0">
-            <Calendar className="h-3.5 w-3.5 text-foreground" />
-            <span>{doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : '2026-02-14'}</span>
-          </span>
-        </div>
-
-        <div className="shrink-0">
-          <Badge variant="outline" className="gap-1 font-mono text-[10px]">
-            <Sparkles className="h-3 w-3 text-primary" />
-            {boundingBoxes.length} Traceable Coordinate Boxes
-          </Badge>
         </div>
       </div>
     </div>
