@@ -5,9 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import {
   ArrowRight,
-  Clock,
-  User,
-  Building,
   AlertTriangle,
   CheckCircle2,
   FileText,
@@ -179,19 +176,12 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                         </Badge>
                       </td>
 
-                      {/* Taxpayer / Entity */}
+                      {/* Taxpayer / Entity (No icons) */}
                       <td className="py-3 px-3">
                         <div className="space-y-0.5">
-                          <div className="flex items-center gap-1.5 font-bold text-foreground group-hover:text-primary transition-colors">
-                            {ret.entityName ? (
-                              <Building className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                            ) : (
-                              <User className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                            )}
-                            <span className="truncate max-w-[220px]" title={ret.taxpayerName}>
-                              {ret.taxpayerName}
-                            </span>
-                          </div>
+                          <p className="font-bold text-foreground group-hover:text-primary transition-colors truncate max-w-[220px]" title={ret.taxpayerName}>
+                            {ret.taxpayerName}
+                          </p>
 
                           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-mono">
                             <Badge variant="secondary" className="text-[10px] px-1 py-0 font-bold">
@@ -203,12 +193,11 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                         </div>
                       </td>
 
-                      {/* Deadline */}
+                      {/* Deadline (No icon) */}
                       <td className="py-3 px-3 whitespace-nowrap">
                         <div className="space-y-0.5">
-                          <div className="flex items-center gap-1 text-xs font-mono font-bold text-foreground">
-                            <Clock className="h-3 w-3 text-muted-foreground" />
-                            <span>{new Date(ret.dueDate).toLocaleDateString()}</span>
+                          <div className="text-xs font-mono font-bold text-foreground">
+                            {new Date(ret.dueDate).toLocaleDateString()}
                           </div>
                           <span className="text-[10px] text-muted-foreground font-mono block">
                             {ret.dueDate === '2026-03-15' ? 'Due in <15 days' : 'Due in 45 days'}
