@@ -81,7 +81,7 @@
 - [X] T027 [US3] Build client document intake dropzone and requested documents list in src/components/client-portal/ClientDocumentUpload.tsx
 - [X] T028 [US3] Build client summary card displaying return status, estimated refund/tax due, and assigned CPA contact in src/components/client-portal/ClientSummaryCard.tsx
 - [X] T029 [US3] Assemble master ClientPortalView (with centered 60% progress bar and clean next action focus) in src/components/client-portal/ClientPortalView.tsx
-- [ ] T030 [US3] Record client progress bar geometry (60% centered width) and 6-stage lifecycle decisions in DECISIONS.md
+- [X] T030 [US3] Record client progress bar geometry (60% centered width) and 6-stage lifecycle decisions in DECISIONS.md
 
 **Checkpoint**: User Story 3 is functional and provides clean client portal with centered progress bar.
 

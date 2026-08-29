@@ -142,3 +142,26 @@
 - **Context**: Reviewers and managing partners need instant visibility into bottlenecks across team members.
 - **Decision**: Built `TriageKpiCards.tsx` (4 interactive queue cards: Critical/At-Risk, Ready for Review, Blocked on Client, Ready to File) that instantly filter the queue on click, accompanied by `TeamWorkloadView.tsx` tracking capacity utilization (returns assigned vs. capacity limit) and stage breakdown per practitioner.
 - **Rationale**: Prevents practitioner burnout and ensures balanced distribution across complex Form 1040, 1120-S, and 1065 workflows.
+
+---
+
+## 5. Client Portal Lifecycle & Centered Progress Geometry (Phase 5 - US3)
+
+### Decision 5.1: 6-Stage Client Lifecycle with Centered Geometry (~60% Screen Width)
+- **Context**: Challenge 04 requires delivering a reassuring, transparent client portal that eliminates status anxiety without overwhelming taxpayers with internal accounting jargon.
+- **Decision**: Implemented `ClientMilestoneProgress.tsx` centered at ~60% screen width (`max-w-4xl mx-auto`) directly below the navigation bar, featuring 6 concise 2-3 word stage titles:
+  1. *Documents Intake* (`DOCUMENTS_NEEDED` / `PROCESSING`)
+  2. *Expert Prep* (`PREPARATION`)
+  3. *Partner Review* (`EXPERT_REVIEW`)
+  4. *Client Signature* (`READY_FOR_SIGNATURE`)
+  5. *IRS Submission* (`SUBMITTED_TO_IRS`)
+  6. *Return Accepted* (`ACCEPTED`)
+- **Rationale**: A centered 60% viewport width (`max-w-4xl mx-auto`) anchors the taxpayer's focus directly onto lifecycle progress without peripheral clutter. Concise 2-3 word titles communicate milestone clarity without confusing accounting jargon.
+
+### Decision 5.2: Action-Oriented Client Experience with Integrated Form 8879 E-Signing
+- **Context**: Taxpayers need clear instruction on their exact required action (e.g. uploading missing documents or e-signing) without navigating multi-level menus.
+- **Decision**: Built `ClientActionBanner.tsx`, `ClientSummaryCard.tsx`, and `ClientDocumentUpload.tsx` with dynamic state handling:
+  - *Blocked State*: Direct missing document alert that enables drag-and-drop file upload and instantly unblocks the return upon intake.
+  - *Client Sign State*: Form 8879 IRS e-file authorization with perjury declaration, AGI & refund/tax liability summary, and typed electronic signature that transitions the return immediately to `E_FILED`.
+  - *Prep/Review State*: Reassuring status notice displaying the assigned CPA contact and direct question trigger.
+- **Rationale**: Keeps the client portal actionable, transparent, and frictionless.
