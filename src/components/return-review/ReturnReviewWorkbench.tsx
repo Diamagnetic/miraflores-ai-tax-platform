@@ -10,7 +10,7 @@ import {
   FileSpreadsheet,
   FileText,
   Sparkles,
-  Split,
+  X,
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { getTriageUrgency, getUrgencyBadgeStyle } from '@/store/triageLogic';
@@ -32,8 +32,9 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
     selectDocument,
   } = usePlatformStore();
 
+  // Side-by-side inspection panel state: opens only on click
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState<boolean>(false);
   const [rightPaneTab, setRightPaneTab] = useState<'document' | 'explainability'>('document');
-  const [layoutMode, setLayoutMode] = useState<'split' | 'form_only' | 'doc_only'>('split');
 
   // Active return resolution
   const activeReturn =
@@ -46,9 +47,13 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
   const urgency = getTriageUrgency(activeReturn?.triageScore || 0);
   const urgencyStyle = getUrgencyBadgeStyle(urgency);
 
+  const handleOpenInspection = () => {
+    setIsSidePanelOpen(true);
+  };
+
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* Return Context Header Banner */}
+      {/* Return Context Header Banner (Zero 3-option toggle clutter) */}
       <div className="border border-border bg-card p-4 flex flex-wrap items-center justify-between gap-4 shadow-xs">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center bg-primary text-primary-foreground font-bold">
@@ -93,83 +98,41 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
           <Badge variant="outline" className={`font-mono text-xs py-1.5 px-3 border ${urgencyStyle}`}>
             Triage Score: {activeReturn?.triageScore} ({urgency})
           </Badge>
-
-          {/* Layout Controls */}
-          <div className="flex items-center gap-1 border border-border bg-card p-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLayoutMode('split')}
-              className={`h-7 px-2 text-xs gap-1 ${layoutMode === 'split' ? 'bg-primary text-primary-foreground font-bold' : 'text-muted-foreground'}`}
-              title="Side-by-Side Split Review"
-            >
-              <Split className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Split</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLayoutMode('form_only')}
-              className={`h-7 px-2 text-xs gap-1 ${layoutMode === 'form_only' ? 'bg-primary text-primary-foreground font-bold' : 'text-muted-foreground'}`}
-              title="Maximize Tax Form View"
-            >
-              <FileSpreadsheet className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Form</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLayoutMode('doc_only')}
-              className={`h-7 px-2 text-xs gap-1 ${layoutMode === 'doc_only' ? 'bg-primary text-primary-foreground font-bold' : 'text-muted-foreground'}`}
-              title="Maximize Document View"
-            >
-              <FileText className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Document</span>
-            </Button>
-          </div>
         </div>
       </div>
 
-      {/* Split-Screen Workbench Grid */}
-      <div className={`grid gap-4 ${
-        layoutMode === 'split'
-          ? 'grid-cols-1 xl:grid-cols-12'
-          : layoutMode === 'form_only'
-          ? 'grid-cols-1'
-          : 'grid-cols-1'
-      }`}>
-        {/* Left Pane: Interactive Tax Return Grid (Form 1040 & Schedule C) */}
-        {(layoutMode === 'split' || layoutMode === 'form_only') && (
-          <div className={layoutMode === 'split' ? 'xl:col-span-6 2xl:col-span-7' : 'w-full'}>
-            <TaxFormViewer />
-          </div>
-        )}
+      {/* Dynamic Layout: Full-Width by default, squeezes left table when inspection drawer opens on right */}
+      <div className="flex flex-col xl:flex-row gap-4 items-start w-full">
+        {/* Left Pane: Tax Return Grid (Squeezes smoothly with horizontal container scroll when panel opens) */}
+        <div className={`transition-all duration-200 w-full ${isSidePanelOpen ? 'xl:flex-1 xl:min-w-0 overflow-hidden' : 'w-full'}`}>
+          <TaxFormViewer onOpenInspection={handleOpenInspection} />
+        </div>
 
-        {/* Right Pane: Source Document Traceability & AI Explainability */}
-        {(layoutMode === 'split' || layoutMode === 'doc_only') && (
-          <div className={layoutMode === 'split' ? 'xl:col-span-6 2xl:col-span-5 space-y-4' : 'w-full space-y-4'}>
-            {/* Right Pane Navigation Tabs */}
-            <div className="flex items-center justify-between border-b border-border bg-muted/40 p-1.5">
+        {/* Right Pane: Source Document Traceability & AI Explainability Drawer (Shown ONLY when clicking Review/Inspect) */}
+        {isSidePanelOpen && (
+          <div className="w-full xl:w-[520px] 2xl:w-[580px] shrink-0 border border-border bg-card shadow-md flex flex-col transition-all duration-200">
+            {/* Drawer Header with Close Button */}
+            <div className="flex items-center justify-between border-b border-border bg-muted/40 p-2.5">
               <div className="flex items-center gap-1.5">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setRightPaneTab('document')}
-                  className={`h-7 px-3 text-xs font-semibold gap-1.5 border ${
+                  className={`h-7 px-2.5 text-xs font-semibold gap-1.5 border ${
                     rightPaneTab === 'document'
                       ? 'bg-card text-foreground border-border shadow-2xs font-bold'
                       : 'text-muted-foreground border-transparent hover:border-border'
                   }`}
                 >
                   <FileText className="h-3.5 w-3.5 text-primary" />
-                  Source Traceability ({returnDocs.length} Docs)
+                  Source Traceability ({returnDocs.length})
                 </Button>
 
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setRightPaneTab('explainability')}
-                  className={`h-7 px-3 text-xs font-semibold gap-1.5 border ${
+                  className={`h-7 px-2.5 text-xs font-semibold gap-1.5 border ${
                     rightPaneTab === 'explainability'
                       ? 'bg-card text-foreground border-border shadow-2xs font-bold'
                       : 'text-muted-foreground border-transparent hover:border-border'
@@ -180,32 +143,47 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
                 </Button>
               </div>
 
-              {/* Source Document Quick Switcher */}
-              <div className="flex items-center gap-1">
-                <select
-                  aria-label="Select source document to inspect"
-                  value={activeDocumentId || ''}
-                  onChange={(e) => selectDocument(e.target.value)}
-                  className="h-7 bg-card border border-border px-2 text-xs font-medium text-foreground focus:outline-none max-w-[200px] truncate"
+              <div className="flex items-center gap-2">
+                {/* Document Selector in Tab */}
+                {rightPaneTab === 'document' && (
+                  <select
+                    aria-label="Select source document to inspect"
+                    value={activeDocumentId || ''}
+                    onChange={(e) => selectDocument(e.target.value)}
+                    className="h-7 bg-card border border-border px-2 text-xs font-medium text-foreground focus:outline-none max-w-[140px] truncate"
+                  >
+                    {returnDocs.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.fileName}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
+                {/* Close Drawer Button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsSidePanelOpen(false)}
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                  title="Close inspection panel and return to full-width table"
                 >
-                  {returnDocs.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.fileName} ({d.docType})
-                    </option>
-                  ))}
-                </select>
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
             </div>
 
-            {/* Right Pane Content */}
-            {rightPaneTab === 'document' ? (
-              <DocumentViewer />
-            ) : (
-              <div className="space-y-4">
-                <AIExplainabilityCard />
-                {activeField?.formula && <FormulaBreakdown field={activeField} />}
-              </div>
-            )}
+            {/* Drawer Body Content */}
+            <div className="p-3 space-y-3">
+              {rightPaneTab === 'document' ? (
+                <DocumentViewer />
+              ) : (
+                <div className="space-y-3">
+                  <AIExplainabilityCard />
+                  {activeField?.formula && <FormulaBreakdown field={activeField} />}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

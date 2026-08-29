@@ -16,10 +16,12 @@ import {
 } from 'lucide-react';
 
 interface TaxFormViewerProps {
+  onOpenInspection?: (fieldId: string) => void;
   className?: string;
 }
 
 export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
+  onOpenInspection,
   className = '',
 }) => {
   const {
@@ -52,6 +54,13 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
     returnFields
       .filter((f) => f.state === 'ai_extracted' && (f.aiConfidence || 0) >= 90)
       .forEach((f) => verifyField(f.id));
+  };
+
+  const handleRowClick = (fieldId: string) => {
+    selectField(fieldId);
+    if (onOpenInspection) {
+      onOpenInspection(fieldId);
+    }
   };
 
   const highConfidenceCount = returnFields.filter(
@@ -137,15 +146,15 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
 
       {/* Horizontal Scroll Safe Data Table */}
       <div className="overflow-x-auto min-w-full">
-        <table className="w-full text-left border-collapse min-w-[850px]">
+        <table className="w-full text-left border-collapse min-w-[720px]">
           <thead>
             <tr className="border-b border-border bg-muted/40 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-              <th className="py-2.5 px-3 w-20">Line #</th>
-              <th className="py-2.5 px-3">Description / Field Name</th>
-              <th className="py-2.5 px-3 w-36">Schedule</th>
-              <th className="py-2.5 px-3 w-48">Value & Affordance</th>
-              <th className="py-2.5 px-3 w-36 text-center">Source Provenance</th>
-              <th className="py-2.5 px-3 w-28 text-right">Actions</th>
+              <th className="py-2.5 px-3 w-16 whitespace-nowrap">Line #</th>
+              <th className="py-2.5 px-3 min-w-[200px]">Description / Field Name</th>
+              <th className="py-2.5 px-3 w-32">Schedule</th>
+              <th className="py-2.5 px-3 w-44">Value & Affordance</th>
+              <th className="py-2.5 px-3 w-32 text-center">Source Provenance</th>
+              <th className="py-2.5 px-3 w-36 text-right whitespace-nowrap">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border text-xs font-sans">
@@ -160,18 +169,21 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
               filteredFields.map((field) => {
                 const isSelected = activeFieldId === field.id;
                 const hasDocs = field.sourceDocumentIds && field.sourceDocumentIds.length > 0;
+                const cleanLineNumber = field.lineNumber
+                  ? field.lineNumber.replace(/^Line\s*/i, '')
+                  : '—';
 
                 return (
                   <tr
                     key={field.id}
-                    onClick={() => selectField(field.id)}
+                    onClick={() => handleRowClick(field.id)}
                     className={`transition-colors cursor-pointer hover:bg-muted/30 ${
                       isSelected ? 'bg-primary/5 font-medium' : ''
                     }`}
                   >
-                    {/* Line Number */}
-                    <td className="py-2.5 px-3 font-mono font-bold text-foreground">
-                      {field.lineNumber || '—'}
+                    {/* Line Number without "Line" prefix */}
+                    <td className="py-2.5 px-3 font-mono font-bold text-foreground whitespace-nowrap">
+                      {cleanLineNumber}
                     </td>
 
                     {/* Field Description */}
@@ -180,7 +192,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                         <span className="truncate max-w-sm">{field.label}</span>
                         {field.formula && (
                           <span
-                            className="text-muted-foreground hover:text-foreground"
+                            className="text-muted-foreground hover:text-foreground shrink-0"
                             title={`Calculation Formula: ${field.formula}`}
                           >
                             <HelpCircle className="h-3 w-3" />
@@ -191,7 +203,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
 
                     {/* Schedule Badge */}
                     <td className="py-2.5 px-3">
-                      <Badge variant="outline" className="font-mono text-[11px] bg-muted/20">
+                      <Badge variant="outline" className="font-mono text-[11px] bg-muted/20 whitespace-nowrap">
                         {field.formCode}
                       </Badge>
                     </td>
@@ -201,12 +213,12 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                       <AffordanceCell
                         field={field}
                         isSelected={isSelected}
-                        onClick={() => selectField(field.id)}
+                        onClick={() => handleRowClick(field.id)}
                       />
                     </td>
 
                     {/* Source Document Provenance */}
-                    <td className="py-2.5 px-3 text-center">
+                    <td className="py-2.5 px-3 text-center whitespace-nowrap">
                       {hasDocs ? (
                         <span
                           className="inline-flex items-center gap-1 px-2 py-0.5 border border-purple-200 bg-purple-50 text-purple-800 text-[11px] font-mono font-semibold"
@@ -225,19 +237,24 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                     </td>
 
                     {/* Quick Actions */}
-                    <td className="py-2.5 px-3 text-right">
-                      <div className="flex items-center justify-end gap-1">
+                    <td className="py-2.5 px-3 text-right whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-1.5">
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            selectField(field.id);
+                            handleRowClick(field.id);
                           }}
-                          className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                          className={`h-7 px-2 text-xs gap-1 ${
+                            isSelected
+                              ? 'bg-primary text-primary-foreground border-primary font-bold'
+                              : 'text-foreground hover:bg-muted/50 border-border'
+                          }`}
                           title="Inspect AI Explainability & Source Document"
                         >
                           <Eye className="h-3.5 w-3.5" />
+                          <span>Review</span>
                         </Button>
 
                         {field.state === 'ai_extracted' && isReviewerOrPreparer && (
@@ -248,7 +265,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                               e.stopPropagation();
                               verifyField(field.id);
                             }}
-                            className="h-6 w-6 p-0 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                            className="h-7 w-7 p-0 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
                             title="1-Click Verify"
                           >
                             <ShieldCheck className="h-3.5 w-3.5" />
