@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { TaxFormViewer } from './TaxFormViewer';
@@ -55,6 +55,17 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
   };
+
+  // Close drawer on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isDrawerOpen) {
+        setIsDrawerOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDrawerOpen]);
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -119,8 +130,8 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
             {/* Backdrop Blur */}
             <div
               onClick={handleCloseDrawer}
-              className="fixed inset-0 bg-slate-950/50 backdrop-blur-xs transition-opacity"
-              aria-label="Close document drawer overlay"
+              className="fixed inset-0 bg-slate-950/50 backdrop-blur-xs transition-opacity cursor-pointer"
+              aria-label="Close document drawer overlay (Esc)"
             />
 
             {/* Full-Height Drawer Spanning from top: 0 to bottom: 0 */}
