@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { SourceDocument } from '@/types';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
   className = '',
 }) => {
   const {
+    returns,
     documents,
     fields,
     activeDocumentId,
@@ -107,7 +108,10 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
       ? 'Commercial Expense Receipt'
       : 'Source Tax Workpaper';
 
-  const documentOwner = doc.uploadedBy || 'Tony Stark';
+  const activeReturn = returns.find((r) => r.id === doc.returnId);
+  const documentOwner =
+    activeReturn?.taxpayerName ||
+    (doc.uploadedBy && !doc.uploadedBy.includes('@') ? doc.uploadedBy : 'Tony Stark');
   const documentCompany = doc.vendor || 'Stark Industries LLC';
 
   return (

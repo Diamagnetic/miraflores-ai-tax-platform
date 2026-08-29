@@ -25,7 +25,7 @@ const tonyDocuments: SourceDocument[] = [
     category: 'income',
     pageCount: 1,
     uploadedAt: '2026-02-01T10:15:00Z',
-    uploadedBy: 'tony.stark@starkenterprises.com',
+    uploadedBy: 'Tony Stark',
     status: 'processed',
     amount: 1450000,
     vendor: 'Stark Industries Inc.',
@@ -55,7 +55,7 @@ const tonyDocuments: SourceDocument[] = [
     category: 'income',
     pageCount: 1,
     uploadedAt: '2026-02-03T14:20:00Z',
-    uploadedBy: 'tony.stark@starkenterprises.com',
+    uploadedBy: 'Tony Stark',
     status: 'processed',
     amount: 325000,
     vendor: 'Morgan Stanley Wealth Management',
@@ -79,7 +79,7 @@ const tonyDocuments: SourceDocument[] = [
     category: 'income',
     pageCount: 3,
     uploadedAt: '2026-02-05T09:00:00Z',
-    uploadedBy: 'tony.stark@starkenterprises.com',
+    uploadedBy: 'Tony Stark',
     status: 'processed',
     amount: 875000,
     vendor: 'Goldman Sachs & Co.',
@@ -104,7 +104,7 @@ const tonyDocuments: SourceDocument[] = [
     category: 'deductions',
     pageCount: 1,
     uploadedAt: '2026-02-08T11:45:00Z',
-    uploadedBy: 'tony.stark@starkenterprises.com',
+    uploadedBy: 'Tony Stark',
     status: 'processed',
     amount: 84500,
     vendor: 'JPMorgan Chase Bank',
@@ -465,3 +465,4 @@ export function getDocumentsForReturn(returnId: string): SourceDocument[] {
 export function getDocumentById(docId: string): SourceDocument | undefined {
   return mockDocuments.find((doc) => doc.id === docId);
 }
+
