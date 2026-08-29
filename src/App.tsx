@@ -1,8 +1,9 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { Header } from '@/components/common/Header';
 import { ReturnReviewWorkbench } from '@/components/return-review/ReturnReviewWorkbench';
 import { CpaDashboard } from '@/components/dashboard/CpaDashboard';
+import { ClientPortalView } from '@/components/client-portal/ClientPortalView';
 import { Button } from '@/components/ui/button';
 import { LayoutDashboard, FileSpreadsheet, ArrowLeft } from 'lucide-react';
 
@@ -80,10 +81,9 @@ export default function App() {
             <ReturnReviewWorkbench />
           )
         ) : (
-          <ReturnReviewWorkbench />
+          <ClientPortalView />
         )}
       </main>
     </div>
   );
 }
-
