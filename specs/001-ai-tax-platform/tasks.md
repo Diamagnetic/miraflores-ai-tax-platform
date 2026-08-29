@@ -77,7 +77,7 @@
 **Independent Test**: Sign in as Tony Stark or Peter Parker -> Observe top progress bar spanning ~60% screen width in the center with 6 concise stage titles (1. Documents Intake, 2. Expert Prep, 3. Partner Review, 4. Client Signature, 5. IRS Submission, 6. Return Accepted) -> Observe active stage and direct action callout -> Upload a document or e-sign Form 8879 -> Verify instant progress bar advancement.
 
 - [X] T025 [P] [US3] Build 6-stage ClientMilestoneProgress bar (centered ~60% screen width, max-w-4xl mx-auto, 6 concise 2-3 word stage titles: Documents Intake, Expert Prep, Partner Review, Client Signature, IRS Submission, Return Accepted) in src/components/client-portal/ClientMilestoneProgress.tsx
-- [ ] T026 [P] [US3] Build client pending action callout and Form 8879 e-signature banner in src/components/client-portal/ClientActionBanner.tsx
+- [X] T026 [P] [US3] Build client pending action callout and Form 8879 e-signature banner in src/components/client-portal/ClientActionBanner.tsx
 - [ ] T027 [US3] Build client document intake dropzone and requested documents list in src/components/client-portal/ClientDocumentUpload.tsx
 - [ ] T028 [US3] Build client summary card displaying return status, estimated refund/tax due, and assigned CPA contact in src/components/client-portal/ClientSummaryCard.tsx
 - [ ] T029 [US3] Assemble master ClientPortalView (with centered 60% progress bar and clean next action focus) in src/components/client-portal/ClientPortalView.tsx
