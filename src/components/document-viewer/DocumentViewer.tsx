@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { SourceDocument } from '@/types';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { Button } from '@/components/ui/button';
@@ -116,8 +116,8 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
   return (
     <div className={`flex flex-col h-full bg-slate-200/80 dark:bg-slate-900 text-foreground ${className}`}>
-      {/* Seamless Heading (No line separation): Doc Name, PDF File Name, Taxpayer Owner, Issuing Company */}
-      <div className="p-4 pb-2 bg-transparent flex flex-wrap items-start justify-between gap-3 shrink-0">
+      {/* Header with clean separation border */}
+      <div className="p-3.5 bg-card/80 backdrop-blur-xs border-b border-border flex flex-wrap items-start justify-between gap-3 shrink-0">
         <div className="min-w-0 flex-1">
           {/* Doc Name / Type */}
           <div className="flex items-center gap-2">
@@ -127,12 +127,13 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
             </h2>
           </div>
 
-          {/* PDF File Name, Taxpayer, Issuing Company */}
-          <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-muted-foreground font-mono">
-            <span className="text-foreground font-semibold truncate max-w-[280px]" title={doc.fileName}>
-              {doc.fileName}
-            </span>
-            <span>•</span>
+          {/* PDF File Name on its own line */}
+          <p className="mt-1 font-mono text-xs font-semibold text-foreground truncate max-w-md" title={doc.fileName}>
+            {doc.fileName}
+          </p>
+
+          {/* Taxpayer and Issued By on one line */}
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[11px] text-muted-foreground font-mono">
             <span>
               Taxpayer: <strong className="text-foreground">{documentOwner}</strong>
             </span>
@@ -217,8 +218,8 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
         </div>
       </div>
 
-      {/* Slightly Darker Neutral Document Viewport Seamless with Heading */}
-      <div className="relative flex-1 overflow-auto bg-transparent p-4 pt-2 flex items-start justify-center">
+      {/* Document Viewport */}
+      <div className="relative flex-1 overflow-auto bg-transparent p-4 flex items-start justify-center">
         <div
           className="relative bg-white text-slate-900 shadow-xl border border-slate-300 transition-transform origin-top select-none w-full max-w-[580px]"
           style={{
