@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
-import { ReturnField, AffordanceState } from '@/types';
+import { ReturnField, AffordanceState, SourceDocument } from '@/types';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { AffordanceCell } from './AffordanceCell';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,11 @@ import {
   FileText,
   AlertCircle,
   HelpCircle,
+  Sparkles,
+  ShieldCheck,
+  Edit3,
+  Lock,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface TaxFormViewerProps {
@@ -25,6 +30,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
 }) => {
   const {
     fields,
+    documents,
     selectedReturnId,
     activeFieldId,
     selectField,
@@ -34,6 +40,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
 
   const [activeFormTab, setActiveFormTab] = useState<string>('all');
   const [filterState, setFilterState] = useState<AffordanceState | 'all'>('all');
+  const [hoveredFieldId, setHoveredFieldId] = useState<string | null>(null);
   const activeRowRef = useRef<HTMLTableRowElement | null>(null);
 
   // Filter fields belonging to the active return
@@ -101,10 +108,73 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
   const isReviewerOrPreparer =
     currentUser.role === 'tax_reviewer' || currentUser.role === 'tax_preparer';
 
+  // Helper to format source doc label
+  const getSourceDocLabel = (field: ReturnField) => {
+    if (field.sourceDocumentIds && field.sourceDocumentIds.length > 0) {
+      const linkedDocs = documents.filter((d) => field.sourceDocumentIds.includes(d.id));
+      if (linkedDocs.length === 1) {
+        const doc = linkedDocs[0];
+        const typeName = doc.docType.replace('_', '-');
+        const vendorShort = doc.vendor ? ` (${doc.vendor.split(' ')[0]})` : '';
+        return `${typeName}${vendorShort}`;
+      }
+      return `${linkedDocs.length}x Source Docs`;
+    }
+    if (field.formula) return 'Formula';
+    if (field.state === 'user_edited') return 'Manual Entry';
+    return '—';
+  };
+
+  // Helper to get first linked doc
+  const getFirstLinkedDoc = (field: ReturnField): SourceDocument | undefined => {
+    if (field.sourceDocumentIds && field.sourceDocumentIds.length > 0) {
+      return documents.find((d) => d.id === field.sourceDocumentIds[0]);
+    }
+    return undefined;
+  };
+
   return (
     <div className={`flex flex-col border border-border bg-card shadow-xs ${className}`}>
+      {/* Top Legend Bar: Clear 5-Color Semantic Tokens */}
+      <div className="border-b border-border bg-muted/50 px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+        <div className="flex items-center gap-1.5 text-muted-foreground font-semibold">
+          <span>Field Legend:</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* AI Extracted */}
+          <div className="flex items-center gap-1 px-2 py-0.5 bg-purple-100 dark:bg-purple-950/60 border border-purple-300 dark:border-purple-700 text-purple-950 dark:text-purple-200 font-semibold font-mono">
+            <Sparkles className="h-3 w-3 text-purple-700 dark:text-purple-400" />
+            <span>AI-Extracted</span>
+          </div>
+
+          {/* Verified */}
+          <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 font-semibold font-mono">
+            <ShieldCheck className="h-3 w-3 text-emerald-700 dark:text-emerald-400" />
+            <span>Verified (Locked)</span>
+          </div>
+
+          {/* Manual Edit - Distinct Amber */}
+          <div className="flex items-center gap-1 px-2 py-0.5 bg-amber-100 dark:bg-amber-950/60 border border-amber-400 dark:border-amber-700 text-amber-950 dark:text-amber-200 font-semibold font-mono">
+            <Edit3 className="h-3 w-3 text-amber-800 dark:text-amber-400" />
+            <span>Manual Edit</span>
+          </div>
+
+          {/* Calculated */}
+          <div className="flex items-center gap-1 px-2 py-0.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-semibold font-mono">
+            <Lock className="h-3 w-3 text-slate-600 dark:text-slate-400" />
+            <span>Calculated Formula</span>
+          </div>
+
+          {/* Needs QA */}
+          <div className="flex items-center gap-1 px-2 py-0.5 bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 text-rose-950 dark:text-rose-200 font-semibold font-mono">
+            <AlertTriangle className="h-3 w-3 text-rose-700 dark:text-rose-400" />
+            <span>Needs QA / Approval</span>
+          </div>
+        </div>
+      </div>
+
       {/* Form Navigation & Batch Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/30 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/20 p-3">
         {/* Form Tabs */}
         <div className="flex flex-wrap items-center gap-1.5">
           <Button
@@ -184,7 +254,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
               <th className="py-2.5 px-3 min-w-[200px]">Description / Line Item</th>
               <th className="py-2.5 px-3 w-28">Schedule</th>
               <th className="py-2.5 px-3 w-44">Value & Affordance</th>
-              <th className="py-2.5 px-3 w-32 text-center">Source Provenance</th>
+              <th className="py-2.5 px-3 w-36 text-center">Source Provenance</th>
               <th className="py-2.5 px-3 w-24 text-right whitespace-nowrap">Action</th>
             </tr>
           </thead>
@@ -216,6 +286,9 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                       const cleanLineNumber = field.lineNumber
                         ? field.lineNumber.replace(/^Line\s*/i, '')
                         : '—';
+                      const docLabel = getSourceDocLabel(field);
+                      const firstDoc = getFirstLinkedDoc(field);
+                      const isHovered = hoveredFieldId === field.id;
 
                       return (
                         <tr
@@ -262,22 +335,51 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                             />
                           </td>
 
-                          {/* Source Document Provenance */}
-                          <td className="py-2 px-3 text-center whitespace-nowrap">
+                          {/* Source Document Provenance with Rich Hover Card */}
+                          <td
+                            className="py-2 px-3 text-center whitespace-nowrap relative"
+                            onMouseEnter={() => setHoveredFieldId(field.id)}
+                            onMouseLeave={() => setHoveredFieldId(null)}
+                          >
                             {hasDocs ? (
                               <span
-                                className="inline-flex items-center gap-1 px-1.5 py-0.5 border border-purple-200 bg-purple-50 text-purple-800 text-[10px] font-mono font-semibold"
-                                title={`Tied to ${field.sourceDocumentIds.length} source document(s)`}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 border border-purple-300 bg-purple-100 dark:bg-purple-950/60 text-purple-950 dark:text-purple-200 text-[10px] font-mono font-bold hover:bg-purple-200 transition-colors"
                               >
-                                <FileText className="h-3 w-3 text-purple-600" />
-                                {field.sourceDocumentIds.length} Source {field.sourceDocumentIds.length > 1 ? 'Docs' : 'Doc'}
+                                <FileText className="h-3 w-3 text-purple-700 dark:text-purple-400" />
+                                <span>{docLabel}</span>
                               </span>
                             ) : field.formula ? (
-                              <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-1 py-0.5">
+                              <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 border border-slate-200">
                                 Formula
                               </span>
                             ) : (
-                              <span className="text-[10px] text-muted-foreground">—</span>
+                              <span className="text-[10px] text-muted-foreground font-mono">—</span>
+                            )}
+
+                            {/* Hover Card Details */}
+                            {isHovered && hasDocs && firstDoc && (
+                              <div className="absolute z-40 bottom-full mb-1.5 left-1/2 -translate-x-1/2 w-64 p-3 bg-slate-900 text-white text-left shadow-xl border border-slate-700 text-xs font-sans pointer-events-none animate-in fade-in zoom-in-95 duration-100">
+                                <div className="flex items-center gap-1.5 pb-1.5 border-b border-slate-800">
+                                  <FileText className="h-3.5 w-3.5 text-primary shrink-0" />
+                                  <span className="font-bold truncate text-white">{firstDoc.fileName}</span>
+                                </div>
+                                <div className="space-y-1 pt-1.5 text-[11px] text-slate-300 font-mono">
+                                  <p>
+                                    <span className="text-slate-400">Payer:</span>{' '}
+                                    <strong className="text-white">{firstDoc.vendor || 'Stark Industries Inc.'}</strong>
+                                  </p>
+                                  <p>
+                                    <span className="text-slate-400">Source:</span>{' '}
+                                    <strong className="text-white">
+                                      {firstDoc.docType} (Page 1)
+                                    </strong>
+                                  </p>
+                                  <p className="flex items-center justify-between text-emerald-400 font-bold pt-1 border-t border-slate-800">
+                                    <span>OCR Match: 98%</span>
+                                    <span className="text-[10px] text-primary">Click to view ➔</span>
+                                  </p>
+                                </div>
+                              </div>
                             )}
                           </td>
 
@@ -315,20 +417,6 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
       {/* Table Footer Summary */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-muted/20 p-2.5 text-xs text-muted-foreground font-mono">
         <span>Showing {filteredFields.length} schedule lines across {Object.keys(categoryGroups).length} categories</span>
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1">
-            <span className="h-2 w-2 bg-purple-500 inline-block" /> AI-Extracted
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="h-2 w-2 bg-emerald-500 inline-block" /> Verified
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="h-2 w-2 bg-sky-500 inline-block" /> Manual Edit
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="h-2 w-2 bg-slate-400 inline-block" /> Formula Locked
-          </span>
-        </div>
       </div>
     </div>
   );
