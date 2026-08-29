@@ -62,7 +62,7 @@
 - [X] T019 [P] [US2] Build urgency metric KPI summary cards in src/components/dashboard/TriageKpiCards.tsx
 - [X] T020 [P] [US2] Build actionable triage queue card with container horizontal scroll (overflow-x-auto) and fixed column widths in src/components/dashboard/TriageQueueCard.tsx
 - [X] T021 [US2] Build multi-faceted return search and filter bar (by status, deadline, assigned preparer, blocker) in src/components/dashboard/DashboardFilters.tsx
-- [ ] T022 [US2] Build team workload distribution view for managers in src/components/dashboard/TeamWorkloadView.tsx
+- [X] T022 [US2] Build team workload distribution view for managers in src/components/dashboard/TeamWorkloadView.tsx
 - [ ] T023 [US2] Assemble master Actionable CPA Dashboard with scroll-safe container layout in src/components/dashboard/CpaDashboard.tsx
 - [ ] T024 [US2] Record triage prioritization and dashboard information architecture decisions in DECISIONS.md
 
