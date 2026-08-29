@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { TriageKpiCards, DashboardKpiFilter } from './TriageKpiCards';
 import { DashboardFilters, DashboardFilterState } from './DashboardFilters';
@@ -44,22 +44,42 @@ export const CpaDashboard: React.FC<CpaDashboardProps> = ({
     return Array.from(names);
   }, [returns]);
 
+  // Synchronize KPI card selection with the filter bar
+  const handleKpiCardSelect = (kpi: DashboardKpiFilter) => {
+    setKpiFilter(kpi);
+
+    if (kpi === 'review') {
+      setFilterState((prev) => ({ ...prev, status: 'REVIEW', blockerOnly: false }));
+    } else if (kpi === 'blocked') {
+      setFilterState((prev) => ({ ...prev, status: 'ALL', blockerOnly: true }));
+    } else if (kpi === 'filing') {
+      setFilterState((prev) => ({ ...prev, status: 'CLIENT_SIGN', blockerOnly: false }));
+    } else if (kpi === 'critical') {
+      setFilterState((prev) => ({ ...prev, status: 'ALL', blockerOnly: false }));
+    } else {
+      setFilterState((prev) => ({ ...prev, status: 'ALL', blockerOnly: false }));
+    }
+  };
+
+  // Synchronize filter bar changes with the top KPI cards
+  const handleFilterChange = (newFilters: DashboardFilterState) => {
+    setFilterState(newFilters);
+
+    if (newFilters.blockerOnly) {
+      setKpiFilter('blocked');
+    } else if (newFilters.status === 'REVIEW') {
+      setKpiFilter('review');
+    } else if (newFilters.status === 'CLIENT_SIGN') {
+      setKpiFilter('filing');
+    } else {
+      setKpiFilter('all');
+    }
+  };
+
   // Multi-tier filtering
   const filteredReturns = useMemo(() => {
     return returns.filter((ret) => {
-      // 1. KPI Top Card Filter
-      if (kpiFilter === 'critical') {
-        const isCritical = ret.triageScore >= 90 || (ret.status !== 'E_FILED' && ret.status !== 'ACCEPTED' && ret.dueDate === '2026-03-15');
-        if (!isCritical) return false;
-      } else if (kpiFilter === 'review') {
-        if (ret.status !== 'REVIEW' && ret.nextActionOwner !== 'reviewer') return false;
-      } else if (kpiFilter === 'blocked') {
-        if (!ret.isBlocked && ret.nextActionOwner !== 'client') return false;
-      } else if (kpiFilter === 'filing') {
-        if (ret.status !== 'CLIENT_SIGN' && ret.status !== 'E_FILED') return false;
-      }
-
-      // 2. Search Query (Taxpayer, entity, email)
+      // 1. Search Query (Taxpayer, entity, email)
       if (filterState.searchQuery.trim()) {
         const q = filterState.searchQuery.toLowerCase();
         const matchesName = ret.taxpayerName.toLowerCase().includes(q);
@@ -68,13 +88,18 @@ export const CpaDashboard: React.FC<CpaDashboardProps> = ({
         if (!matchesName && !matchesEntity && !matchesEmail) return false;
       }
 
-      // 3. Return Type
+      // 2. Return Type
       if (filterState.returnType !== 'ALL' && ret.returnType !== filterState.returnType) {
         return false;
       }
 
-      // 4. Status
+      // 3. Status
       if (filterState.status !== 'ALL' && ret.status !== filterState.status) {
+        return false;
+      }
+
+      // 4. Blocker Toggle
+      if (filterState.blockerOnly && !ret.isBlocked) {
         return false;
       }
 
@@ -85,9 +110,10 @@ export const CpaDashboard: React.FC<CpaDashboardProps> = ({
         if (!matchesPrep && !matchesRev) return false;
       }
 
-      // 6. Blocker Toggle
-      if (filterState.blockerOnly && !ret.isBlocked) {
-        return false;
+      // 6. Critical Deadline Window Filter (when critical card is selected)
+      if (kpiFilter === 'critical') {
+        const isCritical = ret.triageScore >= 90 || (ret.status !== 'E_FILED' && ret.status !== 'ACCEPTED' && ret.dueDate === '2026-03-15');
+        if (!isCritical) return false;
       }
 
       return true;
@@ -161,7 +187,7 @@ export const CpaDashboard: React.FC<CpaDashboardProps> = ({
             title="Reset queue filters"
           >
             <RefreshCw className="h-3 w-3" />
-            <span>Refresh</span>
+            <span>Reset</span>
           </Button>
         </div>
       </div>
@@ -170,7 +196,7 @@ export const CpaDashboard: React.FC<CpaDashboardProps> = ({
       <TriageKpiCards
         returns={returns}
         activeFilter={kpiFilter}
-        onSelectFilter={setKpiFilter}
+        onSelectFilter={handleKpiCardSelect}
       />
 
       {/* Team Workload Distribution (when active) */}
@@ -179,7 +205,7 @@ export const CpaDashboard: React.FC<CpaDashboardProps> = ({
       {/* Multi-Faceted Return Search & Filter Bar */}
       <DashboardFilters
         filters={filterState}
-        onFilterChange={setFilterState}
+        onFilterChange={handleFilterChange}
         preparerNames={preparerNames}
       />
 

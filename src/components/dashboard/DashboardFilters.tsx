@@ -41,6 +41,17 @@ export const DashboardFilters: React.FC<DashboardFiltersProps> = ({
     });
   };
 
+  const currentStatusValue = filters.blockerOnly ? 'BLOCKED' : filters.status;
+
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    if (val === 'BLOCKED') {
+      onFilterChange({ ...filters, status: 'ALL', blockerOnly: true });
+    } else {
+      onFilterChange({ ...filters, status: val as ReturnStatus | 'ALL', blockerOnly: false });
+    }
+  };
+
   return (
     <div className={`border border-border bg-card p-3 shadow-xs space-y-2.5 ${className}`}>
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -87,23 +98,22 @@ export const DashboardFilters: React.FC<DashboardFiltersProps> = ({
             </select>
           </div>
 
-          {/* Status */}
+          {/* Status Dropdown (resonates with KPI cards and includes Blocked) */}
           <div className="flex items-center gap-1 border border-border bg-background px-2 h-8 text-xs">
             <span className="text-[10px] text-muted-foreground font-semibold">Status:</span>
             <select
               aria-label="Filter by return workflow status"
-              value={filters.status}
-              onChange={(e) =>
-                onFilterChange({ ...filters, status: e.target.value as ReturnStatus | 'ALL' })
-              }
+              value={currentStatusValue}
+              onChange={handleStatusChange}
               className="bg-transparent border-0 text-xs font-medium text-foreground focus:outline-none cursor-pointer"
             >
               <option value="ALL">All Statuses</option>
-              <option value="INTAKE">Intake</option>
-              <option value="EXTRACTION">Extraction</option>
-              <option value="PREPARATION">Preparation</option>
+              <option value="BLOCKED">Blocked</option>
               <option value="REVIEW">Ready for Review</option>
+              <option value="PREPARATION">Preparation</option>
               <option value="CLIENT_SIGN">Client Signature</option>
+              <option value="EXTRACTION">Extraction</option>
+              <option value="INTAKE">Intake</option>
               <option value="E_FILED">E-Filed</option>
               <option value="ACCEPTED">Accepted</option>
             </select>
@@ -135,7 +145,7 @@ export const DashboardFilters: React.FC<DashboardFiltersProps> = ({
             variant={filters.blockerOnly ? 'destructive' : 'outline'}
             size="sm"
             onClick={() =>
-              onFilterChange({ ...filters, blockerOnly: !filters.blockerOnly })
+              onFilterChange({ ...filters, blockerOnly: !filters.blockerOnly, status: 'ALL' })
             }
             className="h-8 text-xs gap-1.5 font-semibold"
           >
