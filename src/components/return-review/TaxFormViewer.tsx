@@ -290,7 +290,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         </div>
       </div>
 
-      {/* Horizontal Scroll Safe Data Table with Separate Value & Affordance Columns */}
+      {/* Horizontal Scroll Safe Data Table with Center-Aligned Source Doc Column */}
       <div className="overflow-x-auto min-w-full">
         <table className="w-full text-left border-collapse min-w-[780px]">
           <thead>
@@ -300,7 +300,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
               <th className="py-2.5 px-3 w-28">Schedule</th>
               <th className="py-2.5 px-3 w-36 text-right whitespace-nowrap">Value</th>
               <th className="py-2.5 px-3 w-40">Affordance</th>
-              <th className="py-2.5 px-3 w-28 text-right whitespace-nowrap">Source Doc</th>
+              <th className="py-2.5 px-3 w-28 text-center whitespace-nowrap">Source Doc</th>
               <th className="py-2.5 px-3 w-20 text-right whitespace-nowrap">Action</th>
             </tr>
           </thead>
@@ -384,8 +384,8 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                             {renderAffordanceBadge(field)}
                           </td>
 
-                          {/* Source Document Button (Right Aligned, No Tilted Arrow) */}
-                          <td className="py-2 px-3 text-right whitespace-nowrap">
+                          {/* Source Document Button (Center Aligned) */}
+                          <td className="py-2 px-3 text-center whitespace-nowrap">
                             {hasDocs && firstDoc ? (
                               <button
                                 type="button"
@@ -435,7 +435,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         </table>
       </div>
 
-      {/* Viewport-Safe Floating Hover Card (Never Clipped by Scroll Container or Viewport Edges) */}
+      {/* Viewport-Safe Floating Hover Card */}
       {hoveredDocInfo && (
         <div
           style={{
