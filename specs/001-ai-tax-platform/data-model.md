@@ -147,31 +147,35 @@ interface Message {
 
 ---
 
-### 2.5 User Roles & Permissions Matrix
+### 2.5 User Accounts & Authentication Model
 
-The 3 core platform roles (with firm personal return context support):
+The platform utilizes an authentic **"Saved Logins / Account Chooser"** landing screen (`SavedLoginsScreen`) featuring 4 realistic persona accounts:
 
-| Role Identifier | Role Title | Key Permissions & Navigation Scope |
-|---|---|---|
-| `individual_client` | Individual Taxpayer (Client) | View personal return, 10-second onboarding cards, upload docs, answer queries, e-sign |
-| `tax_preparer` | Tax Preparer (Firm) | Actionable triage workbench, return preparation, side-by-side traceability, internal notes, run AI extraction |
-| `tax_reviewer` | Senior Tax Reviewer (Firm Senior) | Full review controls, verify overrides, sign-off gatekeeper, triage oversight, IRS filing authorization |
+| Account Identifier | Name & Title | Email | Role Key | Default View / Permissions |
+|---|---|---|---|---|
+| `prep-sam-wilson` | **Sam Wilson, CPA** | `sam.wilson@miraflores.tax` | `tax_preparer` | Actionable triage dashboard, return preparation, side-by-side traceability, internal notes |
+| `rev-steve-rogers`| **Steve Rogers** (Senior Tax Director) | `steve.rogers@miraflores.tax` | `tax_reviewer` | Full review controls, verify overrides, sign-off gatekeeper, triage oversight, IRS lock |
+| `client-tony-stark`| **Tony Stark** (Individual Taxpayer) | `tony.stark@starkenterprises.com` | `individual_client` | Client Portal with 7-stage progress bar, document uploads, action replies, Form 8879 e-sign |
+| `client-peter-parker`| **Peter Parker** (Freelance Taxpayer) | `peter.parker@nyu.edu` | `individual_client` | Client Portal with 7-stage progress bar, missing 1099 chasers, equipment receipt upload |
 
-**Special Context Mode**: `firm_employee_personal` — When a firm preparer/reviewer switches to view their own personal tax return, the platform automatically gates internal firm notes to enforce privacy.
+**Post-Login Personal Return Mode**:
+- For firm employees/preparers, personal tax filing is accessed **from within the top-right navbar account menu** (`Switch to My Personal Return`), which securely opens Dr. Bruce Banner's private employee Form 1040 (`ret-bruce-1040`) while strictly isolating personal files from the firm roster.
 
 ---
 
-### 2.6 Workflow Stages & Status Mapping
+### 2.6 Workflow Stages & Client Progress Bar Mapping
 
-| Stage Key | CPA Granular Stage | Client Reassuring Milestone | Next Action Owner |
+The Client Portal maps the lifecycle to a sleek multi-stage **Return Progress Bar** positioned directly below the navbar with concise 2-3 word stage titles (no metric card clutter):
+
+| Stage Key | CPA Granular Stage | Client Progress Bar Stage Title (2-3 Words) | Next Action Owner |
 |---|---|---|---|
-| `INTAKE` | Document Intake (85% Docs Received) | Step 1: Gathering Documents | Client |
-| `EXTRACTION` | AI Auto-Extraction & Line Matching | Step 1: Processing Documents | Automated / Preparer |
-| `PREPARATION`| Active Tax Preparation & Workpaper Tie-out | Step 2: Preparing Your Return | Tax Preparer |
-| `REVIEW` | Senior Review & Quality Assurance | Step 3: Expert Review | Tax Reviewer |
-| `CLIENT_SIGN`| Ready for Client E-Sign & Authorization | Step 4: Ready for Your Signature | Client |
-| `E_FILED` | E-Filed with IRS / State Agencies | Step 5: Submitted to IRS | Automated / IRS |
-| `ACCEPTED` | IRS Accepted / Filing Complete | Step 6: Filed & Accepted 🎉 | Completed |
+| `INTAKE` | Document Intake (85% Docs Received) | **1. Documents Intake** | Client |
+| `EXTRACTION` | AI Auto-Extraction & Line Matching | **2. AI Processing** | Automated / Preparer |
+| `PREPARATION`| Active Tax Preparation & Workpaper Tie-out | **3. Expert Prep** | Tax Preparer |
+| `REVIEW` | Senior Review & Quality Assurance | **4. Partner Review** | Tax Reviewer |
+| `CLIENT_SIGN`| Ready for Client E-Sign & Authorization | **5. Client Signature** | Client (e-Sign 8879) |
+| `E_FILED` | E-Filed with IRS / State Agencies | **6. IRS Submission** | Automated / IRS |
+| `ACCEPTED` | IRS Accepted / Filing Complete | **7. Return Accepted** 🎉 | Completed |
 
 ---
 

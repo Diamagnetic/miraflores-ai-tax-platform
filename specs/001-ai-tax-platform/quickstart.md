@@ -75,14 +75,12 @@ npm run dev
 
 ---
 
-### Scenario 5: Where to Start — 10-Second Client Onboarding (Challenge 03)
-1. Switch the global Role Switcher to **Individual Taxpayer (Peter Parker - First-Time Client)**.
+### Scenario 5: Client Portal Multi-Stage Progress Bar (Challenge 03 & 06)
+1. Sign in as **Tony Stark (Client Taxpayer Portal)** or **Peter Parker**.
 2. **Expected Outcome**:
-   - The UI replaces the complex CPA menu with a welcoming 3-step action card banner:
-     1. `Upload W-2 (Daily Bugle) & 1099 Forms (Est. 2 mins)`
-     2. `Answer 4 Life Change Questions (Est. 3 mins)`
-     3. `Review Prior Year Comparison (Est. 1 min)`
-   - Clear time-to-first-action indicator and immediate drag-and-drop intake zone.
+   - The top fold does NOT display complex CPA metric cards.
+   - Directly below the top navbar, a multi-stage **Return Progress Bar** displays 7 concise 2-3 word stage titles (`1. Documents Intake`, `2. AI Processing`, `3. Expert Prep`, `4. Partner Review`, `5. Client Signature`, `6. IRS Submission`, `7. Accepted`).
+   - The active stage is prominently highlighted with an unambiguous callout: `Next Action Owner: Client (Upload Missing Receipts / e-Sign Form 8879)`.
 
 ---
 
@@ -95,12 +93,14 @@ npm run dev
 
 ---
 
-### Scenario 7: Role-Aware Architecture & Firm Personal Return (Challenge 05)
-1. Test switching between the 3 core roles in the top bar: **Individual Taxpayer (Peter Parker / Tony Stark)**, **Tax Preparer (Sam Wilson)**, and **Senior Tax Reviewer (Steve Rogers)**.
-2. Toggle the **"View My Personal Return"** mode while in `Tax Preparer (Bruce Banner)` session.
-3. **Expected Outcome**:
-   - The shell switches to a client-style personal dashboard for Bruce Banner's own return.
-   - Senior reviewer internal notes on Bruce's return are masked to uphold firm privacy policies.
+### Scenario 7: Saved Logins Landing Screen & Post-Login Personal Return Access (Challenge 05)
+1. On initial load or after clicking **Logout** from the navbar account dropdown, observe the authentic corporate **Saved Logins (Account Chooser)** page.
+2. Select **Sam Wilson, CPA** -> User logs into the Preparer workspace.
+3. Click the top-right **Account Menu** (Sam Wilson, CPA) -> select **"Switch to My Personal Return"**.
+4. **Expected Outcome**:
+   - The workspace cleanly pivots into Dr. Bruce Banner's private employee Form 1040 (`ret-bruce-1040`).
+   - Firm client rosters and senior reviewer internal notes are strictly gated to preserve confidentiality.
+   - The user can toggle back to the firm workspace or click `Logout` to return to the Saved Logins screen.
 
 ---
 

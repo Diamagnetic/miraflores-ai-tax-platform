@@ -8,21 +8,21 @@
 
 ## Summary
 
-Build an interactive, role-aware, and trustworthy AI-powered tax platform prototype resolving all 10 candidate case study challenges. The platform features an interactive return review workbench with side-by-side source document traceability (Form 1040/Schedule C to 1099/W-2 with coordinate bounding boxes) and AI output defensibility, an actionable CPA triage dashboard with dynamic prioritization, a 10-second client onboarding flow, contextual threaded messaging with strict internal vs. external privacy, a 3-role switcher (`individual_client`, `tax_preparer`, `tax_reviewer`) with personal/firm context switching, a 5-tier visual affordance system (AI-extracted, verified, manual, locked, approval required), and a trustworthy AI explainability framework with inline correction workflows. All state is powered by a pure in-memory ephemeral Zustand store with real-time synchronous UI reactivity and zero LocalStorage/SessionStorage complexity.
+Build an interactive, role-aware, and trustworthy AI-powered tax platform prototype resolving all 10 candidate case study challenges. The platform features an authentic **Saved Logins (Account Chooser)** landing screen, an interactive return review workbench with side-by-side source document traceability (Form 1040/Schedule C to 1099/W-2 with coordinate bounding boxes) and AI output defensibility, an actionable CPA triage dashboard with dynamic prioritization, a streamlined Client Portal featuring a multi-stage **Return Progress Bar** with concise 2-3 word stage titles directly below the navbar (no generic 3-card clutter), contextual threaded messaging with strict internal vs. external privacy, a top-right Navbar Account Menu with a post-login **"Switch to My Personal Return"** toggle for firm employees, a 5-tier visual affordance system (AI-extracted, verified, manual, locked, approval required), and a trustworthy AI explainability framework with inline correction workflows. All state is powered by a pure in-memory ephemeral Zustand store with real-time synchronous UI reactivity and zero LocalStorage/SessionStorage complexity.
 
 ---
 
 ## Technical Context
 
 **Language/Version**: TypeScript 7 / Node.js 24.20  
-**Primary Dependencies**: React 19, Vite 8.0, Tailwind CSS v4.3, shadcn/ui (`buHOvz6` preset), Lucide React Icons, Zustand (Pure In-Memory Reactive Store), Canvas/SVG Document Engine  
+**Primary Dependencies**: React 19, Vite 8.0, Tailwind CSS v4.3, shadcn/ui (`buHOvz6` preset with strict `--radius: 0rem` sharp corners), Lucide React Icons, Zustand (Pure In-Memory Reactive Store), Canvas/SVG Document Engine  
 **Storage**: Pure In-Memory Ephemeral Zustand Store (Zero LocalStorage/SessionStorage serialization or caching complexity; state is live across in-app role switches and cleanly resets to pristine baseline fixtures on browser refresh)  
 **Testing**: Vitest + React Testing Library (for unit/component tests & contract checks)  
 **Target Platform**: Modern Web Browsers (Chrome, Edge, Safari, Firefox)  
 **Project Type**: Interactive Web Application Prototype (Single-Page App with client routing & view switching)  
-**Performance Goals**: < 100ms response time on search/filter across 150+ simulated documents and returns; instantaneous role and context switching; 0ms synchronous state propagation across mounted components  
-**Constraints**: Zero external backend requirement (self-contained in-memory mock engine); realistic simulated Avengers-themed tax data and bounding-box coordinates; container-level horizontal scrolling (`overflow-x-auto` with `min-w-*` preservation) to eliminate content squeezing on dense professional views  
-**Scale/Scope**: 10 distinct challenge workflows, 3 core user roles (plus firm employee personal return context), 8 realistic multi-schedule returns, 120+ mock source documents (including 150+ expense receipts for Wakanda Tech)  
+**Performance Goals**: < 100ms response time on search/filter across 170+ simulated documents and returns; instantaneous role and context switching; 0ms synchronous state propagation across mounted components  
+**Constraints**: Zero external backend requirement (self-contained in-memory mock engine); realistic simulated Avengers-themed tax data and bounding-box coordinates; container-level horizontal scrolling (`overflow-x-auto` with `min-w-*` preservation) to eliminate content squeezing on dense professional views; strict `--radius: 0rem` sharp-corner geometry  
+**Scale/Scope**: 10 distinct challenge workflows, 4 authentic persona logins on Saved Logins screen (Sam Wilson CPA, Steve Rogers Reviewer, Tony Stark Client, Peter Parker Client) plus in-app employee personal return mode (Dr. Bruce Banner), 8 realistic multi-schedule returns, 170+ mock source documents (including 155 expense receipts for Wakanda Tech)  
 
 ---
 
@@ -33,7 +33,7 @@ Build an interactive, role-aware, and trustworthy AI-powered tax platform protot
 - **Interactive Prototype First**: Pass. All 10 challenges are modeled as clickable, interactive components backed by rich mock data.
 - **Simulate AI with High Fidelity & Defensibility**: Pass. Plausible AI confidence scores, explainability cards, formula breakdowns, and uncertainty reasons are specified in `data-model.md` and `contracts/`.
 - **Pure In-Memory Reactive State**: Pass. Pure ephemeral Zustand store without backend or storage complexity; verification and edits immediately update all views in real time.
-- **Role Isolation & Context Switching**: Pass. 3 core operational roles and employee-personal return separation are fully defined.
+- **Role Isolation & Context Switching**: Pass. Realistic Saved Logins chooser with clear firm vs. client separation and in-app employee-personal return dropdown toggle.
 - **No Unjustified Complexity**: Pass. Clean client-side architecture using React 19 + shadcn/ui (`buHOvz6`) + Zustand + Tailwind v4.3 without unnecessary backend or storage infrastructure.
 
 ---
@@ -49,6 +49,8 @@ specs/001-ai-tax-platform/
 ├── research.md          # Phase 0 technical research & design decisions
 ├── data-model.md        # Phase 1 domain entities, states & explainability models
 ├── quickstart.md        # Phase 1 step-by-step interactive validation guide
+├── checklists/          # Quality checklists
+│   └── requirements.md
 └── contracts/           # Phase 1 TypeScript interfaces & mock API contracts
     ├── types.ts
     └── mock-api.ts
@@ -59,9 +61,10 @@ specs/001-ai-tax-platform/
 ```text
 src/
 ├── components/
-│   ├── common/             # Navigation header, RoleSwitcher, Breadcrumbs, ContextDock
+│   ├── auth/               # SavedLoginsScreen (authentic account chooser landing page)
+│   ├── common/             # Navigation header with Account Dropdown, Logout, Breadcrumbs
 │   ├── dashboard/          # Actionable triage queue, manager vs. preparer views, metrics
-│   ├── onboarding/         # First-time client 10-second action cards, progress tracker
+│   ├── client-portal/      # Client stage progress bar (2-3 word titles), document upload, e-sign
 │   ├── return-review/      # Form 1040/Schedule C grid, AffordanceCell, formula popups
 │   ├── document-viewer/    # SVG/Canvas document renderer, bounding boxes, zoom/pan
 │   ├── ai-explainability/  # Trust cards, confidence gauges, evidence breakdown, inline correction
@@ -69,16 +72,16 @@ src/
 │   └── document-hub/       # Scalable document browser, multi-filter, search & batch actions
 ├── data/
 │   ├── mockReturns.ts      # 8 diverse tax returns (1040, 1120S, 1065, etc.)
-│   ├── mockDocuments.ts    # 120+ mock source documents with bounding boxes & text
+│   ├── mockDocuments.ts    # 170+ mock source documents with bounding boxes & text
 │   └── mockThreads.ts      # Pre-seeded collaboration threads and requests
 ├── store/
-│   ├── usePlatformStore.ts # Zustand global store (role, active return, filters, audit logs)
+│   ├── usePlatformStore.ts # Zustand global store (current user, active return, filters, audit logs)
 │   └── triageLogic.ts      # Algorithmic triage score and queue categorization
 ├── types/
 │   └── index.ts            # Type definitions mirroring contracts
-├── App.tsx                 # Master shell, routing, layout
+├── App.tsx                 # Master shell, view switching (Saved Logins vs. Logged In Workspace)
 ├── main.tsx                # Application entry point
-└── index.css               # Tailwind CSS & custom affordance styling
+└── index.css               # Tailwind CSS & custom affordance styling (--radius: 0rem)
 ```
 
 **Structure Decision**: Single React web application organized into domain-specific component modules, a central Zustand store, and deterministic mock data generators.

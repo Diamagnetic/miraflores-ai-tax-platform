@@ -27,9 +27,21 @@ The platform addresses 10 critical challenges:
 
 ## Clarifications
 
-### Session 2026-08-28
-- **Q:** How should demo data mutations (such as inline AI corrections, verified field states, client uploads, and new contextual messages) be preserved across browser reloads?  
-  **A:** **Option B (Pure In-Memory / Ephemeral)** — State is managed reactively in-memory via a centralized Zustand store. State is preserved live during all in-app navigation and role-switching workflows without page reloads, and cleanly resets back to baseline mock fixtures on hard browser refresh without unnecessary LocalStorage serialization complexity.
+### Session 2026-08-28 (State & Navigation Architecture)
+- **Q1 (State Architecture):** How should demo data mutations be preserved?  
+  **A:** **Option B (Pure In-Memory / Ephemeral)** — State is managed reactively in-memory via a centralized Zustand store. State is preserved live during all in-app navigation and role-switching workflows without page reloads, and cleanly resets back to baseline mock fixtures on hard browser refresh.
+- **Q2 (Saved Logins Screen & Post-Login Personal Return Access):** How should role selection and employee personal return access be presented?  
+  **A:** The landing screen is structured realistically as a **"Saved Logins / Account Chooser"** page (matching authentic enterprise SSO / login selectors to eliminate prototype artificiality and reduce cognitive load for interviewers).
+    - The Saved Logins page displays realistic persona accounts:
+      1. **Sam Wilson, CPA** — `Tax Preparer (Firm Workspace)`
+      2. **Steve Rogers** — `Senior Tax Director (Firm Review & Approval)`
+      3. **Tony Stark** — `Client Taxpayer Portal`
+      4. **Peter Parker** — `Client Taxpayer Portal (Freelance)`
+    - There is **NO** standalone "Personal Return Mode" on the initial login screen.
+    - For employees/preparers, personal tax filing is accessed **after logging in from within the top-right account dropdown** via **"Switch to My Personal Return"**.
+    - The top-right navbar menu contains the account holder's name, `Switch to My Personal Return` (for firm employees), `Settings` (placeholder), `Help` (placeholder), and `Logout` (which returns to the Saved Logins screen).
+- **Q3 (Client Portal View Structure):** How is the client interface structured below the navbar?  
+  **A:** For the client, the 3 metric/onboarding cards are **removed**. Directly below the navbar, a multi-stage **Progress Bar** is displayed indicating the client's exact stage in the tax return lifecycle. Each stage displays a concise title (maximum 2-3 words, e.g., *"Documents Intake"*, *"AI Processing"*, *"Expert Preparation"*, *"Partner Review"*, *"Ready to Sign"*, *"IRS E-Filed"*, *"Return Accepted"*), with no lengthy card descriptions cluttering the top fold.
 
 ---
 
@@ -65,18 +77,18 @@ The platform addresses 10 critical challenges:
 
 ---
 
-### User Story 3 - New Client Onboarding in Under 10 Seconds (Priority: P2)
+### User Story 3 - Client Progress Lifecycle & Stage Bar (Priority: P2)
 
-**User Journey**: A first-time client logs in. Instead of a complex tax tree, they are greeted with a welcoming, zero-jargon onboarding view: a clear greeting, 3 immediate high-priority action cards ("Upload W-2", "Answer 4 Tax Life Questions", "Review Bank 1099"), an estimated time to complete (8 mins), and a visual progress tracker.
+**User Journey**: A client (e.g., Tony Stark or Peter Parker) logs in to their portal. Directly below the top navbar, the client sees a sleek, high-visibility **Return Progress Bar** mapping the full lifecycle. Each stage displays a clear, 2-3 word title (e.g., `1. Documents Intake`, `2. AI Processing`, `3. Expert Prep`, `4. Partner Review`, `5. Client Signature`, `6. IRS Submission`, `7. Accepted`). The active stage is prominently highlighted, showing the next action owner and pending requests (such as upload missing 1099 or Form 8879 e-sign).
 
-**Why this priority**: Solves Challenge 03. Prevents client drop-off and confusion during initial intake.
+**Why this priority**: Solves Challenge 03 and Challenge 06. Delivers instant clarity on "Where is my tax return?" and "What do I need to do next?" in under 5 seconds without UI clutter.
 
 **Independent Test**:
-- Switch role to "First-Time Client" -> Observe 10-second orientation card -> Click "Upload Document" -> Drag-and-drop simulated file -> Notice immediate completion checkmark and progress bar update from 0% to 33%.
+- Log in as Client -> Observe top progress bar with concise 2-3 word stage titles -> View the active highlighted stage and next action callout -> Upload a requested document or click e-sign -> Observe real-time advance in the stage bar.
 
 **Acceptance Scenarios**:
-1. **Given** a new client account, **When** they first log in, **Then** non-essential menus are deferred and a clear 3-step action card banner is presented.
-2. **Given** the client completes all initial items, **Then** the interface transitions from onboarding mode into the standard active return tracker.
+1. **Given** a client session, **When** viewing the client portal, **Then** a multi-stage progress bar with concise 2-3 word stage titles is rendered directly below the navbar.
+2. **Given** a stage transition (e.g., preparer completes review), **Then** the client progress bar updates state to "Client Signature" with a direct Form 8879 e-sign action.
 
 ---
 
@@ -95,19 +107,25 @@ The platform addresses 10 critical challenges:
 
 ---
 
-### User Story 5 - Role Switcher & Context Preservation (Priority: P2)
+### User Story 5 - Saved Logins Account Chooser & Navbar Account Dropdown (Priority: P2)
 
-**User Journey**: The application provides a persistent Role Switcher in the development/demo header allowing instant switching between the 3 core roles:
-1. **Individual Taxpayer (Client)**: Focuses on intake, document uploads, action requests, and e-signatures.
-2. **Tax Preparer (Firm)**: Focuses on daily return prep, document extraction, workpapers, and internal collaboration.
-3. **Senior Tax Reviewer (Firm Senior)**: Focuses on verification overrides, QA approvals, triage oversight, and IRS filing authorization.
-Plus a special toggle: **"Firm Employee Personal Return"** showing how the UI cleanly separates professional firm duties from personal tax documents.
+**User Journey**: The application provides an authentic **Saved Logins (Account Chooser)** landing screen where users select their account to sign in:
+1. **Sam Wilson, CPA** — `Tax Preparer (Firm Workspace)`
+2. **Steve Rogers** — `Senior Tax Director (Firm Review & Approval)`
+3. **Tony Stark** — `Client Taxpayer Portal (Stark Enterprises / 1040)`
+4. **Peter Parker** — `Client Taxpayer Portal (Freelance Photography)`
 
-**Why this priority**: Solves Challenge 05 and Challenge 04. Demonstrates role-aware frontend architecture, permission clarity, and context preservation without confusing separate products.
+When logged in:
+- The top-right navbar renders the **Account Holder Name** with a user dropdown.
+- For firm employees/preparers, the dropdown contains a **"Switch to My Personal Return"** option, cleanly transitioning into their private employee Form 1040 without exposing personal files on the public login screen.
+- The dropdown also contains `Logout` (returns to the Saved Logins page), plus `Settings` and `Help` (inactive placeholders).
+
+**Why this priority**: Solves Challenge 05 and Challenge 04. Enforces authentic authentication flows, minimizes interviewer cognitive load, and maintains strict confidentiality for employee personal returns.
 
 **Acceptance Scenarios**:
-1. **Given** any screen, **When** switching between the 3 roles, **Then** the navigation, permission buttons (e.g. "Approve Return" only for Reviewer), and visible data adapt immediately.
-2. **Given** a firm employee viewing their own personal return, **Then** internal preparer notes on their own return are masked or role-gated per confidentiality rules.
+1. **Given** the Saved Logins screen, **When** clicking a persona card, **Then** the user logs in directly to that specific persona workspace without exposing a fake "Personal Return" role option on the login screen.
+2. **Given** a logged-in firm preparer/reviewer, **When** opening the account dropdown and selecting "Switch to My Personal Return", **Then** the workspace shifts into their private employee 1040 self-filing mode.
+3. **Given** any logged-in view, **When** clicking "Logout" in the account dropdown, **Then** the app logs out to the Saved Logins screen.
 
 ---
 
@@ -150,13 +168,13 @@ Plus a special toggle: **"Firm Employee Personal Return"** showing how the UI cl
 - **FR-002**: System MUST calculate and display AI confidence scores, extraction provenance, and multi-document transformation formulas.
 - **FR-003**: System MUST support threaded messaging tied directly to documents, line items, and returns with strict internal vs. external privacy controls.
 - **FR-004**: System MUST provide an actionable triage score algorithm ranking returns by deadline, urgency, blocker state, and client responsiveness.
-- **FR-005**: System MUST include a zero-friction Role Switcher supporting the 3 core roles (`individual_client`, `tax_preparer`, `tax_reviewer`) plus employee personal/firm context switching.
-- **FR-006**: System MUST provide dual-view lifecycle progress (Granular for CPAs, Milestone for Clients) with explicit Next Action Owner indicator.
+- **FR-005**: System MUST provide an authentic Saved Logins (Account Chooser) landing screen for persona sign-in (Sam Wilson CPA, Steve Rogers Senior Reviewer, Tony Stark Client, Peter Parker Client) and a top-right Navbar Account Menu containing Account Holder Name, Switch to My Personal Return (for firm staff), Settings (placeholder), Help (placeholder), and Logout (returns to Saved Logins).
+- **FR-006**: System MUST render a multi-stage Return Progress Bar directly below the navbar for the Client Portal with concise 2-3 word stage titles, hiding the 3 CPA/admin metric cards in client mode.
 - **FR-007**: System MUST render consistent visual affordance badges across all data elements (AI-extracted, verified, manual, calculated, locked).
 - **FR-008**: System MUST support instant filtering, search, and progressive disclosure over a mock dataset of 100+ documents and returns.
 - **FR-009**: System MUST allow inline one-click correction and verification of AI recommendations.
 - **FR-010**: System MUST maintain breadcrumbs, persistent context dock, and deep links across interconnected objects.
-- **FR-011**: System MUST maintain minimum readable content widths (`min-w-*`) with container-level horizontal scrollability (`overflow-x-auto`) on dense tax tables, side-by-side review panes, and document viewers to prevent awkward data squeezing on smaller screens.
+- **FR-011**: System MUST maintain minimum readable content widths (`min-w-*`) with container-level horizontal scrollability (`overflow-x-auto`) on dense tax tables, side-by-side review panes, and document viewers to prevent data squeezing.
 
 ---
 
