@@ -9,6 +9,7 @@ import {
   User,
   Building2,
   Briefcase,
+  AlertTriangle,
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
@@ -32,6 +33,8 @@ export const Header: React.FC = () => {
   const currentRoleValue = currentUser.isPersonalReturnView
     ? 'personal_return'
     : currentUser.role;
+
+  const activeReturn = returns.find((r) => r.id === selectedReturnId);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background shadow-2xs">
@@ -65,6 +68,17 @@ export const Header: React.FC = () => {
                   </option>
                 ))}
               </select>
+            )}
+
+            {/* Blocked Badge only when the active return is blocked */}
+            {activeReturn?.isBlocked && (
+              <Badge
+                variant="destructive"
+                className="text-[11px] gap-1 font-mono font-medium py-0.5 px-2 animate-pulse"
+              >
+                <AlertTriangle className="h-3 w-3 shrink-0" />
+                <span>Blocked</span>
+              </Badge>
             )}
           </div>
         </div>
