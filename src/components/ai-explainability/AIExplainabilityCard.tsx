@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { ReturnField, EvidenceItem, FieldAuditEntry } from '@/types';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { Badge } from '@/components/ui/badge';
@@ -201,7 +201,7 @@ export const AIExplainabilityCard: React.FC<AIExplainabilityCardProps> = ({
               <Button type="button" variant="outline" size="sm" onClick={() => setIsEditing(false)} className="h-7 text-xs">
                 Cancel
               </Button>
-              <Button type="submit" size="sm" className="h-7 text-xs gap-1 bg-primary text-primary-foreground font-semibold">
+              <Button type="submit" size="sm" className="h-7 text-xs gap-1 bg-primary/10 text-primary border border-primary/40 hover:bg-primary/20 font-semibold">
                 <Check className="h-3.5 w-3.5" />
                 Save Override
               </Button>
