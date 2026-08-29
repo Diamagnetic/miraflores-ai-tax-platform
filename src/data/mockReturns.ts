@@ -103,7 +103,7 @@ export const mockTaxReturns: TaxReturn[] = [
     id: 'ret-wakanda-1065',
     taxYear: 2025,
     returnType: '1065',
-    taxpayerName: 'Princess Shuri (Managing Member)',
+    taxpayerName: 'Princess Shuri',
     taxpayerEmail: 'shuri.rd@wakandatech.wk',
     entityName: 'Wakanda Tech & Design LLC',
     assignedPreparerId: 'prep-sam-wilson',
@@ -152,7 +152,7 @@ export const mockTaxReturns: TaxReturn[] = [
     id: 'ret-pym-1120s',
     taxYear: 2025,
     returnType: '1120S',
-    taxpayerName: 'Dr. Henry "Hank" Pym',
+    taxpayerName: 'Hank Pym',
     taxpayerEmail: 'hank.pym@pymtech.com',
     entityName: 'Pym Quantum Solutions Inc.',
     assignedPreparerId: 'prep-sam-wilson',
@@ -177,7 +177,7 @@ export const mockTaxReturns: TaxReturn[] = [
     id: 'ret-avengers-1065',
     taxYear: 2025,
     returnType: '1065',
-    taxpayerName: 'Steve Rogers & Tony Stark (Partners)',
+    taxpayerName: 'Steve Rogers & Tony Stark',
     taxpayerEmail: 'steve.rogers@avengers.org',
     entityName: 'Avengers Compound Upstate LLC',
     assignedPreparerId: 'prep-sam-wilson',
@@ -451,5 +451,6 @@ export const mockReturnFields: ReturnField[] = [
     },
   },
 ];
+
 
 

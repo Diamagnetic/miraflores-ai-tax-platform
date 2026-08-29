@@ -52,7 +52,7 @@ export default function App() {
               }`}
             >
               <FileSpreadsheet className="h-3.5 w-3.5" />
-              <span>Return Workbench ({activeReturn?.taxpayerName})</span>
+              <span>Return Workbench — {activeReturn?.taxpayerName}</span>
             </Button>
           </div>
 
@@ -84,3 +84,4 @@ export default function App() {
     </div>
   );
 }
+
