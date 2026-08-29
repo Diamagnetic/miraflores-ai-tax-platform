@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { TaxReturn } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,34 +25,54 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
   // Sort returns deterministically by triageScore descending under the hood
   const sortedReturns = [...returns].sort((a, b) => b.triageScore - a.triageScore);
 
-  const getNextActionBadge = (owner: string) => {
-    switch (owner) {
-      case 'reviewer':
-        return (
-          <Badge className="bg-purple-100 text-purple-900 dark:bg-purple-950/60 dark:text-purple-200 border-purple-300 font-mono text-[10px]">
-            Partner Review
-          </Badge>
-        );
-      case 'preparer':
-        return (
-          <Badge className="bg-blue-100 text-blue-900 dark:bg-blue-950/60 dark:text-blue-200 border-blue-300 font-mono text-[10px]">
-            Preparer Work
-          </Badge>
-        );
-      case 'client':
-        return (
-          <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-200 border-amber-400 font-mono text-[10px] animate-pulse">
-            Waiting on Client
-          </Badge>
-        );
-      case 'irs':
-        return (
-          <Badge className="bg-emerald-100 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200 border-emerald-300 font-mono text-[10px]">
-            IRS Submission
-          </Badge>
-        );
+  const getStatusBadgeStyle = (status: string, isBlocked: boolean) => {
+    if (isBlocked) {
+      return {
+        label: 'BLOCKED',
+        className: 'bg-rose-100 text-rose-800 dark:bg-rose-900/60 dark:text-rose-200 border-rose-300 dark:border-rose-800',
+      };
+    }
+    switch (status) {
+      case 'REVIEW':
+        return {
+          label: 'REVIEW',
+          className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200 border-emerald-300 dark:border-emerald-800',
+        };
+      case 'CLIENT_SIGN':
+        return {
+          label: 'CLIENT SIGN',
+          className: 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200 border-blue-300 dark:border-blue-800',
+        };
+      case 'PREPARATION':
+        return {
+          label: 'PREPARATION',
+          className: 'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200 border-amber-300 dark:border-amber-800',
+        };
+      case 'EXTRACTION':
+        return {
+          label: 'EXTRACTION',
+          className: 'bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-200 border-purple-300 dark:border-purple-800',
+        };
+      case 'INTAKE':
+        return {
+          label: 'INTAKE',
+          className: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700',
+        };
+      case 'E_FILED':
+        return {
+          label: 'E-FILED',
+          className: 'bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-200 border-teal-300 dark:border-teal-800',
+        };
+      case 'ACCEPTED':
+        return {
+          label: 'ACCEPTED',
+          className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200 border-emerald-300 dark:border-emerald-800',
+        };
       default:
-        return null;
+        return {
+          label: status,
+          className: 'bg-muted text-muted-foreground border-border',
+        };
     }
   };
 
@@ -99,6 +119,7 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                   const urgency = getTriageUrgency(ret.triageScore);
                   const urgencyBadge = getUrgencyBadgeStyle(urgency);
                   const isBlocked = ret.isBlocked;
+                  const statusStyle = getStatusBadgeStyle(ret.status, isBlocked);
 
                   return (
                     <tr
@@ -153,26 +174,21 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                         </div>
                       </td>
 
-                      {/* Status Only (No AI Conf) */}
+                      {/* Status with Respective Card Color Coding */}
                       <td className="py-3 px-3 whitespace-nowrap">
                         <Badge
-                          variant={isBlocked ? 'destructive' : 'outline'}
-                          className="text-[10px] font-mono uppercase"
+                          variant="outline"
+                          className={`text-[10px] font-mono uppercase font-semibold px-2 py-0.5 border ${statusStyle.className}`}
                         >
-                          {isBlocked ? 'BLOCKED' : ret.status}
+                          {statusStyle.label}
                         </Badge>
                       </td>
 
-                      {/* Immediate Next Action */}
+                      {/* Immediate Next Action (Clean text, no redundant badge) */}
                       <td className="py-3 px-3">
-                        <div className="space-y-1 max-w-sm">
-                          <div className="flex items-center gap-1.5">
-                            {getNextActionBadge(ret.nextActionOwner)}
-                          </div>
-                          <p className="text-[11px] text-foreground font-medium line-clamp-2 leading-tight">
-                            {ret.blockerReason || ret.nextActionDescription || 'Review Form 1040 line items'}
-                          </p>
-                        </div>
+                        <p className="text-[11px] text-foreground font-medium line-clamp-2 leading-tight max-w-sm">
+                          {ret.blockerReason || ret.nextActionDescription || 'Review Form 1040 line items'}
+                        </p>
                       </td>
 
                       {/* Assigned Team */}
