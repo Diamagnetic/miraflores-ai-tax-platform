@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { TaxReturn } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -242,7 +242,7 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                       <td className="py-3 px-3.5 text-right whitespace-nowrap">
                         <Button
                           size="sm"
-                          variant={isBlocked ? 'destructive' : 'default'}
+                          variant="default"
                           onClick={(e) => {
                             e.stopPropagation();
                             onSelectReturn(ret.id);
