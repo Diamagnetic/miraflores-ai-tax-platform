@@ -45,10 +45,10 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
   if (!doc) {
     return (
-      <div className={`flex flex-col items-center justify-center p-12 bg-slate-950 text-slate-300 text-center h-full ${className}`}>
-        <FileText className="h-10 w-10 text-slate-500 mb-3 opacity-40" />
-        <p className="text-sm font-semibold text-white">No Document Selected</p>
-        <p className="text-xs text-slate-400 mt-1">Select a return field or document to inspect source traceability.</p>
+      <div className={`flex flex-col items-center justify-center p-12 bg-muted/60 text-muted-foreground text-center h-full ${className}`}>
+        <FileText className="h-10 w-10 text-muted-foreground mb-3 opacity-40" />
+        <p className="text-sm font-semibold text-foreground">No Document Selected</p>
+        <p className="text-xs text-muted-foreground mt-1">Select a return field or document to inspect source traceability.</p>
       </div>
     );
   }
@@ -111,48 +111,48 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
   const documentCompany = doc.vendor || 'Stark Industries LLC';
 
   return (
-    <div className={`flex flex-col h-full bg-slate-950 text-slate-100 ${className}`}>
-      {/* Seamless Heading (No line separation from viewer): Doc Name, PDF File Name, Taxpayer Owner, Issuing Company */}
-      <div className="p-4 pb-2 bg-slate-950 flex flex-wrap items-start justify-between gap-3 shrink-0">
+    <div className={`flex flex-col h-full bg-slate-200/80 dark:bg-slate-900 text-foreground ${className}`}>
+      {/* Seamless Heading (No line separation): Doc Name, PDF File Name, Taxpayer Owner, Issuing Company */}
+      <div className="p-4 pb-2 bg-transparent flex flex-wrap items-start justify-between gap-3 shrink-0">
         <div className="min-w-0 flex-1">
           {/* Doc Name / Type */}
           <div className="flex items-center gap-2">
             <FileText className="h-4 w-4 text-primary shrink-0" />
-            <h2 className="text-sm font-bold text-white tracking-tight truncate">
+            <h2 className="text-sm font-bold text-foreground tracking-tight truncate">
               {documentTypeLabel}
             </h2>
           </div>
 
           {/* PDF File Name, Taxpayer, Issuing Company */}
-          <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-slate-300 font-mono">
-            <span className="text-slate-100 font-semibold truncate max-w-[280px]" title={doc.fileName}>
+          <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-xs text-muted-foreground font-mono">
+            <span className="text-foreground font-semibold truncate max-w-[280px]" title={doc.fileName}>
               {doc.fileName}
             </span>
-            <span className="text-slate-600">•</span>
-            <span className="text-slate-400">
-              Taxpayer: <strong className="text-slate-200">{documentOwner}</strong>
+            <span>•</span>
+            <span>
+              Taxpayer: <strong className="text-foreground">{documentOwner}</strong>
             </span>
-            <span className="text-slate-600">•</span>
-            <span className="text-slate-400">
-              Issued by: <strong className="text-slate-200">{documentCompany}</strong>
+            <span>•</span>
+            <span>
+              Issued by: <strong className="text-foreground">{documentCompany}</strong>
             </span>
           </div>
         </div>
 
         {/* Zoom & Fullscreen Controls + Close Button */}
-        <div className="flex items-center gap-1.5 shrink-0 bg-slate-900/90 border border-slate-800 p-1">
+        <div className="flex items-center gap-1.5 shrink-0 bg-card border border-border p-1 shadow-xs">
           {totalPages > 1 && (
-            <div className="flex items-center gap-1 pr-1 border-r border-slate-800">
+            <div className="flex items-center gap-1 pr-1 border-r border-border">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                 disabled={currentPage <= 1}
-                className="h-7 w-7 p-0 text-slate-300 hover:text-white hover:bg-slate-800"
+                className="h-7 w-7 p-0 text-foreground hover:bg-muted"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
               </Button>
-              <span className="text-xs font-mono px-1 text-slate-300">
+              <span className="text-xs font-mono px-1 text-foreground">
                 {currentPage}/{totalPages}
               </span>
               <Button
@@ -160,7 +160,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                 size="sm"
                 onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
                 disabled={currentPage >= totalPages}
-                className="h-7 w-7 p-0 text-slate-300 hover:text-white hover:bg-slate-800"
+                className="h-7 w-7 p-0 text-foreground hover:bg-muted"
               >
                 <ChevronRight className="h-3.5 w-3.5" />
               </Button>
@@ -171,17 +171,17 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
             variant="ghost"
             size="sm"
             onClick={handleZoomOut}
-            className="h-7 w-7 p-0 text-slate-300 hover:text-white hover:bg-slate-800"
+            className="h-7 w-7 p-0 text-foreground hover:bg-muted"
             title="Zoom Out"
           >
             <ZoomOut className="h-3.5 w-3.5" />
           </Button>
-          <span className="text-xs font-mono min-w-[36px] text-center text-slate-200">{zoomLevel}%</span>
+          <span className="text-xs font-mono min-w-[36px] text-center text-foreground font-semibold">{zoomLevel}%</span>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleZoomIn}
-            className="h-7 w-7 p-0 text-slate-300 hover:text-white hover:bg-slate-800"
+            className="h-7 w-7 p-0 text-foreground hover:bg-muted"
             title="Zoom In"
           >
             <ZoomIn className="h-3.5 w-3.5" />
@@ -190,7 +190,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
             variant="ghost"
             size="sm"
             onClick={handleResetZoom}
-            className="h-7 w-7 p-0 text-slate-300 hover:text-white hover:bg-slate-800"
+            className="h-7 w-7 p-0 text-foreground hover:bg-muted"
             title="Reset / Fit View"
           >
             <Maximize2 className="h-3.5 w-3.5" />
@@ -198,12 +198,12 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
           {onClose && (
             <>
-              <div className="h-4 w-px bg-slate-800 mx-0.5" />
+              <div className="h-4 w-px bg-border mx-0.5" />
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="h-7 w-7 p-0 text-slate-400 hover:text-white hover:bg-slate-800"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
                 title="Close document (Esc)"
               >
                 <X className="h-4 w-4" />
@@ -213,10 +213,10 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
         </div>
       </div>
 
-      {/* Dark Shaded Document Viewport Seamless with Heading */}
-      <div className="relative flex-1 overflow-auto bg-slate-950 p-4 pt-2 flex items-start justify-center">
+      {/* Slightly Darker Neutral Document Viewport Seamless with Heading */}
+      <div className="relative flex-1 overflow-auto bg-transparent p-4 pt-2 flex items-start justify-center">
         <div
-          className="relative bg-white text-slate-900 shadow-2xl border border-slate-300 transition-transform origin-top select-none w-full max-w-[580px]"
+          className="relative bg-white text-slate-900 shadow-xl border border-slate-300 transition-transform origin-top select-none w-full max-w-[580px]"
           style={{
             transform: zoomLevel !== 100 ? `scale(${zoomLevel / 100})` : undefined,
             transformOrigin: 'top center',
