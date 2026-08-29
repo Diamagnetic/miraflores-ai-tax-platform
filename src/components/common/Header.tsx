@@ -64,7 +64,7 @@ export const Header: React.FC = () => {
               >
                 {returns.map((ret) => (
                   <option key={ret.id} value={ret.id}>
-                    {ret.taxpayerName} ({ret.returnType} - {ret.taxYear}) — Score: {ret.triageScore}
+                    {ret.taxpayerName} ({ret.returnType} - {ret.taxYear})
                   </option>
                 ))}
               </select>

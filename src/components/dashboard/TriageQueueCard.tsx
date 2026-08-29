@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { TaxReturn } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,6 @@ import {
   Clock,
   User,
   Building,
-  Sparkles,
 } from 'lucide-react';
 import { getTriageUrgency, getUrgencyBadgeStyle } from '@/store/triageLogic';
 
@@ -24,7 +23,7 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
   onSelectReturn,
   className = '',
 }) => {
-  // Sort returns by triageScore descending (highest priority first)
+  // Sort returns deterministically by triageScore descending under the hood
   const sortedReturns = [...returns].sort((a, b) => b.triageScore - a.triageScore);
 
   const getNextActionBadge = (owner: string) => {
@@ -77,13 +76,13 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
       <CardContent className="p-0">
         {/* Horizontal scroll safe container with min-width */}
         <div className="overflow-x-auto min-w-full">
-          <table className="w-full text-left border-collapse min-w-[960px]">
+          <table className="w-full text-left border-collapse min-w-[920px]">
             <thead>
               <tr className="border-b border-border bg-muted/40 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                <th className="py-2.5 px-3.5 w-24 text-center">Triage Score</th>
+                <th className="py-2.5 px-3.5 w-28 text-center">Priority</th>
                 <th className="py-2.5 px-3 min-w-[220px]">Taxpayer / Entity</th>
                 <th className="py-2.5 px-3 w-32">Deadline</th>
-                <th className="py-2.5 px-3 w-36">Status</th>
+                <th className="py-2.5 px-3 w-32">Status</th>
                 <th className="py-2.5 px-3 min-w-[240px]">Immediate Next Action</th>
                 <th className="py-2.5 px-3 w-40">Assigned Team</th>
                 <th className="py-2.5 px-3.5 w-28 text-right">Action</th>
@@ -97,7 +96,7 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                   </td>
                 </tr>
               ) : (
-                sortedReturns.map((ret, index) => {
+                sortedReturns.map((ret) => {
                   const urgency = getTriageUrgency(ret.triageScore);
                   const urgencyBadge = getUrgencyBadgeStyle(urgency);
                   const isBlocked = ret.isBlocked;
@@ -108,22 +107,17 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                       className="hover:bg-muted/30 transition-colors group cursor-pointer"
                       onClick={() => onSelectReturn(ret.id)}
                     >
-                      {/* Triage Score & Rank */}
+                      {/* Priority Category Badge Only (No numbers) */}
                       <td className="py-3 px-3.5 text-center whitespace-nowrap">
-                        <div className="flex flex-col items-center gap-1">
-                          <div className="flex items-center gap-1">
-                            <span className="text-[10px] text-muted-foreground font-mono">#{index + 1}</span>
-                            <strong className="text-base font-mono font-extrabold text-foreground">
-                              {ret.triageScore}
-                            </strong>
-                          </div>
-                          <Badge variant="outline" className={`text-[9px] px-1.5 py-0 font-mono ${urgencyBadge.className}`}>
-                            {urgency}
-                          </Badge>
-                        </div>
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] px-2 py-0.5 font-mono font-semibold ${urgencyBadge.className}`}
+                        >
+                          {urgencyBadge.label}
+                        </Badge>
                       </td>
 
-                      {/* Taxpayer / Entity */}
+                      {/* Taxpayer / Entity (No doc count) */}
                       <td className="py-3 px-3">
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-1.5 font-bold text-foreground group-hover:text-primary transition-colors">
@@ -132,7 +126,7 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                             ) : (
                               <User className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                             )}
-                            <span className="truncate max-w-[200px]" title={ret.taxpayerName}>
+                            <span className="truncate max-w-[220px]" title={ret.taxpayerName}>
                               {ret.taxpayerName}
                             </span>
                           </div>
@@ -143,8 +137,6 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                             </Badge>
                             <span>•</span>
                             <span>TY {ret.taxYear}</span>
-                            <span>•</span>
-                            <span>{ret.documentCount} docs</span>
                           </div>
                         </div>
                       </td>
@@ -162,23 +154,14 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                         </div>
                       </td>
 
-                      {/* Status & AI Confidence */}
+                      {/* Status Only (No AI Conf) */}
                       <td className="py-3 px-3 whitespace-nowrap">
-                        <div className="space-y-1">
-                          <Badge
-                            variant={isBlocked ? 'destructive' : 'outline'}
-                            className="text-[10px] font-mono uppercase"
-                          >
-                            {isBlocked ? 'BLOCKED' : ret.status}
-                          </Badge>
-
-                          {ret.aiConfidenceAvg && (
-                            <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-mono">
-                              <Sparkles className="h-2.5 w-2.5 text-purple-600" />
-                              <span>{Math.round(ret.aiConfidenceAvg * 100)}% AI Conf</span>
-                            </div>
-                          )}
-                        </div>
+                        <Badge
+                          variant={isBlocked ? 'destructive' : 'outline'}
+                          className="text-[10px] font-mono uppercase"
+                        >
+                          {isBlocked ? 'BLOCKED' : ret.status}
+                        </Badge>
                       </td>
 
                       {/* Immediate Next Action */}

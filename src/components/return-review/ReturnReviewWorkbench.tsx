@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { TaxFormViewer } from './TaxFormViewer';
@@ -119,7 +119,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
           </div>
 
           <Badge variant="outline" className={`font-mono text-xs py-1.5 px-3 border ${urgencyStyle}`}>
-            Triage Score: {activeReturn?.triageScore} ({urgency})
+            Priority: {urgency}
           </Badge>
         </div>
       </div>

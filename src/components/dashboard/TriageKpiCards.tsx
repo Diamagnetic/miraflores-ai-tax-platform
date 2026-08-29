@@ -37,7 +37,6 @@ export const TriageKpiCards: React.FC<TriageKpiCardsProps> = ({
       id: 'critical' as DashboardKpiFilter,
       label: 'Critical / At-Risk',
       count: criticalReturns.length,
-      description: 'Deadline < 15 days or score ≥ 90',
       icon: AlertCircle,
       accentColor: 'border-l-4 border-l-rose-500 bg-rose-50/40 dark:bg-rose-950/20 text-rose-950 dark:text-rose-200',
       badgeColor: 'bg-rose-100 text-rose-800 dark:bg-rose-900/60 dark:text-rose-200',
@@ -47,7 +46,6 @@ export const TriageKpiCards: React.FC<TriageKpiCardsProps> = ({
       id: 'review' as DashboardKpiFilter,
       label: 'Ready for Review',
       count: readyForReview.length,
-      description: 'Prepared & awaiting partner sign-off',
       icon: CheckCircle2,
       accentColor: 'border-l-4 border-l-emerald-600 bg-emerald-50/40 dark:bg-emerald-950/20 text-emerald-950 dark:text-emerald-200',
       badgeColor: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200',
@@ -57,7 +55,6 @@ export const TriageKpiCards: React.FC<TriageKpiCardsProps> = ({
       id: 'blocked' as DashboardKpiFilter,
       label: 'Blocked on Client',
       count: blockedOnClient.length,
-      description: 'Missing documents or clarification',
       icon: Clock,
       accentColor: 'border-l-4 border-l-amber-500 bg-amber-50/40 dark:bg-amber-950/20 text-amber-950 dark:text-amber-200',
       badgeColor: 'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200',
@@ -67,7 +64,6 @@ export const TriageKpiCards: React.FC<TriageKpiCardsProps> = ({
       id: 'filing' as DashboardKpiFilter,
       label: 'Ready to File / Sign',
       count: readyToFile.length,
-      description: 'Client signing Form 8879 or e-filing',
       icon: FileCheck,
       accentColor: 'border-l-4 border-l-blue-600 bg-blue-50/40 dark:bg-blue-950/20 text-blue-950 dark:text-blue-200',
       badgeColor: 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200',
@@ -89,7 +85,7 @@ export const TriageKpiCards: React.FC<TriageKpiCardsProps> = ({
               isSelected ? 'ring-2 ring-primary shadow-sm scale-[1.01]' : 'border-border'
             }`}
           >
-            <CardContent className="p-3.5 flex flex-col justify-between h-full">
+            <CardContent className="p-3.5 flex flex-col justify-between h-full space-y-3">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <span className="text-xs font-bold uppercase tracking-wider block truncate opacity-85">
@@ -107,9 +103,8 @@ export const TriageKpiCards: React.FC<TriageKpiCardsProps> = ({
                 </div>
               </div>
 
-              <div className="mt-3 pt-2.5 border-t border-border/40 flex items-center justify-between text-[11px]">
-                <span className="truncate opacity-75">{card.description}</span>
-                <span className="font-semibold flex items-center gap-0.5 text-primary hover:underline shrink-0 ml-1">
+              <div className="pt-2 border-t border-border/40 flex items-center justify-end text-[11px]">
+                <span className="font-semibold flex items-center gap-0.5 text-primary hover:underline">
                   {card.actionText}
                   <ArrowRight className="h-3 w-3" />
                 </span>
