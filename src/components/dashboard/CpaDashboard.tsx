@@ -3,14 +3,6 @@ import { usePlatformStore } from '@/store/usePlatformStore';
 import { TriageKpiCards, DashboardKpiFilter } from './TriageKpiCards';
 import { DashboardFilters, DashboardFilterState } from './DashboardFilters';
 import { TriageQueueCard } from './TriageQueueCard';
-import { TeamWorkloadView } from './TeamWorkloadView';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  LayoutDashboard,
-  Users,
-  RefreshCw,
-} from 'lucide-react';
 
 interface CpaDashboardProps {
   onOpenReturn?: (returnId: string) => void;
@@ -21,10 +13,9 @@ export const CpaDashboard: React.FC<CpaDashboardProps> = ({
   onOpenReturn,
   className = '',
 }) => {
-  const { returns, currentUser, selectReturn } = usePlatformStore();
+  const { returns, selectReturn } = usePlatformStore();
 
   const [kpiFilter, setKpiFilter] = useState<DashboardKpiFilter>('all');
-  const [showWorkloadView, setShowWorkloadView] = useState<boolean>(false);
 
   const [filterState, setFilterState] = useState<DashboardFilterState>({
     searchQuery: '',
@@ -127,80 +118,14 @@ export const CpaDashboard: React.FC<CpaDashboardProps> = ({
     }
   };
 
-  const isReviewerOrManager =
-    currentUser.role === 'tax_reviewer' || currentUser.name.includes('Rogers');
-
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* Dashboard Top Header Banner */}
-      <div className="border border-border bg-card p-4 flex flex-wrap items-center justify-between gap-4 shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center bg-primary text-primary-foreground font-bold">
-            <LayoutDashboard className="h-5 w-5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-base font-bold text-foreground">
-                CPA Actionable Triage Command Center
-              </h1>
-              <Badge variant="outline" className="font-mono text-xs capitalize">
-                {currentUser.role.replace('_', ' ')}
-              </Badge>
-              <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200 border-emerald-300 font-mono text-[11px]">
-                Tax Season 2026 Active
-              </Badge>
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Signed in as <strong>{currentUser.name}</strong> • Answers "What return should I work on right now?"
-            </p>
-          </div>
-        </div>
-
-        {/* Top Actions */}
-        <div className="flex items-center gap-2">
-          {isReviewerOrManager && (
-            <Button
-              variant={showWorkloadView ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setShowWorkloadView((prev) => !prev)}
-              className="h-8 text-xs gap-1.5 font-semibold"
-            >
-              <Users className="h-3.5 w-3.5" />
-              <span>{showWorkloadView ? 'Hide Team Workload' : 'Team Workload & Capacity'}</span>
-            </Button>
-          )}
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setKpiFilter('all');
-              setFilterState({
-                searchQuery: '',
-                returnType: 'ALL',
-                status: 'ALL',
-                assignedPreparer: 'ALL',
-                blockerOnly: false,
-              });
-            }}
-            className="h-8 text-xs gap-1 text-muted-foreground hover:text-foreground"
-            title="Reset queue filters"
-          >
-            <RefreshCw className="h-3 w-3" />
-            <span>Reset</span>
-          </Button>
-        </div>
-      </div>
-
-      {/* 4 Urgency Metric KPI Summary Cards */}
+      {/* 4 Urgency Metric KPI Summary Cards directly */}
       <TriageKpiCards
         returns={returns}
         activeFilter={kpiFilter}
         onSelectFilter={handleKpiCardSelect}
       />
-
-      {/* Team Workload Distribution (when active) */}
-      {showWorkloadView && <TeamWorkloadView returns={returns} />}
 
       {/* Multi-Faceted Return Search & Filter Bar */}
       <DashboardFilters
