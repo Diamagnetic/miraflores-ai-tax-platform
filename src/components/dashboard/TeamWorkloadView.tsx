@@ -29,7 +29,7 @@ export const TeamWorkloadView: React.FC<TeamWorkloadViewProps> = ({
   const staffMap: { [name: string]: StaffWorkload } = {
     'Sam Wilson': {
       name: 'Sam Wilson',
-      role: 'Lead Tax Preparer (CPA)',
+      role: 'Lead Tax Preparer',
       totalReturns: 0,
       inPrep: 0,
       inReview: 0,
@@ -59,7 +59,7 @@ export const TeamWorkloadView: React.FC<TeamWorkloadViewProps> = ({
     },
     'Bruce Banner': {
       name: 'Bruce Banner',
-      role: 'Complex Corporate & Quantitative CPA',
+      role: 'Corporate Tax Specialist',
       totalReturns: 0,
       inPrep: 0,
       inReview: 0,

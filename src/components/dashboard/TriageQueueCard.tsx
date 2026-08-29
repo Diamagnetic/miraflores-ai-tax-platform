@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { TaxReturn } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -192,17 +192,18 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                         </p>
                       </td>
 
-                      {/* Primary Action Button */}
+                      {/* Primary Action Button (Contextual) */}
                       <td className="py-3 px-3.5 text-right whitespace-nowrap">
                         <Button
                           size="sm"
+                          variant={isBlocked ? 'destructive' : 'default'}
                           onClick={(e) => {
                             e.stopPropagation();
                             onSelectReturn(ret.id);
                           }}
-                          className="h-7 text-xs font-semibold gap-1 bg-primary text-primary-foreground hover:bg-primary/90"
+                          className="h-7 text-xs font-semibold gap-1"
                         >
-                          <span>Review</span>
+                          <span>{isBlocked ? 'Resolve' : ret.status === 'REVIEW' ? 'Review' : ret.status === 'PREPARATION' ? 'Prepare' : 'Open'}</span>
                           <ArrowRight className="h-3 w-3" />
                         </Button>
                       </td>

@@ -90,7 +90,7 @@ export interface PlatformStoreState {
 
 const DEFAULT_USER: UserSession = {
   userId: 'prep-sam-wilson',
-  name: 'Sam Wilson (CPA)',
+  name: 'Sam Wilson',
   email: 'sam.wilson@miraflores.tax',
   role: 'tax_preparer',
   isPersonalReturnView: false,
@@ -122,13 +122,13 @@ export const usePlatformStore = create<PlatformStoreState>((set, get) => ({
   diffMode: 'none',
 
   setRole: (role, isPersonalReturnView = false) => {
-    let name = 'Sam Wilson (CPA)';
+    let name = 'Sam Wilson';
     let email = 'sam.wilson@miraflores.tax';
     let userId = 'prep-sam-wilson';
     let defaultReturnId: string | null = get().selectedReturnId;
 
     if (role === 'tax_reviewer') {
-      name = 'Steve Rogers (Senior Tax Director)';
+      name = 'Steve Rogers';
       email = 'steve.rogers@miraflores.tax';
       userId = 'rev-steve-rogers';
     } else if (role === 'individual_client') {
@@ -424,3 +424,4 @@ export const usePlatformStore = create<PlatformStoreState>((set, get) => ({
     });
   },
 }));
+
