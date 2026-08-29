@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ReturnField, AffordanceState, SourceDocument } from '@/types';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { AffordanceCell } from './AffordanceCell';
@@ -295,9 +295,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                           key={field.id}
                           ref={isSelected ? activeRowRef : null}
                           onClick={() => handleRowClick(field.id)}
-                          className={`transition-colors cursor-pointer hover:bg-muted/30 ${
-                            isSelected ? 'bg-primary/10 font-medium' : ''
-                          }`}
+                          className="transition-colors cursor-pointer hover:bg-muted/30"
                         >
                           {/* Line Number without "Line" prefix */}
                           <td className="py-2 px-3 font-mono font-bold text-foreground whitespace-nowrap">
