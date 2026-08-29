@@ -1,4 +1,4 @@
-﻿import { TaxReturn } from '@/types';
+import { TaxReturn } from '@/types';
 
 /**
  * Calculates a dynamic, deterministic triage priority score (0-100) for a tax return.
@@ -78,25 +78,25 @@ export function getUrgencyBadgeStyle(urgency: TriageUrgencyLevel): {
       return {
         variant: 'destructive',
         label: 'Critical Due',
-        className: 'bg-rose-50 text-rose-700 border-rose-200 font-semibold',
+        className: 'bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-950/50 dark:text-rose-200 dark:border-rose-800 font-semibold',
       };
     case 'HIGH':
       return {
         variant: 'warning',
         label: 'High Priority',
-        className: 'bg-amber-50 text-amber-700 border-amber-200 font-semibold',
+        className: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/50 dark:text-amber-200 dark:border-amber-800 font-semibold',
       };
     case 'MEDIUM':
       return {
         variant: 'secondary',
         label: 'Normal Flow',
-        className: 'bg-slate-100 text-slate-700 border-slate-200',
+        className: 'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
       };
     case 'LOW':
       return {
         variant: 'verified',
         label: 'On Track',
-        className: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        className: 'bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800',
       };
   }
 }

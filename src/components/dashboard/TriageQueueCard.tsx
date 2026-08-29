@@ -8,6 +8,13 @@ import {
   Clock,
   User,
   Building,
+  AlertTriangle,
+  CheckCircle2,
+  FileText,
+  PenTool,
+  Sparkles,
+  Inbox,
+  CheckCheck,
 } from 'lucide-react';
 import { getTriageUrgency, getUrgencyBadgeStyle } from '@/store/triageLogic';
 
@@ -25,54 +32,90 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
   // Sort returns deterministically by triageScore descending under the hood
   const sortedReturns = [...returns].sort((a, b) => b.triageScore - a.triageScore);
 
-  const getStatusBadgeStyle = (status: string, isBlocked: boolean) => {
+  const renderStatusBadge = (status: string, isBlocked: boolean) => {
     if (isBlocked) {
-      return {
-        label: 'BLOCKED',
-        className: 'bg-rose-100 text-rose-800 dark:bg-rose-900/60 dark:text-rose-200 border-rose-300 dark:border-rose-800',
-      };
+      return (
+        <Badge
+          variant="outline"
+          className="border-border bg-card text-foreground font-mono text-[10px] uppercase font-medium px-2 py-0.5 inline-flex items-center gap-1 shadow-2xs"
+        >
+          <AlertTriangle className="h-3 w-3 text-rose-500 shrink-0" />
+          <span>BLOCKED</span>
+        </Badge>
+      );
     }
+
     switch (status) {
       case 'REVIEW':
-        return {
-          label: 'REVIEW',
-          className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200 border-emerald-300 dark:border-emerald-800',
-        };
+        return (
+          <Badge
+            variant="outline"
+            className="border-border bg-card text-foreground font-mono text-[10px] uppercase font-medium px-2 py-0.5 inline-flex items-center gap-1 shadow-2xs"
+          >
+            <CheckCircle2 className="h-3 w-3 text-muted-foreground shrink-0" />
+            <span>REVIEW</span>
+          </Badge>
+        );
       case 'CLIENT_SIGN':
-        return {
-          label: 'CLIENT SIGN',
-          className: 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200 border-blue-300 dark:border-blue-800',
-        };
+        return (
+          <Badge
+            variant="outline"
+            className="border-border bg-card text-foreground font-mono text-[10px] uppercase font-medium px-2 py-0.5 inline-flex items-center gap-1 shadow-2xs"
+          >
+            <PenTool className="h-3 w-3 text-muted-foreground shrink-0" />
+            <span>CLIENT SIGN</span>
+          </Badge>
+        );
       case 'PREPARATION':
-        return {
-          label: 'PREPARATION',
-          className: 'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200 border-amber-300 dark:border-amber-800',
-        };
+        return (
+          <Badge
+            variant="outline"
+            className="border-border bg-card text-foreground font-mono text-[10px] uppercase font-medium px-2 py-0.5 inline-flex items-center gap-1 shadow-2xs"
+          >
+            <FileText className="h-3 w-3 text-muted-foreground shrink-0" />
+            <span>PREPARATION</span>
+          </Badge>
+        );
       case 'EXTRACTION':
-        return {
-          label: 'EXTRACTION',
-          className: 'bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-200 border-purple-300 dark:border-purple-800',
-        };
+        return (
+          <Badge
+            variant="outline"
+            className="border-border bg-card text-foreground font-mono text-[10px] uppercase font-medium px-2 py-0.5 inline-flex items-center gap-1 shadow-2xs"
+          >
+            <Sparkles className="h-3 w-3 text-muted-foreground shrink-0" />
+            <span>EXTRACTION</span>
+          </Badge>
+        );
       case 'INTAKE':
-        return {
-          label: 'INTAKE',
-          className: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700',
-        };
+        return (
+          <Badge
+            variant="outline"
+            className="border-border bg-card text-foreground font-mono text-[10px] uppercase font-medium px-2 py-0.5 inline-flex items-center gap-1 shadow-2xs"
+          >
+            <Inbox className="h-3 w-3 text-muted-foreground shrink-0" />
+            <span>INTAKE</span>
+          </Badge>
+        );
       case 'E_FILED':
-        return {
-          label: 'E-FILED',
-          className: 'bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-200 border-teal-300 dark:border-teal-800',
-        };
       case 'ACCEPTED':
-        return {
-          label: 'ACCEPTED',
-          className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200 border-emerald-300 dark:border-emerald-800',
-        };
+        return (
+          <Badge
+            variant="outline"
+            className="border-border bg-card text-foreground font-mono text-[10px] uppercase font-medium px-2 py-0.5 inline-flex items-center gap-1 shadow-2xs"
+          >
+            <CheckCheck className="h-3 w-3 text-muted-foreground shrink-0" />
+            <span>{status === 'E_FILED' ? 'E-FILED' : 'ACCEPTED'}</span>
+          </Badge>
+        );
       default:
-        return {
-          label: status,
-          className: 'bg-muted text-muted-foreground border-border',
-        };
+        return (
+          <Badge
+            variant="outline"
+            className="border-border bg-card text-foreground font-mono text-[10px] uppercase font-medium px-2 py-0.5 shadow-2xs"
+          >
+            {status}
+          </Badge>
+        );
     }
   };
 
@@ -119,7 +162,6 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                   const urgency = getTriageUrgency(ret.triageScore);
                   const urgencyBadge = getUrgencyBadgeStyle(urgency);
                   const isBlocked = ret.isBlocked;
-                  const statusStyle = getStatusBadgeStyle(ret.status, isBlocked);
 
                   return (
                     <tr
@@ -127,17 +169,17 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                       className="hover:bg-muted/30 transition-colors group cursor-pointer"
                       onClick={() => onSelectReturn(ret.id)}
                     >
-                      {/* Priority Category Badge Only (No numbers) */}
+                      {/* Priority (Traffic Light Heat Map) */}
                       <td className="py-3 px-3.5 text-center whitespace-nowrap">
                         <Badge
                           variant="outline"
-                          className={`text-[10px] px-2 py-0.5 font-mono font-semibold ${urgencyBadge.className}`}
+                          className={`text-[10px] px-2 py-0.5 font-mono font-semibold border ${urgencyBadge.className}`}
                         >
                           {urgencyBadge.label}
                         </Badge>
                       </td>
 
-                      {/* Taxpayer / Entity (No doc count) */}
+                      {/* Taxpayer / Entity */}
                       <td className="py-3 px-3">
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-1.5 font-bold text-foreground group-hover:text-primary transition-colors">
@@ -174,17 +216,12 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                         </div>
                       </td>
 
-                      {/* Status with Respective Card Color Coding */}
+                      {/* Status (Neutral Outlined Token with Icon) */}
                       <td className="py-3 px-3 whitespace-nowrap">
-                        <Badge
-                          variant="outline"
-                          className={`text-[10px] font-mono uppercase font-semibold px-2 py-0.5 border ${statusStyle.className}`}
-                        >
-                          {statusStyle.label}
-                        </Badge>
+                        {renderStatusBadge(ret.status, isBlocked)}
                       </td>
 
-                      {/* Immediate Next Action (Clean text, no redundant badge) */}
+                      {/* Immediate Next Action */}
                       <td className="py-3 px-3">
                         <p className="text-[11px] text-foreground font-medium line-clamp-2 leading-tight max-w-sm">
                           {ret.blockerReason || ret.nextActionDescription || 'Review Form 1040 line items'}
