@@ -76,3 +76,38 @@
 - **Decision**: Implemented 5 distinct affordance states (`ai_extracted`, `verified`, `user_edited`, `calculated_locked`, `requires_approval`).
 - **Rationale**: Prevents accidental editing of IRS formula lines while giving immediate visual confidence on source verification status.
 
+
+---
+
+## 3. Source Document Traceability, AI Defensibility & Review Workbench (Phase 3 - US1 MVP)
+
+### Decision 3.1: Coordinate-Based Vector Document Viewer with Interactive Bounding Boxes
+- **Context**: Challenge 01 requires connecting any number on the return back to its source document, page, and exact coordinates.
+- **Decision**: Implemented an SVG/Vector-based authentic tax document renderer (`DocumentViewer.tsx`) with coordinate-based bounding box overlays (`{ x, y, width, height }`).
+- **Rationale**:
+  - Delivers zero-latency click-throughs from Form 1040 fields directly into source W-2s, 1099-NECs, and receipts without external PDF rendering delays or CORS quirks.
+  - Bi-directional interactivity: clicking a return field highlights the document bounding box with high contrast; clicking a document box selects the return line in the global store.
+
+### Decision 3.2: 5-State Affordance Token System with Fixed Non-Collapsing Widths
+- **Context**: Challenge 08 requires clear visual distinction between AI-extracted, verified, manual, locked, and approval-pending values without layout jank.
+- **Decision**: Built `AffordanceCell.tsx` enforcing strict minimum widths (`min-w-[150px]`) and semantic color tokens:
+  1. `ai_extracted`: Purple badge + Sparkles icon + confidence score pill (`98%`).
+  2. `verified`: Emerald badge + ShieldCheck icon + LOCKED audit state.
+  3. `user_edited`: Sky blue badge + Edit3 icon + author attribution on hover.
+  4. `calculated_locked`: Slate neutral badge + Lock icon + formula tooltip.
+  5. `requires_approval`: Rose/Amber badge + AlertTriangle warning pulse.
+- **Rationale**: Solves the "clickable vs. editable" ambiguity across all data tables and prevents cell text truncation.
+
+### Decision 3.3: 4-Pillar AI Explainability Framework with Inline Correction
+- **Context**: Challenge 10 requires explainable, trustworthy AI with friction-free correction workflows.
+- **Decision**: Implemented `AIExplainabilityCard.tsx` covering the 4 core pillars:
+  1. *What AI Extracted*: Natural language summary of the extraction and multi-document summation.
+  2. *Evidence & Provenance*: Document name, page number, box label, and visual coordinate link.
+  3. *Calculation Breakdown*: Explicit mathematical formula tree.
+  4. *Uncertainty & Rationale*: Rationale for confidence score (e.g. 100% OCR clarity vs. handwritten note flag).
+- **Rationale**: Gives CPAs full defensibility behind every number and allows inline corrections that immediately update state to `user_edited` with audit logging.
+
+### Decision 3.4: Dual-Pane Side-by-Side Review Workbench Layout
+- **Context**: CPAs need simultaneous visibility of the IRS tax schedule and the supporting source workpapers.
+- **Decision**: Created `ReturnReviewWorkbench.tsx` with a dual-pane layout: Left pane for Form 1040 / Schedule C with container-level horizontal scroll (`min-w-[850px]`), Right pane for Document Viewer and AI Explainability, with quick toggle buttons for Split, Form-Only, and Document-Only layouts.
+- **Rationale**: Enables rapid verification without modal popup fatigue or lost context.

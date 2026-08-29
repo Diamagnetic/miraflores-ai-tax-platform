@@ -1,6 +1,5 @@
 /**
  * Core Type Definitions for AI-Powered Tax Platform (MiraFlores AI)
- * Preset: buHOvz6 | In-Memory Ephemeral Architecture
  */
 
 export type UserRoleType = 
@@ -9,11 +8,11 @@ export type UserRoleType =
   | 'tax_reviewer';
 
 export type AffordanceState = 
-  | 'ai_extracted'      // Extracted by AI, needs verification (purple badge)
-  | 'verified'          // Verified by human/CPA, locked (emerald badge)
-  | 'user_edited'       // Manually overridden by user (amber/blue badge)
-  | 'calculated_locked' // Form calculation, non-editable (slate badge)
-  | 'requires_approval';// Flagged discrepancy needing senior approval (red badge)
+  | 'ai_extracted'      // Extracted by AI, needs verification
+  | 'verified'          // Verified by human/CPA, locked
+  | 'user_edited'       // Manually overridden by user
+  | 'calculated_locked' // Form calculation, non-editable
+  | 'requires_approval';// Flagged discrepancy needing senior approval
 
 export type ReturnStatus = 
   | 'INTAKE'
@@ -86,23 +85,33 @@ export interface CalculationInput {
   fieldRef?: string;
 }
 
+export interface EvidenceItem {
+  sourceDocumentId: string;
+  sourceDocumentName: string;
+  pageNumber: number;
+  boxLabel: string;
+  extractedText: string;
+  boundingBoxId: string;
+}
+
 export interface AIExplainability {
   summary: string;
   confidenceScore: number;
-  evidence: {
-    sourceDocumentId: string;
-    sourceDocumentName: string;
-    pageNumber: number;
-    boxLabel: string;
-    extractedText: string;
-    boundingBoxId: string;
-  }[];
+  evidence: EvidenceItem[];
   calculationBreakdown?: {
     formula: string;
     inputs: CalculationInput[];
   };
   uncertaintyFactors: string[];
   suggestedAction: string;
+}
+
+export interface FieldAuditEntry {
+  changedBy: string;
+  timestamp: string;
+  reason?: string;
+  oldValue?: string | number;
+  newValue?: string | number;
 }
 
 export interface ReturnField {
@@ -121,6 +130,7 @@ export interface ReturnField {
   lastModifiedBy: string;
   lastModifiedAt: string;
   category?: 'income' | 'deductions' | 'taxes' | 'credits' | 'business_expenses' | 'summary';
+  auditHistory?: FieldAuditEntry[];
 }
 
 export interface ActionRequest {
@@ -160,9 +170,9 @@ export interface TaxReturn {
   taxpayerEmail: string;
   entityName?: string;
   assignedPreparerId: string;
-  assignedPreparerName: string;
+  assignedPreparerName?: string;
   assignedReviewerId: string;
-  assignedReviewerName: string;
+  assignedReviewerName?: string;
   status: ReturnStatus;
   clientMilestone: ClientMilestone;
   nextActionOwner: NextActionOwner;
@@ -173,7 +183,7 @@ export interface TaxReturn {
   triageScore: number;
   totalIncome: number;
   taxLiability: number;
-  refundOrDueAmount: number; // positive = refund, negative = balance due
+  refundOrDueAmount: number;
   documentCount: number;
   openIssueCount: number;
   aiConfidenceAvg: number;
@@ -184,14 +194,18 @@ export interface UserSession {
   name: string;
   email: string;
   role: UserRoleType;
-  isPersonalReturnView?: boolean;
+  isPersonalReturnView: boolean;
 }
 
 export interface FilterState {
   searchQuery: string;
   statusFilter: ReturnStatus | 'ALL';
-  returnTypeFilter: 'ALL' | '1040' | '1120S' | '1065' | '1041';
-  blockerOnly: boolean;
-  sortBy: 'triageScore' | 'dueDate' | 'name' | 'income';
-  sortOrder: 'asc' | 'desc';
+  roleFilter?: UserRoleType | 'ALL';
+  urgencyFilter?: 'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  showBlockedOnly?: boolean;
+  showNeedsReviewOnly?: boolean;
+  returnTypeFilter?: string;
+  blockerOnly?: boolean;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }

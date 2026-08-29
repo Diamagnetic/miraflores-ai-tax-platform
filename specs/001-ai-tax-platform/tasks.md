@@ -41,13 +41,13 @@
 
 **Independent Test**: Select Tony Stark -> Open Schedule C -> Click Line 1 ($142,500) -> Verify side-by-side drawer renders 1099-NEC with highlighted Box 1 bounding box, calculation breakdown ($45k + $55k + $42.5k), and AI explainability card -> Click "Verify" to lock field.
 
-- [ ] T012 [P] [US1] Build coordinate-based SVG document page renderer with bounding-box highlights in src/components/document-viewer/DocumentViewer.tsx
-- [ ] T013 [P] [US1] Build 5-state AffordanceCell component (AI-extracted, verified, manual, locked, approval required) with fixed non-collapsing widths in src/components/return-review/AffordanceCell.tsx
-- [ ] T014 [US1] Build Form 1040 & Schedule C interactive grid with min-width preservation (min-w-[850px]) and container horizontal scroll (overflow-x-auto) in src/components/return-review/TaxFormViewer.tsx
-- [ ] T015 [US1] Build AI Explainability Card (summary, confidence gauge, evidence list, uncertainty reasons, inline correction) in src/components/ai-explainability/AIExplainabilityCard.tsx
-- [ ] T016 [US1] Build calculation formula breakdown modal/drawer in src/components/return-review/FormulaBreakdown.tsx
-- [ ] T017 [US1] Integrate side-by-side split review workbench with dual-pane horizontal scrolling container in src/components/return-review/ReturnReviewWorkbench.tsx
-- [ ] T018 [US1] Record traceability, AI explainability, and horizontal scroll viewport decisions in DECISIONS.md
+- [X] T012 [P] [US1] Build coordinate-based SVG document page renderer with bounding-box highlights in src/components/document-viewer/DocumentViewer.tsx
+- [X] T013 [P] [US1] Build 5-state AffordanceCell component (AI-extracted, verified, manual, locked, approval required) with fixed non-collapsing widths in src/components/return-review/AffordanceCell.tsx
+- [X] T014 [US1] Build Form 1040 & Schedule C interactive grid with min-width preservation (min-w-[850px]) and container horizontal scroll (overflow-x-auto) in src/components/return-review/TaxFormViewer.tsx
+- [X] T015 [US1] Build AI Explainability Card (summary, confidence gauge, evidence list, uncertainty reasons, inline correction) in src/components/ai-explainability/AIExplainabilityCard.tsx
+- [X] T016 [US1] Build calculation formula breakdown modal/drawer in src/components/return-review/FormulaBreakdown.tsx
+- [X] T017 [US1] Integrate side-by-side split review workbench with dual-pane horizontal scrolling container in src/components/return-review/ReturnReviewWorkbench.tsx
+- [X] T018 [US1] Record traceability, AI explainability, and horizontal scroll viewport decisions in DECISIONS.md
 
 **Checkpoint**: User Story 1 (MVP) is fully functional and testable independently.
 
