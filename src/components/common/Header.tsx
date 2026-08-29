@@ -1,14 +1,12 @@
-﻿import React from 'react';
+import React from 'react';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { UserRoleType } from '@/types';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
   Sparkles,
   UserCheck,
   ShieldCheck,
   User,
-  RotateCcw,
   Building2,
   AlertCircle,
   Briefcase,
@@ -21,7 +19,6 @@ export const Header: React.FC = () => {
     returns,
     selectedReturnId,
     selectReturn,
-    resetToBaseline,
   } = usePlatformStore();
 
   const activeReturn = returns.find((r) => r.id === selectedReturnId);
@@ -116,18 +113,6 @@ export const Header: React.FC = () => {
               <option value="personal_return">Bruce Banner (Firm Personal 1040)</option>
             </select>
           </div>
-
-          {/* Master Reset Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={resetToBaseline}
-            className="h-8 gap-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 border-border"
-            title="Reset in-memory state back to pristine mock fixtures"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            <span className="hidden lg:inline">Reset Baseline</span>
-          </Button>
         </div>
       </div>
     </header>
