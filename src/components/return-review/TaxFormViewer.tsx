@@ -23,6 +23,14 @@ interface TaxFormViewerProps {
   className?: string;
 }
 
+interface HoveredDocInfo {
+  fieldId: string;
+  doc: SourceDocument;
+  x: number;
+  y: number;
+  placement: 'top' | 'bottom';
+}
+
 export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
   onOpenInspection,
   className = '',
@@ -39,7 +47,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
 
   const [activeFormTab, setActiveFormTab] = useState<string>('all');
   const [filterState, setFilterState] = useState<AffordanceState | 'all'>('all');
-  const [hoveredFieldId, setHoveredFieldId] = useState<string | null>(null);
+  const [hoveredDocInfo, setHoveredDocInfo] = useState<HoveredDocInfo | null>(null);
   const activeRowRef = useRef<HTMLTableRowElement | null>(null);
 
   // Filter fields belonging to the active return
@@ -94,6 +102,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
   };
 
   const handleInspectClick = (fieldId: string) => {
+    setHoveredDocInfo(null);
     selectField(fieldId);
     if (onOpenInspection) {
       onOpenInspection(fieldId);
@@ -128,6 +137,30 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
       return documents.find((d) => d.id === field.sourceDocumentIds[0]);
     }
     return undefined;
+  };
+
+  // Handle doc mouse enter with viewport-safe fixed positioning
+  const handleDocMouseEnter = (
+    field: ReturnField,
+    doc: SourceDocument,
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const placement = spaceBelow < 180 ? 'top' : 'bottom';
+    const y = placement === 'top' ? rect.top - 8 : rect.bottom + 8;
+    const x = Math.min(Math.max(rect.left + rect.width / 2, 140), window.innerWidth - 140);
+    setHoveredDocInfo({
+      fieldId: field.id,
+      doc,
+      x,
+      y,
+      placement,
+    });
+  };
+
+  const handleDocMouseLeave = () => {
+    setHoveredDocInfo(null);
   };
 
   // Render separate affordance badge
@@ -267,7 +300,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
               <th className="py-2.5 px-3 w-28">Schedule</th>
               <th className="py-2.5 px-3 w-36 text-right whitespace-nowrap">Value</th>
               <th className="py-2.5 px-3 w-40">Affordance</th>
-              <th className="py-2.5 px-3 w-28 text-center whitespace-nowrap">Source Doc</th>
+              <th className="py-2.5 px-3 w-28 text-right whitespace-nowrap">Source Doc</th>
               <th className="py-2.5 px-3 w-20 text-right whitespace-nowrap">Action</th>
             </tr>
           </thead>
@@ -293,7 +326,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                     </tr>
 
                     {/* Group Items */}
-                    {groupFields.map((field, itemIdx) => {
+                    {groupFields.map((field) => {
                       const isSelected = activeFieldId === field.id;
                       const hasDocs = field.sourceDocumentIds && field.sourceDocumentIds.length > 0;
                       const cleanLineNumber = field.lineNumber
@@ -301,7 +334,6 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                         : '—';
                       const docLabel = getSourceDocLabel(field);
                       const firstDoc = getFirstLinkedDoc(field);
-                      const isHovered = hoveredFieldId === field.id;
 
                       const formattedDisplayValue =
                         field.formattedValue ||
@@ -352,16 +384,14 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                             {renderAffordanceBadge(field)}
                           </td>
 
-                          {/* Source Document Button (No tilted arrow, Document Type only) */}
-                          <td
-                            className="py-2 px-3 text-center whitespace-nowrap relative"
-                            onMouseEnter={() => setHoveredFieldId(field.id)}
-                            onMouseLeave={() => setHoveredFieldId(null)}
-                          >
-                            {hasDocs ? (
+                          {/* Source Document Button (Right Aligned, No Tilted Arrow) */}
+                          <td className="py-2 px-3 text-right whitespace-nowrap">
+                            {hasDocs && firstDoc ? (
                               <button
                                 type="button"
                                 onClick={() => handleInspectClick(field.id)}
+                                onMouseEnter={(e) => handleDocMouseEnter(field, firstDoc, e)}
+                                onMouseLeave={handleDocMouseLeave}
                                 className="inline-flex items-center gap-1 px-2.5 py-0.5 border border-purple-300 bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/60 dark:hover:bg-purple-900/80 text-purple-950 dark:text-purple-200 text-[10px] font-mono font-bold transition-colors cursor-pointer"
                                 title="Click to inspect source document in drawer"
                               >
@@ -374,36 +404,6 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                               </span>
                             ) : (
                               <span className="text-[10px] text-muted-foreground font-mono">—</span>
-                            )}
-
-                            {/* Smart Hover Card: Renders top-full (below button) for top rows to prevent clipping */}
-                            {isHovered && hasDocs && firstDoc && (
-                              <div
-                                className={`absolute z-50 ${
-                                  itemIdx < 2 ? 'top-full mt-1.5' : 'bottom-full mb-1.5'
-                                } left-1/2 -translate-x-1/2 w-64 p-3 bg-card text-card-foreground shadow-xl border border-border text-xs font-sans text-left pointer-events-none animate-in fade-in zoom-in-95 duration-100`}
-                              >
-                                <div className="flex items-center gap-1.5 pb-1.5 border-b border-border">
-                                  <FileText className="h-3.5 w-3.5 text-primary shrink-0" />
-                                  <span className="font-bold truncate text-foreground">{firstDoc.fileName}</span>
-                                </div>
-                                <div className="space-y-1 pt-1.5 text-[11px] text-muted-foreground font-mono">
-                                  <p>
-                                    <span className="text-muted-foreground font-sans">Payer:</span>{' '}
-                                    <strong className="text-foreground">{firstDoc.vendor || 'Stark Industries Inc.'}</strong>
-                                  </p>
-                                  <p>
-                                    <span className="text-muted-foreground font-sans">Source:</span>{' '}
-                                    <strong className="text-foreground">
-                                      {firstDoc.docType} (Page 1)
-                                    </strong>
-                                  </p>
-                                  <div className="flex items-center justify-between text-emerald-700 dark:text-emerald-400 font-bold pt-1 border-t border-border">
-                                    <span>OCR Match: 98%</span>
-                                    <span className="text-[10px] text-primary font-sans font-semibold">Click to view ➔</span>
-                                  </div>
-                                </div>
-                              </div>
                             )}
                           </td>
 
@@ -435,7 +435,44 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         </table>
       </div>
 
-      {/* Table Footer Summary (No Legend) */}
+      {/* Viewport-Safe Floating Hover Card (Never Clipped by Scroll Container or Viewport Edges) */}
+      {hoveredDocInfo && (
+        <div
+          style={{
+            position: 'fixed',
+            left: `${hoveredDocInfo.x}px`,
+            top: `${hoveredDocInfo.y}px`,
+            transform:
+              hoveredDocInfo.placement === 'top'
+                ? 'translate(-50%, -100%)'
+                : 'translate(-50%, 0)',
+          }}
+          className="z-50 w-64 p-3 bg-card text-card-foreground shadow-2xl border border-border text-xs font-sans text-left pointer-events-none animate-in fade-in zoom-in-95 duration-100"
+        >
+          <div className="flex items-center gap-1.5 pb-1.5 border-b border-border">
+            <FileText className="h-3.5 w-3.5 text-primary shrink-0" />
+            <span className="font-bold truncate text-foreground">{hoveredDocInfo.doc.fileName}</span>
+          </div>
+          <div className="space-y-1 pt-1.5 text-[11px] text-muted-foreground font-mono">
+            <p>
+              <span className="text-muted-foreground font-sans">Payer:</span>{' '}
+              <strong className="text-foreground">{hoveredDocInfo.doc.vendor || 'Stark Industries Inc.'}</strong>
+            </p>
+            <p>
+              <span className="text-muted-foreground font-sans">Source:</span>{' '}
+              <strong className="text-foreground">
+                {hoveredDocInfo.doc.docType} (Page 1)
+              </strong>
+            </p>
+            <div className="flex items-center justify-between text-emerald-700 dark:text-emerald-400 font-bold pt-1 border-t border-border">
+              <span>OCR Match: 98%</span>
+              <span className="text-[10px] text-primary font-sans font-semibold">Click to view ➔</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Table Footer Summary */}
       <div className="border-t border-border bg-muted/20 p-2.5 text-xs text-muted-foreground font-mono flex items-center justify-between">
         <span>Showing {filteredFields.length} schedule lines across {Object.keys(categoryGroups).length} categories</span>
       </div>
