@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import {
   FileSpreadsheet,
   CheckCheck,
-  Eye,
   Filter,
   FileText,
   AlertCircle,
@@ -163,12 +162,17 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
     setHoveredDocInfo(null);
   };
 
-  // Render separate affordance badge
+  // Render separate affordance badge with click-to-inspect
   const renderAffordanceBadge = (field: ReturnField) => {
     switch (field.state) {
       case 'ai_extracted':
         return (
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-purple-100 dark:bg-purple-950/60 border border-purple-300 dark:border-purple-700 text-purple-950 dark:text-purple-200 text-[11px] font-semibold font-mono">
+          <button
+            type="button"
+            onClick={() => handleInspectClick(field.id)}
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/60 dark:hover:bg-purple-900/80 border border-purple-300 dark:border-purple-700 text-purple-950 dark:text-purple-200 text-[11px] font-semibold font-mono transition-colors cursor-pointer"
+            title="Click to view AI extraction explainability"
+          >
             <Sparkles className="h-3 w-3 text-purple-700 dark:text-purple-400 shrink-0" />
             <span>AI Extracted</span>
             {field.aiConfidence ? (
@@ -176,39 +180,59 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                 {Math.round(field.aiConfidence > 1 ? field.aiConfidence : field.aiConfidence * 100)}%
               </span>
             ) : null}
-          </div>
+          </button>
         );
 
       case 'verified':
         return (
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 text-[11px] font-semibold font-mono">
+          <button
+            type="button"
+            onClick={() => handleInspectClick(field.id)}
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/80 border border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 text-[11px] font-semibold font-mono transition-colors cursor-pointer"
+            title="Click to view verification audit trail"
+          >
             <ShieldCheck className="h-3 w-3 text-emerald-700 dark:text-emerald-400 shrink-0" />
             <span>Verified (Locked)</span>
-          </div>
+          </button>
         );
 
       case 'user_edited':
         return (
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-100 dark:bg-amber-950/60 border border-amber-400 dark:border-amber-700 text-amber-950 dark:text-amber-200 text-[11px] font-semibold font-mono">
+          <button
+            type="button"
+            onClick={() => handleInspectClick(field.id)}
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/60 dark:hover:bg-amber-900/80 border border-amber-400 dark:border-amber-700 text-amber-950 dark:text-amber-200 text-[11px] font-semibold font-mono transition-colors cursor-pointer"
+            title="Click to view manual edit audit history"
+          >
             <Edit3 className="h-3 w-3 text-amber-800 dark:text-amber-400 shrink-0" />
             <span>Manual Edit</span>
-          </div>
+          </button>
         );
 
       case 'calculated_locked':
         return (
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-[11px] font-semibold font-mono">
+          <button
+            type="button"
+            onClick={() => handleInspectClick(field.id)}
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-[11px] font-semibold font-mono transition-colors cursor-pointer"
+            title="Click to view formula calculation breakdown"
+          >
             <Lock className="h-3 w-3 text-slate-600 dark:text-slate-400 shrink-0" />
             <span>Calculated</span>
-          </div>
+          </button>
         );
 
       case 'requires_approval':
         return (
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 text-rose-950 dark:text-rose-200 text-[11px] font-semibold font-mono animate-pulse">
+          <button
+            type="button"
+            onClick={() => handleInspectClick(field.id)}
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/60 dark:hover:bg-rose-900/80 border border-rose-300 dark:border-rose-700 text-rose-950 dark:text-rose-200 text-[11px] font-semibold font-mono animate-pulse transition-colors cursor-pointer"
+            title="Click to view QA discrepancy details"
+          >
             <AlertTriangle className="h-3 w-3 text-rose-700 dark:text-rose-400 shrink-0" />
             <span>Needs QA</span>
-          </div>
+          </button>
         );
 
       default:
@@ -290,24 +314,23 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         </div>
       </div>
 
-      {/* Horizontal Scroll Safe Data Table with Center-Aligned Source Doc Column */}
+      {/* Horizontal Scroll Safe Data Table without Redundant Action Column */}
       <div className="overflow-x-auto min-w-full">
-        <table className="w-full text-left border-collapse min-w-[780px]">
+        <table className="w-full text-left border-collapse min-w-[720px]">
           <thead>
             <tr className="border-b border-border bg-muted/40 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
               <th className="py-2.5 px-3 w-16 whitespace-nowrap">Line #</th>
-              <th className="py-2.5 px-3 min-w-[200px]">Description / Line Item</th>
+              <th className="py-2.5 px-3 min-w-[220px]">Description / Line Item</th>
               <th className="py-2.5 px-3 w-28">Schedule</th>
-              <th className="py-2.5 px-3 w-36 text-right whitespace-nowrap">Value</th>
-              <th className="py-2.5 px-3 w-40">Affordance</th>
-              <th className="py-2.5 px-3 w-28 text-center whitespace-nowrap">Source Doc</th>
-              <th className="py-2.5 px-3 w-20 text-right whitespace-nowrap">Action</th>
+              <th className="py-2.5 px-3 w-40 text-right whitespace-nowrap">Value</th>
+              <th className="py-2.5 px-3 w-44">Affordance</th>
+              <th className="py-2.5 px-3 w-32 text-center whitespace-nowrap">Source Doc</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border text-xs font-sans">
             {filteredFields.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center py-8 text-muted-foreground">
+                <td colSpan={6} className="text-center py-8 text-muted-foreground">
                   <AlertCircle className="h-6 w-6 mx-auto mb-2 opacity-50" />
                   No line items found for the selected filter.
                 </td>
@@ -320,7 +343,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                   <React.Fragment key={groupTitle}>
                     {/* Category Group Header */}
                     <tr className="bg-muted/60 border-y border-border">
-                      <td colSpan={7} className="py-1.5 px-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      <td colSpan={6} className="py-1.5 px-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                         {groupTitle} ({groupFields.length})
                       </td>
                     </tr>
@@ -379,12 +402,12 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                             {formattedDisplayValue}
                           </td>
 
-                          {/* Separate Column: Affordance Badge */}
+                          {/* Separate Column: Affordance Badge (Clickable) */}
                           <td className="py-1.5 px-3 whitespace-nowrap">
                             {renderAffordanceBadge(field)}
                           </td>
 
-                          {/* Source Document Button (Center Aligned) */}
+                          {/* Source Document Button (Center Aligned, Clickable) */}
                           <td className="py-2 px-3 text-center whitespace-nowrap">
                             {hasDocs && firstDoc ? (
                               <button
@@ -399,30 +422,17 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                                 <span>{docLabel}</span>
                               </button>
                             ) : field.formula ? (
-                              <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 border border-slate-200">
-                                Formula
-                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleInspectClick(field.id)}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 border border-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-[10px] font-mono font-semibold transition-colors cursor-pointer"
+                                title="Click to inspect formula calculation tree"
+                              >
+                                <span>Formula</span>
+                              </button>
                             ) : (
                               <span className="text-[10px] text-muted-foreground font-mono">—</span>
                             )}
-                          </td>
-
-                          {/* Action Button: Review */}
-                          <td className="py-2 px-3 text-right whitespace-nowrap">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleInspectClick(field.id)}
-                              className={`h-6 px-2 text-[11px] gap-1 ${
-                                isSelected
-                                  ? 'bg-primary text-primary-foreground border-primary font-bold'
-                                  : 'text-foreground hover:bg-muted/50 border-border'
-                              }`}
-                              title="Inspect AI Explainability & Source Document"
-                            >
-                              <Eye className="h-3 w-3" />
-                              <span>Review</span>
-                            </Button>
                           </td>
                         </tr>
                       );
