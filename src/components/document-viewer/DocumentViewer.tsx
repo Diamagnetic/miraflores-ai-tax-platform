@@ -189,7 +189,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
         </div>
       </div>
 
-      {/* Linked Number Callout Banner (Clicking Doc leads directly to Return Line) */}
+      {/* Linked Number Callout Banner */}
       {linkedReturnField && (
         <div
           onClick={() => selectField(linkedReturnField.id)}
@@ -212,7 +212,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
         </div>
       )}
 
-      {/* Document Viewport with Tight, Accurate Bounding Boxes */}
+      {/* Document Viewport with Primary Accent Default Bounding Boxes & Yellow Active Highlights */}
       <div className="relative flex-1 min-h-[440px] max-h-[580px] overflow-auto bg-slate-900/5 p-4 flex items-start justify-center">
         <div
           className="relative bg-white text-slate-900 shadow-md border border-slate-300 transition-transform origin-top select-none w-full max-w-[540px]"
@@ -245,7 +245,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
               </div>
             </div>
 
-            {/* Payer / Employer Box with Accurate EIN Bounding Box */}
+            {/* Payer / Employer Box with Unified Primary/Yellow Bounding Box on EIN */}
             <div className="grid grid-cols-2 gap-2.5 border border-slate-400 p-2 bg-slate-50/50">
               <div className="min-w-0 overflow-hidden">
                 <p className="text-[9px] font-bold text-slate-500 uppercase">PAYER / EMPLOYER</p>
@@ -254,22 +254,27 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                 </p>
                 <p className="text-slate-600 text-[10px] truncate">10880 Wilshire Blvd, Suite 1400</p>
                 
-                {/* EIN Box with Accurate Hugging Bounding Box */}
+                {/* EIN Box with Unified Primary/Yellow Bounding Box */}
                 <div
                   onClick={() => handleFieldBoxClick('box-t-w2-1', 'ein')}
-                  className={`relative mt-1 inline-block px-1 py-0.5 transition-all cursor-pointer ${
+                  className={`relative mt-1 inline-block px-1.5 py-0.5 transition-all cursor-pointer ${
                     showAllBoxes && isBoxActive('box-t-w2-1', 'ein')
-                      ? 'border-2 border-primary bg-primary/20 ring-2 ring-primary/30 font-bold'
+                      ? 'border-2 border-yellow-500 bg-yellow-400/25 ring-4 ring-yellow-400/50 shadow-md font-bold'
                       : showAllBoxes
-                      ? 'border border-dashed border-purple-500/80 bg-purple-500/10'
+                      ? 'border-2 border-primary/80 bg-primary/10 hover:border-primary hover:bg-primary/20'
                       : ''
                   }`}
                 >
-                  <span className="font-mono text-slate-800 text-[10px]">EIN: 12-3456789</span>
+                  <span className="font-mono text-slate-900 text-[10px] font-bold">EIN: 12-3456789</span>
                   {showAllBoxes && (
-                    <span className="absolute -top-3.5 left-0 text-[8px] font-mono font-bold bg-purple-700 text-white px-1 py-0 leading-none">
-                      EIN (99%)
-                    </span>
+                    <div className={`absolute -top-4 left-0 px-1 py-0.2 text-[8px] font-mono font-bold flex items-center gap-0.5 whitespace-nowrap shadow-xs ${
+                      isBoxActive('box-t-w2-1', 'ein')
+                        ? 'bg-yellow-500 text-slate-950 font-bold'
+                        : 'bg-primary text-primary-foreground'
+                    }`}>
+                      <Sparkles className="h-2 w-2" />
+                      <span>EIN (99%)</span>
+                    </div>
                   )}
                 </div>
               </div>
@@ -284,7 +289,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
               </div>
             </div>
 
-            {/* Structured Line Item Grid with Pixel-Accurate Bounding Boxes */}
+            {/* Structured Line Item Grid with Primary Accent Boxes & Yellow Active Highlights */}
             <div className="border border-slate-400 divide-y divide-slate-300 text-xs">
               {/* FORM W-2 Simulation */}
               {doc.docType === 'W2' && (
@@ -299,9 +304,9 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                         onClick={() => handleFieldBoxClick('box-t-w2-2', 'fld-tony-1040-1a')}
                         className={`relative inline-block px-1.5 py-1 text-right transition-all cursor-pointer ${
                           showAllBoxes && isBoxActive('box-t-w2-2', 'fld-tony-1040-1a')
-                            ? 'border-2 border-primary bg-primary/20 ring-4 ring-primary/30 z-10 shadow-sm'
+                            ? 'border-2 border-yellow-500 bg-yellow-400/25 ring-4 ring-yellow-400/50 z-10 shadow-md font-bold'
                             : showAllBoxes
-                            ? 'border-2 border-purple-500/80 bg-purple-500/10 hover:border-purple-600'
+                            ? 'border-2 border-primary/80 bg-primary/10 hover:border-primary hover:bg-primary/20'
                             : ''
                         }`}
                       >
@@ -309,7 +314,11 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                           ${Number(doc.extractedFields.wagesBox1 || doc.extractedFields.box1_wages || doc.amount || 1450000).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                         </span>
                         {showAllBoxes && (
-                          <div className="absolute -top-4 right-0 px-1 py-0.2 text-[8px] font-mono font-bold bg-purple-700 text-white flex items-center gap-0.5 whitespace-nowrap">
+                          <div className={`absolute -top-4 right-0 px-1 py-0.2 text-[8px] font-mono font-bold flex items-center gap-0.5 whitespace-nowrap shadow-xs ${
+                            isBoxActive('box-t-w2-2', 'fld-tony-1040-1a')
+                              ? 'bg-yellow-500 text-slate-950 font-bold'
+                              : 'bg-primary text-primary-foreground'
+                          }`}>
                             <Sparkles className="h-2 w-2" />
                             <span>Box 1 Wages (98%)</span>
                           </div>
@@ -327,9 +336,9 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                         onClick={() => handleFieldBoxClick('box-t-w2-3', 'fld-tony-1040-25d')}
                         className={`relative inline-block px-1.5 py-1 text-right transition-all cursor-pointer ${
                           showAllBoxes && isBoxActive('box-t-w2-3', 'fld-tony-1040-25d')
-                            ? 'border-2 border-primary bg-primary/20 ring-4 ring-primary/30 z-10 shadow-sm'
+                            ? 'border-2 border-yellow-500 bg-yellow-400/25 ring-4 ring-yellow-400/50 z-10 shadow-md font-bold'
                             : showAllBoxes
-                            ? 'border-2 border-purple-500/80 bg-purple-500/10 hover:border-purple-600'
+                            ? 'border-2 border-primary/80 bg-primary/10 hover:border-primary hover:bg-primary/20'
                             : ''
                         }`}
                       >
@@ -337,7 +346,11 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                           ${Number(doc.extractedFields.fedWithholdingBox2 || doc.extractedFields.box2_fed_tax || 522000).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                         </span>
                         {showAllBoxes && (
-                          <div className="absolute -top-4 right-0 px-1 py-0.2 text-[8px] font-mono font-bold bg-purple-700 text-white flex items-center gap-0.5 whitespace-nowrap">
+                          <div className={`absolute -top-4 right-0 px-1 py-0.2 text-[8px] font-mono font-bold flex items-center gap-0.5 whitespace-nowrap shadow-xs ${
+                            isBoxActive('box-t-w2-3', 'fld-tony-1040-25d')
+                              ? 'bg-yellow-500 text-slate-950 font-bold'
+                              : 'bg-primary text-primary-foreground'
+                          }`}>
                             <Sparkles className="h-2 w-2" />
                             <span>Box 2 Fed Tax (99%)</span>
                           </div>
@@ -365,9 +378,9 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                         onClick={() => handleFieldBoxClick('box-t-div-1', 'fld-tony-1040-3b')}
                         className={`relative inline-block px-1.5 py-1 text-right transition-all cursor-pointer ${
                           showAllBoxes && isBoxActive('box-t-div-1', 'fld-tony-1040-3b')
-                            ? 'border-2 border-primary bg-primary/20 ring-4 ring-primary/30 z-10 shadow-sm'
+                            ? 'border-2 border-yellow-500 bg-yellow-400/25 ring-4 ring-yellow-400/50 z-10 shadow-md font-bold'
                             : showAllBoxes
-                            ? 'border-2 border-purple-500/80 bg-purple-500/10 hover:border-purple-600'
+                            ? 'border-2 border-primary/80 bg-primary/10 hover:border-primary hover:bg-primary/20'
                             : ''
                         }`}
                       >
@@ -375,7 +388,11 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                           ${Number(doc.extractedFields.totalOrdinaryDividends || doc.amount || 325000).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                         </span>
                         {showAllBoxes && (
-                          <div className="absolute -top-4 right-0 px-1 py-0.2 text-[8px] font-mono font-bold bg-purple-700 text-white flex items-center gap-0.5 whitespace-nowrap">
+                          <div className={`absolute -top-4 right-0 px-1 py-0.2 text-[8px] font-mono font-bold flex items-center gap-0.5 whitespace-nowrap shadow-xs ${
+                            isBoxActive('box-t-div-1', 'fld-tony-1040-3b')
+                              ? 'bg-yellow-500 text-slate-950 font-bold'
+                              : 'bg-primary text-primary-foreground'
+                          }`}>
                             <Sparkles className="h-2 w-2" />
                             <span>Box 1a Dividends (97%)</span>
                           </div>
@@ -393,9 +410,9 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                         onClick={() => handleFieldBoxClick('box-t-div-2', 'fld-tony-1040-3a')}
                         className={`relative inline-block px-1.5 py-1 text-right transition-all cursor-pointer ${
                           showAllBoxes && isBoxActive('box-t-div-2', 'fld-tony-1040-3a')
-                            ? 'border-2 border-primary bg-primary/20 ring-4 ring-primary/30 z-10 shadow-sm'
+                            ? 'border-2 border-yellow-500 bg-yellow-400/25 ring-4 ring-yellow-400/50 z-10 shadow-md font-bold'
                             : showAllBoxes
-                            ? 'border-2 border-purple-500/80 bg-purple-500/10 hover:border-purple-600'
+                            ? 'border-2 border-primary/80 bg-primary/10 hover:border-primary hover:bg-primary/20'
                             : ''
                         }`}
                       >
@@ -403,7 +420,11 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                           ${Number(doc.extractedFields.qualifiedDividends || 290000).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                         </span>
                         {showAllBoxes && (
-                          <div className="absolute -top-4 right-0 px-1 py-0.2 text-[8px] font-mono font-bold bg-purple-700 text-white flex items-center gap-0.5 whitespace-nowrap">
+                          <div className={`absolute -top-4 right-0 px-1 py-0.2 text-[8px] font-mono font-bold flex items-center gap-0.5 whitespace-nowrap shadow-xs ${
+                            isBoxActive('box-t-div-2', 'fld-tony-1040-3a')
+                              ? 'bg-yellow-500 text-slate-950 font-bold'
+                              : 'bg-primary text-primary-foreground'
+                          }`}>
                             <Sparkles className="h-2 w-2" />
                             <span>Box 1b Qualified (96%)</span>
                           </div>
@@ -427,9 +448,9 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                         onClick={() => handleFieldBoxClick('box-t-b-1', 'fld-tony-1040-7')}
                         className={`relative inline-block px-1.5 py-1 text-right transition-all cursor-pointer ${
                           showAllBoxes && isBoxActive('box-t-b-1', 'fld-tony-1040-7')
-                            ? 'border-2 border-primary bg-primary/20 ring-4 ring-primary/30 z-10 shadow-sm'
+                            ? 'border-2 border-yellow-500 bg-yellow-400/25 ring-4 ring-yellow-400/50 z-10 shadow-md font-bold'
                             : showAllBoxes
-                            ? 'border-2 border-purple-500/80 bg-purple-500/10 hover:border-purple-600'
+                            ? 'border-2 border-primary/80 bg-primary/10 hover:border-primary hover:bg-primary/20'
                             : ''
                         }`}
                       >
@@ -437,7 +458,11 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                           ${Number(doc.extractedFields.longTermGain || 805000).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                         </span>
                         {showAllBoxes && (
-                          <div className="absolute -top-4 right-0 px-1 py-0.2 text-[8px] font-mono font-bold bg-purple-700 text-white flex items-center gap-0.5 whitespace-nowrap">
+                          <div className={`absolute -top-4 right-0 px-1 py-0.2 text-[8px] font-mono font-bold flex items-center gap-0.5 whitespace-nowrap shadow-xs ${
+                            isBoxActive('box-t-b-1', 'fld-tony-1040-7')
+                              ? 'bg-yellow-500 text-slate-950 font-bold'
+                              : 'bg-primary text-primary-foreground'
+                          }`}>
                             <Sparkles className="h-2 w-2" />
                             <span>Net Gain (95%)</span>
                           </div>
@@ -460,7 +485,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                         onClick={() => handleFieldBoxClick('box-t-nec-1', 'fld-tony-c-1')}
                         className={`relative inline-block px-1.5 py-1 text-right transition-all cursor-pointer ${
                           showAllBoxes
-                            ? 'border-2 border-primary bg-primary/20 ring-4 ring-primary/30 z-10 shadow-sm'
+                            ? 'border-2 border-yellow-500 bg-yellow-400/25 ring-4 ring-yellow-400/50 z-10 shadow-md font-bold'
                             : ''
                         }`}
                       >
@@ -468,7 +493,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                           ${Number(doc.extractedFields.box1_nonemployee_compensation || doc.amount || 45000).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                         </span>
                         {showAllBoxes && (
-                          <div className="absolute -top-4 right-0 px-1 py-0.2 text-[8px] font-mono font-bold bg-purple-700 text-white flex items-center gap-0.5 whitespace-nowrap">
+                          <div className="absolute -top-4 right-0 px-1 py-0.2 text-[8px] font-mono font-bold bg-yellow-500 text-slate-950 flex items-center gap-0.5 whitespace-nowrap shadow-xs">
                             <Sparkles className="h-2 w-2" />
                             <span>Box 1 NEC (98%)</span>
                           </div>
@@ -495,7 +520,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                   <div className="grid grid-cols-2 p-2 bg-slate-100 font-bold text-xs items-center">
                     <span>Total Expense</span>
                     <div className="text-right">
-                      <span className="font-mono text-sm bg-purple-100 border border-purple-300 px-1 py-0.5 text-purple-900">
+                      <span className="font-mono text-sm bg-yellow-100 border border-yellow-400 px-1.5 py-0.5 text-yellow-950 font-bold">
                         ${Number(doc.amount || 12500).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
@@ -542,7 +567,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
         <div className="shrink-0">
           <Badge variant="outline" className="gap-1 font-mono text-[10px]">
-            <Sparkles className="h-3 w-3 text-purple-600" />
+            <Sparkles className="h-3 w-3 text-primary" />
             {boundingBoxes.length} Traceable Coordinate Boxes
           </Badge>
         </div>

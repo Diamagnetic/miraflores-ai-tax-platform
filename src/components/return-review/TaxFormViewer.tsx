@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { ReturnField, AffordanceState, SourceDocument } from '@/types';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { AffordanceCell } from './AffordanceCell';
@@ -17,6 +17,7 @@ import {
   Edit3,
   Lock,
   AlertTriangle,
+  ArrowUpRight,
 } from 'lucide-react';
 
 interface TaxFormViewerProps {
@@ -94,7 +95,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
       .forEach((f) => verifyField(f.id));
   };
 
-  const handleRowClick = (fieldId: string) => {
+  const handleInspectClick = (fieldId: string) => {
     selectField(fieldId);
     if (onOpenInspection) {
       onOpenInspection(fieldId);
@@ -134,45 +135,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
   };
 
   return (
-    <div className={`flex flex-col border border-border bg-card shadow-xs ${className}`}>
-      {/* Top Legend Bar: Clear 5-Color Semantic Tokens */}
-      <div className="border-b border-border bg-muted/50 px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-[11px]">
-        <div className="flex items-center gap-1.5 text-muted-foreground font-semibold">
-          <span>Field Legend:</span>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {/* AI Extracted */}
-          <div className="flex items-center gap-1 px-2 py-0.5 bg-purple-100 dark:bg-purple-950/60 border border-purple-300 dark:border-purple-700 text-purple-950 dark:text-purple-200 font-semibold font-mono">
-            <Sparkles className="h-3 w-3 text-purple-700 dark:text-purple-400" />
-            <span>AI-Extracted</span>
-          </div>
-
-          {/* Verified */}
-          <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 font-semibold font-mono">
-            <ShieldCheck className="h-3 w-3 text-emerald-700 dark:text-emerald-400" />
-            <span>Verified (Locked)</span>
-          </div>
-
-          {/* Manual Edit - Distinct Amber */}
-          <div className="flex items-center gap-1 px-2 py-0.5 bg-amber-100 dark:bg-amber-950/60 border border-amber-400 dark:border-amber-700 text-amber-950 dark:text-amber-200 font-semibold font-mono">
-            <Edit3 className="h-3 w-3 text-amber-800 dark:text-amber-400" />
-            <span>Manual Edit</span>
-          </div>
-
-          {/* Calculated */}
-          <div className="flex items-center gap-1 px-2 py-0.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-semibold font-mono">
-            <Lock className="h-3 w-3 text-slate-600 dark:text-slate-400" />
-            <span>Calculated Formula</span>
-          </div>
-
-          {/* Needs QA */}
-          <div className="flex items-center gap-1 px-2 py-0.5 bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 text-rose-950 dark:text-rose-200 font-semibold font-mono">
-            <AlertTriangle className="h-3 w-3 text-rose-700 dark:text-rose-400" />
-            <span>Needs QA / Approval</span>
-          </div>
-        </div>
-      </div>
-
+    <div className={`flex flex-col border border-border bg-card shadow-xs select-text ${className}`}>
       {/* Form Navigation & Batch Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/20 p-3">
         {/* Form Tabs */}
@@ -294,21 +257,20 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                         <tr
                           key={field.id}
                           ref={isSelected ? activeRowRef : null}
-                          onClick={() => handleRowClick(field.id)}
-                          className="transition-colors cursor-pointer hover:bg-muted/30"
+                          className="transition-colors hover:bg-muted/30"
                         >
-                          {/* Line Number without "Line" prefix */}
-                          <td className="py-2 px-3 font-mono font-bold text-foreground whitespace-nowrap">
+                          {/* Line Number */}
+                          <td className="py-2 px-3 font-mono font-bold text-foreground whitespace-nowrap select-text cursor-text">
                             {cleanLineNumber}
                           </td>
 
                           {/* Field Description */}
-                          <td className="py-2 px-3 text-foreground">
+                          <td className="py-2 px-3 text-foreground select-text cursor-text">
                             <div className="flex items-center gap-1.5">
                               <span className="truncate max-w-sm">{field.label}</span>
                               {field.formula && (
                                 <span
-                                  className="text-muted-foreground hover:text-foreground shrink-0"
+                                  className="text-muted-foreground hover:text-foreground shrink-0 cursor-help"
                                   title={`Calculation Formula: ${field.formula}`}
                                 >
                                   <HelpCircle className="h-3 w-3" />
@@ -324,28 +286,31 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                             </Badge>
                           </td>
 
-                          {/* 5-State Affordance Cell */}
+                          {/* 5-State Affordance Cell (Mouse Selectable) */}
                           <td className="py-1.5 px-3">
                             <AffordanceCell
                               field={field}
                               isSelected={isSelected}
-                              onClick={() => handleRowClick(field.id)}
                             />
                           </td>
 
-                          {/* Source Document Provenance with Rich Hover Card */}
+                          {/* Source Document Provenance Button (Clicking opens drawer) */}
                           <td
                             className="py-2 px-3 text-center whitespace-nowrap relative"
                             onMouseEnter={() => setHoveredFieldId(field.id)}
                             onMouseLeave={() => setHoveredFieldId(null)}
                           >
                             {hasDocs ? (
-                              <span
-                                className="inline-flex items-center gap-1 px-2 py-0.5 border border-purple-300 bg-purple-100 dark:bg-purple-950/60 text-purple-950 dark:text-purple-200 text-[10px] font-mono font-bold hover:bg-purple-200 transition-colors"
+                              <button
+                                type="button"
+                                onClick={() => handleInspectClick(field.id)}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 border border-purple-300 bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/60 dark:hover:bg-purple-900/80 text-purple-950 dark:text-purple-200 text-[10px] font-mono font-bold transition-colors cursor-pointer group"
+                                title="Click to inspect source document in drawer"
                               >
-                                <FileText className="h-3 w-3 text-purple-700 dark:text-purple-400" />
+                                <FileText className="h-3 w-3 text-purple-700 dark:text-purple-400 group-hover:scale-110 transition-transform" />
                                 <span>{docLabel}</span>
-                              </span>
+                                <ArrowUpRight className="h-2.5 w-2.5 opacity-60 group-hover:opacity-100" />
+                              </button>
                             ) : field.formula ? (
                               <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 border border-slate-200">
                                 Formula
@@ -354,42 +319,39 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                               <span className="text-[10px] text-muted-foreground font-mono">—</span>
                             )}
 
-                            {/* Hover Card Details */}
+                            {/* Hover Card Matching Platform Color Palette */}
                             {isHovered && hasDocs && firstDoc && (
-                              <div className="absolute z-40 bottom-full mb-1.5 left-1/2 -translate-x-1/2 w-64 p-3 bg-slate-900 text-white text-left shadow-xl border border-slate-700 text-xs font-sans pointer-events-none animate-in fade-in zoom-in-95 duration-100">
-                                <div className="flex items-center gap-1.5 pb-1.5 border-b border-slate-800">
+                              <div className="absolute z-40 bottom-full mb-2 left-1/2 -translate-x-1/2 w-64 p-3 bg-card text-card-foreground shadow-lg border border-border text-xs font-sans text-left pointer-events-none animate-in fade-in zoom-in-95 duration-100">
+                                <div className="flex items-center gap-1.5 pb-1.5 border-b border-border">
                                   <FileText className="h-3.5 w-3.5 text-primary shrink-0" />
-                                  <span className="font-bold truncate text-white">{firstDoc.fileName}</span>
+                                  <span className="font-bold truncate text-foreground">{firstDoc.fileName}</span>
                                 </div>
-                                <div className="space-y-1 pt-1.5 text-[11px] text-slate-300 font-mono">
+                                <div className="space-y-1 pt-1.5 text-[11px] text-muted-foreground font-mono">
                                   <p>
-                                    <span className="text-slate-400">Payer:</span>{' '}
-                                    <strong className="text-white">{firstDoc.vendor || 'Stark Industries Inc.'}</strong>
+                                    <span className="text-muted-foreground font-sans">Payer:</span>{' '}
+                                    <strong className="text-foreground">{firstDoc.vendor || 'Stark Industries Inc.'}</strong>
                                   </p>
                                   <p>
-                                    <span className="text-slate-400">Source:</span>{' '}
-                                    <strong className="text-white">
+                                    <span className="text-muted-foreground font-sans">Source:</span>{' '}
+                                    <strong className="text-foreground">
                                       {firstDoc.docType} (Page 1)
                                     </strong>
                                   </p>
-                                  <p className="flex items-center justify-between text-emerald-400 font-bold pt-1 border-t border-slate-800">
+                                  <div className="flex items-center justify-between text-emerald-700 dark:text-emerald-400 font-bold pt-1 border-t border-border">
                                     <span>OCR Match: 98%</span>
-                                    <span className="text-[10px] text-primary">Click to view ➔</span>
-                                  </p>
+                                    <span className="text-[10px] text-primary font-sans font-semibold">Click to view ➔</span>
+                                  </div>
                                 </div>
                               </div>
                             )}
                           </td>
 
-                          {/* ONLY ONE ACTION: Review */}
+                          {/* Action Button: Review */}
                           <td className="py-2 px-3 text-right whitespace-nowrap">
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleRowClick(field.id);
-                              }}
+                              onClick={() => handleInspectClick(field.id)}
                               className={`h-6 px-2 text-[11px] gap-1 ${
                                 isSelected
                                   ? 'bg-primary text-primary-foreground border-primary font-bold'
@@ -412,9 +374,42 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         </table>
       </div>
 
-      {/* Table Footer Summary */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-muted/20 p-2.5 text-xs text-muted-foreground font-mono">
-        <span>Showing {filteredFields.length} schedule lines across {Object.keys(categoryGroups).length} categories</span>
+      {/* Bottom Legend Bar: Clear 5-Color Semantic Tokens */}
+      <div className="border-t border-border bg-muted/40 px-3 py-2 flex flex-wrap items-center justify-between gap-3 text-[11px]">
+        <div className="flex items-center gap-1.5 text-muted-foreground font-semibold">
+          <span>Affordance Legend:</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* AI Extracted */}
+          <div className="flex items-center gap-1 px-2 py-0.5 bg-purple-100 dark:bg-purple-950/60 border border-purple-300 dark:border-purple-700 text-purple-950 dark:text-purple-200 font-semibold font-mono">
+            <Sparkles className="h-3 w-3 text-purple-700 dark:text-purple-400" />
+            <span>AI-Extracted</span>
+          </div>
+
+          {/* Verified */}
+          <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 font-semibold font-mono">
+            <ShieldCheck className="h-3 w-3 text-emerald-700 dark:text-emerald-400" />
+            <span>Verified (Locked)</span>
+          </div>
+
+          {/* Manual Edit - Distinct Amber */}
+          <div className="flex items-center gap-1 px-2 py-0.5 bg-amber-100 dark:bg-amber-950/60 border border-amber-400 dark:border-amber-700 text-amber-950 dark:text-amber-200 font-semibold font-mono">
+            <Edit3 className="h-3 w-3 text-amber-800 dark:text-amber-400" />
+            <span>Manual Edit</span>
+          </div>
+
+          {/* Calculated */}
+          <div className="flex items-center gap-1 px-2 py-0.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-semibold font-mono">
+            <Lock className="h-3 w-3 text-slate-600 dark:text-slate-400" />
+            <span>Calculated Formula</span>
+          </div>
+
+          {/* Needs QA */}
+          <div className="flex items-center gap-1 px-2 py-0.5 bg-rose-100 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 text-rose-950 dark:text-rose-200 font-semibold font-mono">
+            <AlertTriangle className="h-3 w-3 text-rose-700 dark:text-rose-400" />
+            <span>Needs QA / Approval</span>
+          </div>
+        </div>
       </div>
     </div>
   );

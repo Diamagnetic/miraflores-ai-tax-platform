@@ -32,7 +32,7 @@ export const AffordanceCell: React.FC<AffordanceCellProps> = ({
           icon: <Sparkles className="h-3.5 w-3.5 text-purple-700 dark:text-purple-400 shrink-0" />,
           label: 'AI Extracted',
           badge: aiConfidence ? (
-            <span className="ml-auto text-[10px] font-mono px-1 py-0.2 bg-purple-200 dark:bg-purple-900/70 text-purple-900 dark:text-purple-200 font-bold">
+            <span className="ml-auto text-[10px] font-mono px-1 py-0.2 bg-purple-200 dark:bg-purple-900/70 text-purple-900 dark:text-purple-200 font-bold select-none">
               {Math.round(aiConfidence > 1 ? aiConfidence : aiConfidence * 100)}%
             </span>
           ) : null,
@@ -45,7 +45,7 @@ export const AffordanceCell: React.FC<AffordanceCellProps> = ({
           icon: <ShieldCheck className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />,
           label: 'Verified',
           badge: (
-            <span className="ml-auto text-[10px] font-mono px-1 py-0.2 bg-emerald-200 dark:bg-emerald-900/70 text-emerald-900 dark:text-emerald-200 font-bold">
+            <span className="ml-auto text-[10px] font-mono px-1 py-0.2 bg-emerald-200 dark:bg-emerald-900/70 text-emerald-900 dark:text-emerald-200 font-bold select-none">
               LOCKED
             </span>
           ),
@@ -59,7 +59,7 @@ export const AffordanceCell: React.FC<AffordanceCellProps> = ({
           label: 'Manual Edit',
           badge: (
             <span
-              className="ml-auto text-[10px] font-mono px-1 py-0.2 bg-amber-200 dark:bg-amber-900/70 text-amber-950 dark:text-amber-200 font-bold"
+              className="ml-auto text-[10px] font-mono px-1 py-0.2 bg-amber-200 dark:bg-amber-900/70 text-amber-950 dark:text-amber-200 font-bold select-none"
               title={auditHistory && auditHistory.length > 0 ? `Edited by ${auditHistory[0].changedBy}: ${auditHistory[0].reason || 'Manual override'}` : 'Manual override'}
             >
               EDITED
@@ -75,7 +75,7 @@ export const AffordanceCell: React.FC<AffordanceCellProps> = ({
           label: 'Calculated',
           badge: (
             <span
-              className="ml-auto text-[10px] font-mono px-1 py-0.2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-300 font-medium truncate max-w-[55px]"
+              className="ml-auto text-[10px] font-mono px-1 py-0.2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-300 font-medium truncate max-w-[55px] select-none"
               title={formula || 'Calculated field'}
             >
               FORMULA
@@ -90,7 +90,7 @@ export const AffordanceCell: React.FC<AffordanceCellProps> = ({
           icon: <AlertTriangle className="h-3.5 w-3.5 text-rose-700 dark:text-rose-400 shrink-0" />,
           label: 'Needs QA',
           badge: (
-            <span className="ml-auto text-[10px] font-mono px-1 py-0.2 bg-rose-200 dark:bg-rose-900/70 text-rose-950 dark:text-rose-200 font-bold">
+            <span className="ml-auto text-[10px] font-mono px-1 py-0.2 bg-rose-200 dark:bg-rose-900/70 text-rose-950 dark:text-rose-200 font-bold select-none">
               DISCREPANCY
             </span>
           ),
@@ -117,17 +117,17 @@ export const AffordanceCell: React.FC<AffordanceCellProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`group relative flex items-center justify-between gap-2 px-2.5 py-1.5 border transition-all cursor-pointer select-none min-w-[150px] ${styles.container} ${
+      className={`group relative flex items-center justify-between gap-2 px-2.5 py-1.5 border transition-all min-w-[150px] select-text cursor-default ${styles.container} ${
         isSelected
           ? 'ring-2 ring-primary ring-offset-1 border-primary shadow-xs z-10'
           : 'shadow-2xs'
       } ${className}`}
-      title={`State: ${styles.label} • Click to inspect source traceability`}
+      title={`State: ${styles.label}`}
     >
-      {/* Icon & Formatted Value */}
-      <div className="flex items-center gap-1.5 min-w-0">
+      {/* Icon & Formatted Value (Selectable with Mouse) */}
+      <div className="flex items-center gap-1.5 min-w-0 select-text">
         {styles.icon}
-        <span className="font-mono font-bold text-xs tracking-tight truncate">
+        <span className="font-mono font-bold text-xs tracking-tight truncate select-text cursor-text">
           {displayString}
         </span>
       </div>
