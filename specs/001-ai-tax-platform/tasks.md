@@ -79,7 +79,7 @@
 - [X] T025 [P] [US3] Build 6-stage ClientMilestoneProgress bar (centered ~60% screen width, max-w-4xl mx-auto, 6 concise 2-3 word stage titles: Documents Intake, Expert Prep, Partner Review, Client Signature, IRS Submission, Return Accepted) in src/components/client-portal/ClientMilestoneProgress.tsx
 - [X] T026 [P] [US3] Build client pending action callout and Form 8879 e-signature banner in src/components/client-portal/ClientActionBanner.tsx
 - [X] T027 [US3] Build client document intake dropzone and requested documents list in src/components/client-portal/ClientDocumentUpload.tsx
-- [ ] T028 [US3] Build client summary card displaying return status, estimated refund/tax due, and assigned CPA contact in src/components/client-portal/ClientSummaryCard.tsx
+- [X] T028 [US3] Build client summary card displaying return status, estimated refund/tax due, and assigned CPA contact in src/components/client-portal/ClientSummaryCard.tsx
 - [ ] T029 [US3] Assemble master ClientPortalView (with centered 60% progress bar and clean next action focus) in src/components/client-portal/ClientPortalView.tsx
 - [ ] T030 [US3] Record client progress bar geometry (60% centered width) and 6-stage lifecycle decisions in DECISIONS.md
 
