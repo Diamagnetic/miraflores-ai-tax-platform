@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { UserRoleType } from '@/types';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +12,11 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  isWorkbench?: boolean;
+}
+
+export const Header: React.FC<HeaderProps> = ({ isWorkbench = false }) => {
   const {
     currentUser,
     setRole,
@@ -77,8 +81,8 @@ export const Header: React.FC = () => {
               </select>
             )}
 
-            {/* Blocked Badge only when the active return is blocked */}
-            {activeReturn?.isBlocked && (
+            {/* Blocked Badge shown in navbar ONLY when in the workbench and the return is genuinely blocked */}
+            {isWorkbench && activeReturn?.isBlocked && (
               <Badge
                 variant="destructive"
                 className="text-[11px] gap-1 font-mono font-medium py-0.5 px-2 animate-pulse"

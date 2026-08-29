@@ -112,7 +112,7 @@ export const AffordanceCell: React.FC<AffordanceCellProps> = ({
     formattedValue ||
     (typeof value === 'number'
       ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
-      : String(value ?? '—'));
+      : String(value ?? '-'));
 
   return (
     <div
@@ -137,3 +137,4 @@ export const AffordanceCell: React.FC<AffordanceCellProps> = ({
     </div>
   );
 };
+

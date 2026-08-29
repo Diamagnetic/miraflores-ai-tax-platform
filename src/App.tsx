@@ -19,9 +19,11 @@ export default function App() {
     setActiveStaffView('workbench');
   };
 
+  const isWorkbench = !isStaff || activeStaffView === 'workbench';
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans">
-      <Header />
+      <Header isWorkbench={isWorkbench} />
 
       {/* Staff View Navigation Bar */}
       {isStaff && (
@@ -52,7 +54,7 @@ export default function App() {
               }`}
             >
               <FileSpreadsheet className="h-3.5 w-3.5" />
-              <span>Return Workbench — {activeReturn?.taxpayerName}</span>
+              <span>Return Workbench: {activeReturn?.taxpayerName}</span>
             </Button>
           </div>
 

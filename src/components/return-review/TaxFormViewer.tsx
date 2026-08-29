@@ -135,7 +135,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
     }
     if (field.formula) return 'Formula';
     if (field.state === 'user_edited') return 'Manual Entry';
-    return '—';
+    return '-';
   };
 
   // Helper to get first linked doc
@@ -244,7 +244,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         );
 
       default:
-        return <span className="text-muted-foreground text-xs">—</span>;
+        return <span className="text-muted-foreground text-xs">-</span>;
     }
   };
 
@@ -362,7 +362,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                       const hasDocs = field.sourceDocumentIds && field.sourceDocumentIds.length > 0;
                       const cleanLineNumber = field.lineNumber
                         ? field.lineNumber.replace(/^Line\s*/i, '')
-                        : '—';
+                        : '-';
                       const docLabel = getSourceDocLabel(field);
                       const firstDoc = getFirstLinkedDoc(field);
 
@@ -370,7 +370,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                         field.formattedValue ||
                         (typeof field.value === 'number'
                           ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(field.value)
-                          : String(field.value ?? '—'));
+                          : String(field.value ?? '-'));
 
                       return (
                         <tr
@@ -439,7 +439,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                                 <span>Formula</span>
                               </button>
                             ) : (
-                              <span className="text-[10px] text-muted-foreground font-mono">—</span>
+                              <span className="text-[10px] text-muted-foreground font-mono">-</span>
                             )}
                           </td>
                         </tr>
@@ -497,3 +497,4 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
     </div>
   );
 };
+
