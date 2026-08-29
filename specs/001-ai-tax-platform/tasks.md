@@ -70,20 +70,20 @@
 
 ---
 
-## Phase 5: User Story 3 - New Client Onboarding in Under 10 Seconds (Priority: P2)
+## Phase 5: User Story 3 - Client Progress Lifecycle & Centered Stage Bar (Priority: P2)
 
-**Goal**: Deliver a zero-jargon, 10-second first-run client experience (Peter Parker - Freelance Photography) featuring 3 immediate action cards, estimated completion times, drag-and-drop intake zone, and progressive onboarding transition.
+**Goal**: Deliver a clean, reassuring client portal experience (Tony Stark / Peter Parker) featuring a 6-stage **Return Progress Bar** centered at ~60% screen width (`max-w-4xl mx-auto`) directly below the navbar with concise 2-3 word stage titles, and highlighting the immediate next action (document upload or Form 8879 e-sign).
 
-**Independent Test**: Switch role to Individual Taxpayer (Peter Parker) -> Observe 10-second action cards -> Upload W-2 -> Observe progress bar increment from 0% to 33% and completion checkmark.
+**Independent Test**: Sign in as Tony Stark or Peter Parker -> Observe top progress bar spanning ~60% screen width in the center with 6 concise stage titles (1. Documents Intake, 2. Expert Prep, 3. Partner Review, 4. Client Signature, 5. IRS Submission, 6. Return Accepted) -> Observe active stage and direct action callout -> Upload a document or e-sign Form 8879 -> Verify instant progress bar advancement.
 
-- [ ] T025 [P] [US3] Build welcoming 10-second orientation banner and time estimates in src/components/onboarding/OnboardingHeader.tsx
-- [ ] T026 [P] [US3] Build 3-step prioritized action cards (Upload W-2/1099, Answer Life Questions, Prior Year Review) in src/components/onboarding/OnboardingActionCard.tsx
-- [ ] T027 [US3] Build interactive simulated document upload dropzone in src/components/onboarding/DocumentUploadDropzone.tsx
-- [ ] T028 [US3] Build 4-question interactive tax life-events questionnaire in src/components/onboarding/LifeEventsQuestionnaire.tsx
-- [ ] T029 [US3] Assemble client onboarding view with dynamic transition to active return tracker in src/components/onboarding/ClientOnboardingView.tsx
-- [ ] T030 [US3] Record time-to-first-action and progressive disclosure onboarding decisions in DECISIONS.md
+- [ ] T025 [P] [US3] Build 6-stage ClientMilestoneProgress bar (centered ~60% screen width, max-w-4xl mx-auto, 6 concise 2-3 word stage titles: Documents Intake, Expert Prep, Partner Review, Client Signature, IRS Submission, Return Accepted) in src/components/client-portal/ClientMilestoneProgress.tsx
+- [ ] T026 [P] [US3] Build client pending action callout and Form 8879 e-signature banner in src/components/client-portal/ClientActionBanner.tsx
+- [ ] T027 [US3] Build client document intake dropzone and requested documents list in src/components/client-portal/ClientDocumentUpload.tsx
+- [ ] T028 [US3] Build client summary card displaying return status, estimated refund/tax due, and assigned CPA contact in src/components/client-portal/ClientSummaryCard.tsx
+- [ ] T029 [US3] Assemble master ClientPortalView (with centered 60% progress bar and clean next action focus) in src/components/client-portal/ClientPortalView.tsx
+- [ ] T030 [US3] Record client progress bar geometry (60% centered width) and 6-stage lifecycle decisions in DECISIONS.md
 
-**Checkpoint**: User Story 3 is functional and provides clean client intake experience.
+**Checkpoint**: User Story 3 is functional and provides clean client portal with centered progress bar.
 
 ---
 
@@ -103,19 +103,19 @@
 
 ---
 
-## Phase 7: User Story 5 - Role Switcher & Context Preservation (Priority: P2)
+## Phase 7: User Story 5 - Saved Logins Account Chooser & Navbar Account Dropdown (Priority: P2)
 
-**Goal**: Provide an interactive Role Switcher supporting 3 core roles (`individual_client`, `tax_preparer`, `tax_reviewer`) plus an employee personal return toggle (Bruce Banner), with explainable disabled states, permission tooltips, and context preservation across role transitions.
+**Goal**: Deliver an authentic enterprise **"Saved Logins / Account Chooser"** landing page (`SavedLoginsScreen`) with 4 realistic persona accounts (Sam Wilson CPA, Steve Rogers Reviewer, Tony Stark Client, Peter Parker Client), coupled with a top-right Navbar Account Menu with a post-login **"Switch to My Personal Return"** toggle for staff and a `Logout` button returning to Saved Logins.
 
-**Independent Test**: Switch between Peter Parker (Client), Sam Wilson (Preparer), and Steve Rogers (Reviewer) -> Verify navigation, buttons, and views adapt immediately -> Switch to Bruce Banner personal return mode -> Verify internal reviewer notes on Bruce's return are masked per independence policies.
+**Independent Test**: On initial load or after Logout, verify Saved Logins page displays 4 authentic persona accounts (no fake "personal mode" card) -> Click Sam Wilson CPA to log in -> Open top-right Account Menu -> Click "Switch to My Personal Return" -> Verify workspace cleanly shifts to Dr. Bruce Banner's confidential employee 1040 -> Click Logout to return to Saved Logins.
 
-- [ ] T036 [P] [US5] Build interactive top-bar Role Switcher dropdown with persona avatars and role descriptions in src/components/common/RoleSwitcher.tsx
-- [ ] T037 [P] [US5] Build explainable disabled action buttons with permission tooltips in src/components/common/PermissionGateButton.tsx
-- [ ] T038 [US5] Implement Employee Personal Return Mode with masked reviewer notes in src/components/common/PersonalReturnBanner.tsx
-- [ ] T039 [US5] Implement context dock preserving active return position across views in src/components/common/ContextDock.tsx
-- [ ] T040 [US5] Record role architecture and permission communication decisions in DECISIONS.md
+- [ ] T036 [P] [US5] Build authentic corporate Saved Logins (Account Chooser) landing page with persona cards in src/components/auth/SavedLoginsScreen.tsx
+- [ ] T037 [P] [US5] Build Navbar Account Menu dropdown with Account Holder Name, Logout to Saved Logins, placeholder Settings/Help, and "Switch to My Personal Return" for staff in src/components/common/UserAccountMenu.tsx
+- [ ] T038 [US5] Update Header.tsx to integrate UserAccountMenu and display active return context in src/components/common/Header.tsx
+- [ ] T039 [US5] Wire in-memory authentication state and personal return mode toggle (Dr. Bruce Banner 1040) in src/store/usePlatformStore.ts
+- [ ] T040 [US5] Record Saved Logins architecture and post-login personal return access decisions in DECISIONS.md
 
-**Checkpoint**: User Story 5 is functional with instant role switching.
+**Checkpoint**: User Story 5 is functional with authentic login chooser and post-login personal return switching.
 
 ---
 
@@ -123,12 +123,14 @@
 
 **Goal**: Deliver an unambiguous status experience with dual views: granular 7-stage internal tracking for CPAs (Intake, Extraction, Prep, Review, Client Sign, E-Filed, Accepted) vs. 6 reassuring milestone stages for clients, featuring explicit Next Action Owner and blocker badges.
 
-**Independent Test**: View Tony Stark return as CPA (shows 7 granular stages with blocker flag) -> View as Client (shows Milestone 3: "Under Expert Review" with reassuring progress bar and explicit Next Action: "CPA preparing Schedule C").
+**Independent Test**: View Tony Stark return as CPA (shows 7 granular stages with blocker flag) -> View as Client (shows Step 3: "Partner Review" with centered 60% progress bar and explicit Next Action: "CPA preparing Schedule C").
 
 - [ ] T041 [P] [US6] Build CPA Granular Lifecycle Stepper with blocker indicators in src/components/status/CpaStatusStepper.tsx
-- [ ] T042 [P] [US6] Build Client Reassuring Milestone Progress Bar in src/components/status/ClientMilestoneProgress.tsx
+- [ ] T042 [P] [US6] Build StatusLifecycleSync logic connecting CPA stages with the 6 Client progress milestones in src/components/status/StatusLifecycleSync.tsx
 - [ ] T043 [US6] Build Next Action Owner & Blocker Callout Banner in src/components/status/NextActionBanner.tsx
 - [ ] T044 [US6] Record status legibility and shared mental model decisions in DECISIONS.md
+
+**Checkpoint**: User Story 6 is functional with zero status ambiguity.
 
 **Checkpoint**: User Story 6 is functional with zero status ambiguity.
 

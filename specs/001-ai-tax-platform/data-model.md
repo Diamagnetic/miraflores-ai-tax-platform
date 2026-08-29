@@ -165,17 +165,16 @@ The platform utilizes an authentic **"Saved Logins / Account Chooser"** landing 
 
 ### 2.6 Workflow Stages & Client Progress Bar Mapping
 
-The Client Portal maps the lifecycle to a sleek multi-stage **Return Progress Bar** positioned directly below the navbar with concise 2-3 word stage titles (no metric card clutter):
+The Client Portal maps the lifecycle to a 6-stage **Return Progress Bar** positioned directly below the navbar, centered at ~60% screen width (`max-w-4xl mx-auto`), with concise 2-3 word stage titles (no internal extraction stage exposed to the client):
 
-| Stage Key | CPA Granular Stage | Client Progress Bar Stage Title (2-3 Words) | Next Action Owner |
-|---|---|---|---|
-| `INTAKE` | Document Intake (85% Docs Received) | **1. Documents Intake** | Client |
-| `EXTRACTION` | AI Auto-Extraction & Line Matching | **2. AI Processing** | Automated / Preparer |
-| `PREPARATION`| Active Tax Preparation & Workpaper Tie-out | **3. Expert Prep** | Tax Preparer |
-| `REVIEW` | Senior Review & Quality Assurance | **4. Partner Review** | Tax Reviewer |
-| `CLIENT_SIGN`| Ready for Client E-Sign & Authorization | **5. Client Signature** | Client (e-Sign 8879) |
-| `E_FILED` | E-Filed with IRS / State Agencies | **6. IRS Submission** | Automated / IRS |
-| `ACCEPTED` | IRS Accepted / Filing Complete | **7. Return Accepted** 🎉 | Completed |
+| CPA Granular Stage | Client Progress Bar Stage Title (2-3 Words) | Next Action Owner |
+|---|---|---|
+| `INTAKE` (85% Docs Received) / `EXTRACTION` | **1. Documents Intake** | Client |
+| `PREPARATION` (Active Preparation & Workpapers) | **2. Expert Prep** | Tax Preparer |
+| `REVIEW` (Senior QA & Partner Sign-off) | **3. Partner Review** | Tax Reviewer |
+| `CLIENT_SIGN` (Form 8879 Authorization) | **4. Client Signature** | Client (e-Sign 8879) |
+| `E_FILED` (Transmitted to IRS) | **5. IRS Submission** | Automated / IRS |
+| `ACCEPTED` (Filing Complete) | **6. Return Accepted** 🎉 | Completed |
 
 ---
 

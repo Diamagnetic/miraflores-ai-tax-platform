@@ -41,7 +41,7 @@ The platform addresses 10 critical challenges:
     - For employees/preparers, personal tax filing is accessed **after logging in from within the top-right account dropdown** via **"Switch to My Personal Return"**.
     - The top-right navbar menu contains the account holder's name, `Switch to My Personal Return` (for firm employees), `Settings` (placeholder), `Help` (placeholder), and `Logout` (which returns to the Saved Logins screen).
 - **Q3 (Client Portal View Structure):** How is the client interface structured below the navbar?  
-  **A:** For the client, the 3 metric/onboarding cards are **removed**. Directly below the navbar, a multi-stage **Progress Bar** is displayed indicating the client's exact stage in the tax return lifecycle. Each stage displays a concise title (maximum 2-3 words, e.g., *"Documents Intake"*, *"AI Processing"*, *"Expert Preparation"*, *"Partner Review"*, *"Ready to Sign"*, *"IRS E-Filed"*, *"Return Accepted"*), with no lengthy card descriptions cluttering the top fold.
+  **A:** Directly below the navbar, a 6-stage **Return Progress Bar** is rendered, centered at approximately 60% of the screen width (`max-w-4xl mx-auto`). Each stage displays a concise title (maximum 2-3 words): `1. Documents Intake`, `2. Expert Prep`, `3. Partner Review`, `4. Client Signature`, `5. IRS Submission`, `6. Return Accepted` (with no separate internal "Extraction" stage presented to the client).
 
 ---
 
@@ -77,17 +77,17 @@ The platform addresses 10 critical challenges:
 
 ---
 
-### User Story 3 - Client Progress Lifecycle & Stage Bar (Priority: P2)
+### User Story 3 - Client Progress Lifecycle & Centered Stage Bar (Priority: P2)
 
-**User Journey**: A client (e.g., Tony Stark or Peter Parker) logs in to their portal. Directly below the top navbar, the client sees a sleek, high-visibility **Return Progress Bar** mapping the full lifecycle. Each stage displays a clear, 2-3 word title (e.g., `1. Documents Intake`, `2. AI Processing`, `3. Expert Prep`, `4. Partner Review`, `5. Client Signature`, `6. IRS Submission`, `7. Accepted`). The active stage is prominently highlighted, showing the next action owner and pending requests (such as upload missing 1099 or Form 8879 e-sign).
+**User Journey**: A client (e.g., Tony Stark or Peter Parker) logs in to their portal. Directly below the top navbar, the client sees a sleek, high-visibility 6-stage **Return Progress Bar** centered at ~60% screen width (`max-w-4xl mx-auto`). Each stage displays a clear, 2-3 word title (`1. Documents Intake`, `2. Expert Prep`, `3. Partner Review`, `4. Client Signature`, `5. IRS Submission`, `6. Return Accepted`). The active stage is prominently highlighted, showing the next action owner and pending requests (such as upload missing receipts or Form 8879 e-sign).
 
 **Why this priority**: Solves Challenge 03 and Challenge 06. Delivers instant clarity on "Where is my tax return?" and "What do I need to do next?" in under 5 seconds without UI clutter.
 
 **Independent Test**:
-- Log in as Client -> Observe top progress bar with concise 2-3 word stage titles -> View the active highlighted stage and next action callout -> Upload a requested document or click e-sign -> Observe real-time advance in the stage bar.
+- Log in as Client -> Observe top progress bar spanning ~60% screen width with 6 concise 2-3 word stage titles -> View the active highlighted stage and next action callout -> Upload a requested document or click e-sign -> Observe real-time advance in the stage bar.
 
 **Acceptance Scenarios**:
-1. **Given** a client session, **When** viewing the client portal, **Then** a multi-stage progress bar with concise 2-3 word stage titles is rendered directly below the navbar.
+1. **Given** a client session, **When** viewing the client portal, **Then** a 6-stage progress bar centered at ~60% screen width with concise 2-3 word stage titles is rendered directly below the navbar.
 2. **Given** a stage transition (e.g., preparer completes review), **Then** the client progress bar updates state to "Client Signature" with a direct Form 8879 e-sign action.
 
 ---
@@ -131,7 +131,7 @@ When logged in:
 
 ### User Story 6 - Shared Return Status & Progress with Zero Ambiguity (Priority: P3)
 
-**User Journey**: Both client and CPA can view the return status lifecycle. The CPA sees granular stages: `Intake (Done) -> AI Extraction (Done) -> Preparation (In Progress) -> Review (Pending) -> Client E-Sign (Pending) -> E-Filed (Pending)`. The client sees simplified, reassuring milestones: `Documents Received -> Under Expert Review -> Ready for Signature -> Filed with IRS`, with an unambiguous badge: `Next Step: CPA preparing return (Estimated completion: Oct 12)`.
+**User Journey**: Both client and CPA can view the return status lifecycle. The CPA sees granular stages: `Intake (Done) -> AI Extraction (Done) -> Preparation (In Progress) -> Review (Pending) -> Client E-Sign (Pending) -> E-Filed (Pending)`. The client sees simplified, reassuring milestones: `Documents Intake -> Expert Prep -> Partner Review -> Client Signature -> IRS Submission -> Return Accepted`, with an unambiguous badge: `Next Step: CPA preparing return (Estimated completion: Oct 12)`.
 
 **Why this priority**: Solves Challenge 06. Ensures clients never wonder "Who is waiting on whom?"
 
@@ -169,7 +169,7 @@ When logged in:
 - **FR-003**: System MUST support threaded messaging tied directly to documents, line items, and returns with strict internal vs. external privacy controls.
 - **FR-004**: System MUST provide an actionable triage score algorithm ranking returns by deadline, urgency, blocker state, and client responsiveness.
 - **FR-005**: System MUST provide an authentic Saved Logins (Account Chooser) landing screen for persona sign-in (Sam Wilson CPA, Steve Rogers Senior Reviewer, Tony Stark Client, Peter Parker Client) and a top-right Navbar Account Menu containing Account Holder Name, Switch to My Personal Return (for firm staff), Settings (placeholder), Help (placeholder), and Logout (returns to Saved Logins).
-- **FR-006**: System MUST render a multi-stage Return Progress Bar directly below the navbar for the Client Portal with concise 2-3 word stage titles, hiding the 3 CPA/admin metric cards in client mode.
+- **FR-006**: System MUST render a 6-stage Return Progress Bar centered at approximately 60% screen width directly below the navbar for the Client Portal with concise 2-3 word stage titles (Documents Intake, Expert Prep, Partner Review, Client Signature, IRS Submission, Return Accepted).
 - **FR-007**: System MUST render consistent visual affordance badges across all data elements (AI-extracted, verified, manual, calculated, locked).
 - **FR-008**: System MUST support instant filtering, search, and progressive disclosure over a mock dataset of 100+ documents and returns.
 - **FR-009**: System MUST allow inline one-click correction and verification of AI recommendations.

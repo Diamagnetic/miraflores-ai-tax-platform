@@ -130,11 +130,11 @@ When building an AI-powered tax platform, the prompt directive to *"Assume nothi
 
 ## 7. Client Portal Top Fold Architecture
 
-### Decision: Multi-Stage Return Progress Bar with Concise 2-3 Word Stage Titles (Zero Metric Card Clutter)
+### Decision: 6-Stage Return Progress Bar Centered at ~60% Screen Width
 - **Rationale**:
-  - Tax clients do not need complex CPA triage metric cards upon logging in; they need immediate, calm clarity on "Where is my return right now?" and "What is the single next action required of me?".
-  - Replacing the 3 dashboard cards with a top-mounted **Return Progress Bar** directly under the navbar displays 7 clear stages with concise 2-3 word titles (`1. Documents Intake`, `2. AI Processing`, `3. Expert Prep`, `4. Partner Review`, `5. Client Signature`, `6. IRS Submission`, `7. Accepted`).
-  - Active stage is highlighted with an unambiguous next action owner callout (e.g. `Next Step: Client e-Sign Form 8879`).
+  - Tax clients need immediate, calm clarity on "Where is my return right now?" and "What is the single next action required of me?".
+  - A top-mounted **Return Progress Bar** positioned directly under the navbar and centered at approximately 60% screen width (`max-w-4xl mx-auto`) displays 6 clear, client-facing stages with concise 2-3 word titles (`1. Documents Intake`, `2. Expert Prep`, `3. Partner Review`, `4. Client Signature`, `5. IRS Submission`, `6. Return Accepted`), keeping internal AI extraction stages under the hood.
+  - The active stage is highlighted with an unambiguous next action owner callout (e.g. `Next Step: Client e-Sign Form 8879`).
 
 ---
 
