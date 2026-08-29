@@ -1,5 +1,5 @@
-﻿import React, { useState } from 'react';
-import { AffordanceState } from '@/types';
+﻿import React, { useState, useEffect, useRef } from 'react';
+import { ReturnField, AffordanceState } from '@/types';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { AffordanceCell } from './AffordanceCell';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,6 @@ import {
   FileSpreadsheet,
   CheckCheck,
   Eye,
-  ShieldCheck,
   Filter,
   FileText,
   AlertCircle,
@@ -35,6 +34,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
 
   const [activeFormTab, setActiveFormTab] = useState<string>('all');
   const [filterState, setFilterState] = useState<AffordanceState | 'all'>('all');
+  const activeRowRef = useRef<HTMLTableRowElement | null>(null);
 
   // Filter fields belonging to the active return
   const returnFields = fields.filter((f) => f.returnId === selectedReturnId);
@@ -48,6 +48,37 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
     const matchesState = filterState === 'all' || f.state === filterState;
     return matchesTab && matchesState;
   });
+
+  // Group fields by financial category
+  const categoryGroups: { [key: string]: ReturnField[] } = {
+    'Income & Gross Receipts': filteredFields.filter(
+      (f) => f.category === 'income' || (!f.category && f.lineNumber.startsWith('1'))
+    ),
+    'Adjustments & Deductions': filteredFields.filter(
+      (f) => f.category === 'deductions' || f.lineNumber.startsWith('10') || f.lineNumber.startsWith('12')
+    ),
+    'Tax Liability & Payments': filteredFields.filter(
+      (f) => f.category === 'taxes' || f.category === 'credits' || f.lineNumber.startsWith('2')
+    ),
+    'Summary & Amount Owed / Refund': filteredFields.filter(
+      (f) => f.category === 'summary' || f.lineNumber.startsWith('3')
+    ),
+    'Other Schedule Line Items': filteredFields.filter(
+      (f) =>
+        f.category === 'business_expenses' ||
+        (!['income', 'deductions', 'taxes', 'credits', 'summary'].includes(f.category || '') &&
+          !f.lineNumber.startsWith('1') &&
+          !f.lineNumber.startsWith('2') &&
+          !f.lineNumber.startsWith('3'))
+    ),
+  };
+
+  // Auto-scroll to active field when selection changes
+  useEffect(() => {
+    if (activeFieldId && activeRowRef.current) {
+      activeRowRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [activeFieldId]);
 
   // Batch verify all AI-extracted fields with confidence >= 90%
   const handleVerifyAllHighConfidence = () => {
@@ -144,17 +175,17 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         </div>
       </div>
 
-      {/* Horizontal Scroll Safe Data Table */}
+      {/* Horizontal Scroll Safe Data Table with Semantic Grouping */}
       <div className="overflow-x-auto min-w-full">
-        <table className="w-full text-left border-collapse min-w-[720px]">
+        <table className="w-full text-left border-collapse min-w-[700px]">
           <thead>
             <tr className="border-b border-border bg-muted/40 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
               <th className="py-2.5 px-3 w-16 whitespace-nowrap">Line #</th>
-              <th className="py-2.5 px-3 min-w-[200px]">Description / Field Name</th>
-              <th className="py-2.5 px-3 w-32">Schedule</th>
+              <th className="py-2.5 px-3 min-w-[200px]">Description / Line Item</th>
+              <th className="py-2.5 px-3 w-28">Schedule</th>
               <th className="py-2.5 px-3 w-44">Value & Affordance</th>
               <th className="py-2.5 px-3 w-32 text-center">Source Provenance</th>
-              <th className="py-2.5 px-3 w-36 text-right whitespace-nowrap">Actions</th>
+              <th className="py-2.5 px-3 w-24 text-right whitespace-nowrap">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border text-xs font-sans">
@@ -166,114 +197,114 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                 </td>
               </tr>
             ) : (
-              filteredFields.map((field) => {
-                const isSelected = activeFieldId === field.id;
-                const hasDocs = field.sourceDocumentIds && field.sourceDocumentIds.length > 0;
-                const cleanLineNumber = field.lineNumber
-                  ? field.lineNumber.replace(/^Line\s*/i, '')
-                  : '—';
+              Object.entries(categoryGroups).map(([groupTitle, groupFields]) => {
+                if (groupFields.length === 0) return null;
 
                 return (
-                  <tr
-                    key={field.id}
-                    onClick={() => handleRowClick(field.id)}
-                    className={`transition-colors cursor-pointer hover:bg-muted/30 ${
-                      isSelected ? 'bg-primary/5 font-medium' : ''
-                    }`}
-                  >
-                    {/* Line Number without "Line" prefix */}
-                    <td className="py-2.5 px-3 font-mono font-bold text-foreground whitespace-nowrap">
-                      {cleanLineNumber}
-                    </td>
+                  <React.Fragment key={groupTitle}>
+                    {/* Category Group Header */}
+                    <tr className="bg-muted/60 border-y border-border">
+                      <td colSpan={6} className="py-1.5 px-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        {groupTitle} ({groupFields.length})
+                      </td>
+                    </tr>
 
-                    {/* Field Description */}
-                    <td className="py-2.5 px-3 text-foreground">
-                      <div className="flex items-center gap-1.5">
-                        <span className="truncate max-w-sm">{field.label}</span>
-                        {field.formula && (
-                          <span
-                            className="text-muted-foreground hover:text-foreground shrink-0"
-                            title={`Calculation Formula: ${field.formula}`}
-                          >
-                            <HelpCircle className="h-3 w-3" />
-                          </span>
-                        )}
-                      </div>
-                    </td>
+                    {/* Group Items */}
+                    {groupFields.map((field) => {
+                      const isSelected = activeFieldId === field.id;
+                      const hasDocs = field.sourceDocumentIds && field.sourceDocumentIds.length > 0;
+                      const cleanLineNumber = field.lineNumber
+                        ? field.lineNumber.replace(/^Line\s*/i, '')
+                        : '—';
 
-                    {/* Schedule Badge */}
-                    <td className="py-2.5 px-3">
-                      <Badge variant="outline" className="font-mono text-[11px] bg-muted/20 whitespace-nowrap">
-                        {field.formCode}
-                      </Badge>
-                    </td>
-
-                    {/* 5-State Affordance Cell */}
-                    <td className="py-2 px-3">
-                      <AffordanceCell
-                        field={field}
-                        isSelected={isSelected}
-                        onClick={() => handleRowClick(field.id)}
-                      />
-                    </td>
-
-                    {/* Source Document Provenance */}
-                    <td className="py-2.5 px-3 text-center whitespace-nowrap">
-                      {hasDocs ? (
-                        <span
-                          className="inline-flex items-center gap-1 px-2 py-0.5 border border-purple-200 bg-purple-50 text-purple-800 text-[11px] font-mono font-semibold"
-                          title={`Tied to ${field.sourceDocumentIds.length} source document(s)`}
-                        >
-                          <FileText className="h-3 w-3 text-purple-600" />
-                          {field.sourceDocumentIds.length} Source {field.sourceDocumentIds.length > 1 ? 'Docs' : 'Doc'}
-                        </span>
-                      ) : field.formula ? (
-                        <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-1.5 py-0.5">
-                          Calculated
-                        </span>
-                      ) : (
-                        <span className="text-[11px] text-muted-foreground">—</span>
-                      )}
-                    </td>
-
-                    {/* Quick Actions */}
-                    <td className="py-2.5 px-3 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRowClick(field.id);
-                          }}
-                          className={`h-7 px-2 text-xs gap-1 ${
-                            isSelected
-                              ? 'bg-primary text-primary-foreground border-primary font-bold'
-                              : 'text-foreground hover:bg-muted/50 border-border'
+                      return (
+                        <tr
+                          key={field.id}
+                          ref={isSelected ? activeRowRef : null}
+                          onClick={() => handleRowClick(field.id)}
+                          className={`transition-colors cursor-pointer hover:bg-muted/30 ${
+                            isSelected ? 'bg-primary/10 font-medium' : ''
                           }`}
-                          title="Inspect AI Explainability & Source Document"
                         >
-                          <Eye className="h-3.5 w-3.5" />
-                          <span>Review</span>
-                        </Button>
+                          {/* Line Number without "Line" prefix */}
+                          <td className="py-2 px-3 font-mono font-bold text-foreground whitespace-nowrap">
+                            {cleanLineNumber}
+                          </td>
 
-                        {field.state === 'ai_extracted' && isReviewerOrPreparer && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              verifyField(field.id);
-                            }}
-                            className="h-7 w-7 p-0 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
-                            title="1-Click Verify"
-                          >
-                            <ShieldCheck className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
+                          {/* Field Description */}
+                          <td className="py-2 px-3 text-foreground">
+                            <div className="flex items-center gap-1.5">
+                              <span className="truncate max-w-sm">{field.label}</span>
+                              {field.formula && (
+                                <span
+                                  className="text-muted-foreground hover:text-foreground shrink-0"
+                                  title={`Calculation Formula: ${field.formula}`}
+                                >
+                                  <HelpCircle className="h-3 w-3" />
+                                </span>
+                              )}
+                            </div>
+                          </td>
+
+                          {/* Schedule Badge */}
+                          <td className="py-2 px-3">
+                            <Badge variant="outline" className="font-mono text-[10px] bg-muted/20 whitespace-nowrap">
+                              {field.formCode}
+                            </Badge>
+                          </td>
+
+                          {/* 5-State Affordance Cell */}
+                          <td className="py-1.5 px-3">
+                            <AffordanceCell
+                              field={field}
+                              isSelected={isSelected}
+                              onClick={() => handleRowClick(field.id)}
+                            />
+                          </td>
+
+                          {/* Source Document Provenance */}
+                          <td className="py-2 px-3 text-center whitespace-nowrap">
+                            {hasDocs ? (
+                              <span
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 border border-purple-200 bg-purple-50 text-purple-800 text-[10px] font-mono font-semibold"
+                                title={`Tied to ${field.sourceDocumentIds.length} source document(s)`}
+                              >
+                                <FileText className="h-3 w-3 text-purple-600" />
+                                {field.sourceDocumentIds.length} Source {field.sourceDocumentIds.length > 1 ? 'Docs' : 'Doc'}
+                              </span>
+                            ) : field.formula ? (
+                              <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-1 py-0.5">
+                                Formula
+                              </span>
+                            ) : (
+                              <span className="text-[10px] text-muted-foreground">—</span>
+                            )}
+                          </td>
+
+                          {/* ONLY ONE ACTION: Review */}
+                          <td className="py-2 px-3 text-right whitespace-nowrap">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRowClick(field.id);
+                              }}
+                              className={`h-6 px-2 text-[11px] gap-1 ${
+                                isSelected
+                                  ? 'bg-primary text-primary-foreground border-primary font-bold'
+                                  : 'text-foreground hover:bg-muted/50 border-border'
+                              }`}
+                              title="Inspect AI Explainability & Source Document"
+                            >
+                              <Eye className="h-3 w-3" />
+                              <span>Review</span>
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </React.Fragment>
                 );
               })
             )}
@@ -283,7 +314,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
 
       {/* Table Footer Summary */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-muted/20 p-2.5 text-xs text-muted-foreground font-mono">
-        <span>Showing {filteredFields.length} of {returnFields.length} schedule lines</span>
+        <span>Showing {filteredFields.length} schedule lines across {Object.keys(categoryGroups).length} categories</span>
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1">
             <span className="h-2 w-2 bg-purple-500 inline-block" /> AI-Extracted

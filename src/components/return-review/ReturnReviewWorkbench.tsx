@@ -32,9 +32,9 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
     selectDocument,
   } = usePlatformStore();
 
-  // Side-by-side inspection panel state: opens only on click
-  const [isSidePanelOpen, setIsSidePanelOpen] = useState<boolean>(false);
-  const [rightPaneTab, setRightPaneTab] = useState<'document' | 'explainability'>('document');
+  // Full-height inspection drawer state: opens on click and covers navbar
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [activeDrawerTab, setActiveDrawerTab] = useState<'document' | 'explainability'>('document');
 
   // Active return resolution
   const activeReturn =
@@ -48,12 +48,16 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
   const urgencyStyle = getUrgencyBadgeStyle(urgency);
 
   const handleOpenInspection = () => {
-    setIsSidePanelOpen(true);
+    setIsDrawerOpen(true);
+  };
+
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false);
   };
 
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* Return Context Header Banner (Zero 3-option toggle clutter) */}
+      {/* Return Context Header Banner */}
       <div className="border border-border bg-card p-4 flex flex-wrap items-center justify-between gap-4 shadow-xs">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center bg-primary text-primary-foreground font-bold">
@@ -101,39 +105,81 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
         </div>
       </div>
 
-      {/* Dynamic Layout: Full-Width by default, squeezes left table when inspection drawer opens on right */}
-      <div className="flex flex-col xl:flex-row gap-4 items-start w-full">
-        {/* Left Pane: Tax Return Grid (Squeezes smoothly with horizontal container scroll when panel opens) */}
-        <div className={`transition-all duration-200 w-full ${isSidePanelOpen ? 'xl:flex-1 xl:min-w-0 overflow-hidden' : 'w-full'}`}>
-          <TaxFormViewer onOpenInspection={handleOpenInspection} />
-        </div>
+      {/* Main Full-Width Schedule Grid */}
+      <div className="w-full">
+        <TaxFormViewer onOpenInspection={handleOpenInspection} />
+      </div>
 
-        {/* Right Pane: Source Document Traceability & AI Explainability Drawer (Shown ONLY when clicking Review/Inspect) */}
-        {isSidePanelOpen && (
-          <div className="w-full xl:w-[520px] 2xl:w-[580px] shrink-0 border border-border bg-card shadow-md flex flex-col transition-all duration-200">
-            {/* Drawer Header with Close Button */}
-            <div className="flex items-center justify-between border-b border-border bg-muted/40 p-2.5">
+      {/* Full-Height Document Inspection Drawer (Covers Navbar: z-50 h-screen fixed) */}
+      {isDrawerOpen && (
+        <>
+          {/* Backdrop Blur */}
+          <div
+            onClick={handleCloseDrawer}
+            className="fixed inset-0 bg-slate-950/40 backdrop-blur-xs z-50 transition-opacity"
+            aria-label="Close document drawer overlay"
+          />
+
+          {/* Full-Height Drawer */}
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="drawer-title"
+            className="fixed inset-y-0 right-0 z-50 h-screen w-full sm:w-[620px] lg:w-[700px] xl:w-[780px] bg-card border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
+          >
+            {/* Immersive Dark / Primary Drawer Header */}
+            <div className="bg-slate-900 text-white p-3.5 flex items-center justify-between border-b border-slate-800 shrink-0">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex h-7 w-7 items-center justify-center bg-primary text-primary-foreground font-bold">
+                  <FileText className="h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <h3 id="drawer-title" className="text-xs font-bold tracking-tight truncate text-white">
+                    Source Document Traceability & AI Defensibility
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-mono truncate">
+                    {activeReturn?.taxpayerName} • Tax Year {activeReturn?.taxYear}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                {/* Close Button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCloseDrawer}
+                  className="h-8 w-8 p-0 text-slate-300 hover:text-white hover:bg-slate-800"
+                  title="Close inspection panel (Esc)"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Tab Navigation Toolbar */}
+            <div className="flex items-center justify-between border-b border-border bg-muted/40 p-2 shrink-0">
               <div className="flex items-center gap-1.5">
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setRightPaneTab('document')}
-                  className={`h-7 px-2.5 text-xs font-semibold gap-1.5 border ${
-                    rightPaneTab === 'document'
+                  onClick={() => setActiveDrawerTab('document')}
+                  className={`h-7 px-3 text-xs font-semibold gap-1.5 border ${
+                    activeDrawerTab === 'document'
                       ? 'bg-card text-foreground border-border shadow-2xs font-bold'
                       : 'text-muted-foreground border-transparent hover:border-border'
                   }`}
                 >
                   <FileText className="h-3.5 w-3.5 text-primary" />
-                  Source Traceability ({returnDocs.length})
+                  Source Document ({returnDocs.length})
                 </Button>
 
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setRightPaneTab('explainability')}
-                  className={`h-7 px-2.5 text-xs font-semibold gap-1.5 border ${
-                    rightPaneTab === 'explainability'
+                  onClick={() => setActiveDrawerTab('explainability')}
+                  className={`h-7 px-3 text-xs font-semibold gap-1.5 border ${
+                    activeDrawerTab === 'explainability'
                       ? 'bg-card text-foreground border-border shadow-2xs font-bold'
                       : 'text-muted-foreground border-transparent hover:border-border'
                   }`}
@@ -143,14 +189,15 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
                 </Button>
               </div>
 
-              <div className="flex items-center gap-2">
-                {/* Document Selector in Tab */}
-                {rightPaneTab === 'document' && (
+              {/* Source Document Picker */}
+              {activeDrawerTab === 'document' && (
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] text-muted-foreground font-medium hidden sm:inline">File:</span>
                   <select
                     aria-label="Select source document to inspect"
                     value={activeDocumentId || ''}
                     onChange={(e) => selectDocument(e.target.value)}
-                    className="h-7 bg-card border border-border px-2 text-xs font-medium text-foreground focus:outline-none max-w-[140px] truncate"
+                    className="h-7 bg-card border border-border px-2 text-xs font-medium text-foreground focus:outline-none max-w-[180px] sm:max-w-[220px] truncate"
                   >
                     {returnDocs.map((d) => (
                       <option key={d.id} value={d.id}>
@@ -158,35 +205,24 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
                       </option>
                     ))}
                   </select>
-                )}
-
-                {/* Close Drawer Button */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsSidePanelOpen(false)}
-                  className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                  title="Close inspection panel and return to full-width table"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
+                </div>
+              )}
             </div>
 
-            {/* Drawer Body Content */}
-            <div className="p-3 space-y-3">
-              {rightPaneTab === 'document' ? (
+            {/* Scrollable Drawer Body Content */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {activeDrawerTab === 'document' ? (
                 <DocumentViewer />
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <AIExplainabilityCard />
                   {activeField?.formula && <FormulaBreakdown field={activeField} />}
                 </div>
               )}
             </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 };
