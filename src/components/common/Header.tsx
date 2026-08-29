@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { UserRoleType } from '@/types';
 import { Badge } from '@/components/ui/badge';
@@ -34,7 +34,14 @@ export const Header: React.FC = () => {
     ? 'personal_return'
     : currentUser.role;
 
-  const activeReturn = returns.find((r) => r.id === selectedReturnId);
+  const activeReturn =
+    currentUser.role === 'individual_client'
+      ? returns.find((r) =>
+          currentUser.isPersonalReturnView
+            ? r.id === 'ret-bruce-1040'
+            : r.id === 'ret-tony-1040'
+        )
+      : returns.find((r) => r.id === selectedReturnId);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background shadow-2xs">
