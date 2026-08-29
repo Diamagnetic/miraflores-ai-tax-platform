@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import {
-  AlertTriangle,
   ArrowRight,
   Clock,
   User,
@@ -169,12 +168,6 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                         <div className="space-y-1 max-w-sm">
                           <div className="flex items-center gap-1.5">
                             {getNextActionBadge(ret.nextActionOwner)}
-                            {isBlocked && (
-                              <span className="flex items-center gap-0.5 text-rose-600 dark:text-rose-400 text-[10px] font-bold">
-                                <AlertTriangle className="h-3 w-3 shrink-0" />
-                                <span>Blocked</span>
-                              </span>
-                            )}
                           </div>
                           <p className="text-[11px] text-foreground font-medium line-clamp-2 leading-tight">
                             {ret.blockerReason || ret.nextActionDescription || 'Review Form 1040 line items'}
