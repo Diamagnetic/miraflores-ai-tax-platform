@@ -9,8 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   FileSpreadsheet,
-  FileText,
-  Sparkles,
   X,
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
@@ -131,7 +129,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
         <TaxFormViewer onOpenInspection={handleOpenInspection} />
       </div>
 
-      {/* Full-Height Document Inspection Drawer (Portaled to document.body) */}
+      {/* Clean Full-Height Drawer (Portaled to document.body: renders ONLY the document/explainability with zero extra wrapper divs) */}
       {isDrawerOpen &&
         typeof document !== 'undefined' &&
         createPortal(
@@ -147,89 +145,38 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
             <div
               role="dialog"
               aria-modal="true"
-              aria-labelledby="drawer-title"
+              aria-labelledby="drawer-content"
               className="fixed top-0 bottom-0 right-0 z-50 h-screen w-full sm:w-[640px] lg:w-[740px] xl:w-[820px] bg-card border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
             >
-              {/* Clean Drawer Header: Document Name & Taxpayer Owner */}
-              <div className="bg-slate-900 text-white p-3.5 flex items-center justify-between border-b border-slate-800 shrink-0">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="flex h-7 w-7 items-center justify-center bg-primary text-primary-foreground font-bold shrink-0">
-                    {activeDrawerTab === 'document' ? (
-                      <FileText className="h-4 w-4" />
-                    ) : (
-                      <Sparkles className="h-4 w-4" />
-                    )}
+              {activeDrawerTab === 'document' ? (
+                <DocumentViewer
+                  document={activeDoc}
+                  onClose={handleCloseDrawer}
+                  className="h-full border-0 shadow-none"
+                />
+              ) : (
+                <div className="h-full flex flex-col bg-card overflow-y-auto">
+                  {/* Clean Minimal Header for Explainability */}
+                  <div className="flex items-center justify-between border-b border-border bg-muted/40 p-3 shrink-0">
+                    <span className="font-bold text-xs text-foreground">
+                      AI Explainability & Defensibility
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCloseDrawer}
+                      className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                      title="Close panel (Esc)"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <div className="min-w-0">
-                    <h3 id="drawer-title" className="text-xs font-bold tracking-tight truncate text-white">
-                      {activeDrawerTab === 'document'
-                        ? activeDoc?.fileName || 'Source Document'
-                        : `${activeField?.formCode || 'Form 1040'} ${activeField?.lineNumber || ''}: ${activeField?.label || 'AI Explainability'}`}
-                    </h3>
-                    <p className="text-[11px] text-slate-400 font-mono truncate">
-                      {activeReturn?.taxpayerName} • {activeDoc?.vendor || 'Tax Workpapers'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  {/* Close Button */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleCloseDrawer}
-                    className="h-8 w-8 p-0 text-slate-300 hover:text-white hover:bg-slate-800"
-                    title="Close inspection panel (Esc)"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Tab Switcher Toolbar */}
-              <div className="flex items-center justify-between border-b border-border bg-muted/40 p-2 shrink-0">
-                <div className="flex items-center gap-1.5">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setActiveDrawerTab('document')}
-                    className={`h-7 px-3 text-xs font-semibold gap-1.5 border ${
-                      activeDrawerTab === 'document'
-                        ? 'bg-card text-foreground border-border shadow-2xs font-bold'
-                        : 'text-muted-foreground border-transparent hover:border-border'
-                    }`}
-                  >
-                    <FileText className="h-3.5 w-3.5 text-primary" />
-                    Source Document
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setActiveDrawerTab('explainability')}
-                    className={`h-7 px-3 text-xs font-semibold gap-1.5 border ${
-                      activeDrawerTab === 'explainability'
-                        ? 'bg-card text-foreground border-border shadow-2xs font-bold'
-                        : 'text-muted-foreground border-transparent hover:border-border'
-                    }`}
-                  >
-                    <Sparkles className="h-3.5 w-3.5 text-purple-600" />
-                    AI Explainability
-                  </Button>
-                </div>
-              </div>
-
-              {/* Scrollable Drawer Body */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {activeDrawerTab === 'document' ? (
-                  <DocumentViewer document={activeDoc} />
-                ) : (
-                  <div className="space-y-4">
-                    <AIExplainabilityCard field={activeField} />
+                  <div className="p-4 space-y-4 flex-1">
+                    <AIExplainabilityCard field={activeField} className="border-0 shadow-none" />
                     {activeField?.formula && <FormulaBreakdown field={activeField} />}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>,
           document.body
