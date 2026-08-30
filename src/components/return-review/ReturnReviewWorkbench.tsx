@@ -5,6 +5,7 @@ import { TaxFormViewer } from './TaxFormViewer';
 import { DocumentViewer } from '../document-viewer/DocumentViewer';
 import { AIExplainabilityCard } from '../ai-explainability/AIExplainabilityCard';
 import { FormulaBreakdown } from './FormulaBreakdown';
+import { ContextualThreadDrawer } from '../collaboration/ContextualThreadDrawer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,6 +17,7 @@ import {
   Clock,
   ShieldCheck,
   FileCheck,
+  MessageSquare,
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { getTriageUrgency, getUrgencyBadgeStyle } from '@/store/triageLogic';
@@ -31,6 +33,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
     returns,
     fields,
     documents,
+    threads,
     selectedReturnId,
     activeFieldId,
     activeDocumentId,
@@ -41,7 +44,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
 
   // Full-height inspection drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
-  const [activeDrawerTab, setActiveDrawerTab] = useState<'document' | 'explainability'>('document');
+  const [activeDrawerTab, setActiveDrawerTab] = useState<'document' | 'explainability' | 'thread'>('document');
 
   // Active return resolution
   const activeReturn =
@@ -51,11 +54,31 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
   const activeField = fields.find((f) => f.id === activeFieldId);
   const activeDoc = documents.find((d) => d.id === activeDocumentId) || documents[0];
 
+  // Resolve collaboration thread for this return / field
+  const returnThreads = threads.filter((t) => t.returnId === activeReturn?.id);
+  const activeThread =
+    (activeFieldId ? returnThreads.find((t) => t.contextId === activeFieldId) : undefined) ||
+    returnThreads[0] || {
+      id: `th-auto-${activeReturn?.id}`,
+      returnId: activeReturn?.id || 'ret-default',
+      contextType: 'return' as const,
+      contextId: activeReturn?.id || 'ret-default',
+      contextLabel: `${activeReturn?.taxpayerName || 'Return'} - Discussion & Internal Notes`,
+      status: 'open' as const,
+      messages: [],
+    };
+
+  const totalThreadMessages = returnThreads.reduce((acc, t) => acc + t.messages.length, 0);
+
   const urgency = getTriageUrgency(activeReturn?.triageScore || 0);
   const urgencyStyle = getUrgencyBadgeStyle(urgency);
   const isRefund = (activeReturn?.refundOrDueAmount || 0) >= 0;
 
-  const handleOpenInspection = (fieldId: string, initialTab: 'document' | 'explainability' = 'document', targetDocId?: string) => {
+  const handleOpenInspection = (
+    fieldId: string,
+    initialTab: 'document' | 'explainability' | 'thread' = 'document',
+    targetDocId?: string
+  ) => {
     if (targetDocId) {
       selectDocument(targetDocId);
     } else if (fieldId) {
@@ -111,7 +134,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
           </div>
         </div>
 
-        {/* Financial Metrics & Triage Score */}
+        {/* Financial Metrics, Collaboration Drawer Button & Triage Score */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="border border-border bg-muted/20 px-3 py-1.5 text-right font-mono text-xs">
             <span className="text-[10px] text-muted-foreground block uppercase">Total Income</span>
@@ -130,6 +153,16 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
           <Badge variant="outline" className={`font-mono text-xs py-1.5 px-3 border ${urgencyStyle}`}>
             Priority: {urgency}
           </Badge>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleOpenInspection('', 'thread')}
+            className="h-8 px-3 text-xs font-semibold gap-1.5 border-border shadow-2xs hover:bg-muted"
+          >
+            <MessageSquare className="h-3.5 w-3.5 text-primary" />
+            <span>Notes & Threads ({totalThreadMessages})</span>
+          </Button>
         </div>
       </div>
 
@@ -247,7 +280,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
         <TaxFormViewer onOpenInspection={handleOpenInspection} />
       </div>
 
-      {/* Clean Full-Height Drawer (Portaled to document.body: renders ONLY the document/explainability with zero extra wrapper divs) */}
+      {/* Clean Full-Height Drawer (Portaled to document.body: renders ONLY the document/explainability/thread with zero extra wrapper divs) */}
       {isDrawerOpen &&
         typeof document !== 'undefined' &&
         createPortal(
@@ -269,6 +302,12 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
               {activeDrawerTab === 'document' ? (
                 <DocumentViewer
                   document={activeDoc}
+                  onClose={handleCloseDrawer}
+                  className="h-full border-0 shadow-none"
+                />
+              ) : activeDrawerTab === 'thread' ? (
+                <ContextualThreadDrawer
+                  thread={activeThread}
                   onClose={handleCloseDrawer}
                   className="h-full border-0 shadow-none"
                 />
