@@ -1,10 +1,13 @@
-import React from 'react';
+﻿import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { SourceDocument } from '@/types';
 import { ClientMilestoneProgress } from './ClientMilestoneProgress';
 import { ClientActionBanner } from './ClientActionBanner';
 import { ClientSummaryCard } from './ClientSummaryCard';
 import { ClientDocumentUpload } from './ClientDocumentUpload';
+import { ClientRequestsWidget } from '../collaboration/ClientRequestsWidget';
+import { ContextualThreadDrawer } from '../collaboration/ContextualThreadDrawer';
 
 interface ClientPortalViewProps {
   className?: string;
@@ -16,6 +19,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
   const {
     returns,
     documents,
+    threads,
     currentUser,
     selectedReturnId,
     signClientForm8879,
@@ -23,6 +27,8 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
     toggleReturnBlocker,
     addUploadedDocument,
   } = usePlatformStore();
+
+  const [isDiscussionOpen, setIsDiscussionOpen] = useState<boolean>(false);
 
   // Resolve active return for the client
   const activeReturn =
@@ -36,6 +42,18 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
 
   // Filter documents belonging to this return
   const returnDocuments = documents.filter((d) => d.returnId === activeReturn.id);
+
+  // Resolve primary return thread or fallback
+  const activeReturnThread =
+    threads.find((t) => t.returnId === activeReturn.id) || {
+      id: `th-client-${activeReturn.id}`,
+      returnId: activeReturn.id,
+      contextType: 'return' as const,
+      contextId: activeReturn.id,
+      contextLabel: `${activeReturn.taxpayerName} - General Tax Q&A`,
+      status: 'open' as const,
+      messages: [],
+    };
 
   // E-Sign Form 8879 Handler (Authorizes signature, waiting for CPA EFIN transmission)
   const handleSignReturn = () => {
@@ -67,6 +85,13 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
     }
   };
 
+  const scrollToUpload = () => {
+    const uploadEl = document.getElementById('client-document-upload-section');
+    if (uploadEl) {
+      uploadEl.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className={`space-y-5 pb-10 ${className}`}>
       {/* 1. Centered 60% Width Return Progress Stepper */}
@@ -76,18 +101,22 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
       <ClientActionBanner
         activeReturn={activeReturn}
         onSignReturn={handleSignReturn}
-        onOpenUpload={() => {
-          const uploadEl = document.getElementById('client-document-upload-section');
-          if (uploadEl) {
-            uploadEl.scrollIntoView({ behavior: 'smooth' });
-          }
-        }}
+        onOpenUpload={scrollToUpload}
       />
 
-      {/* 3. Financial Summary Card */}
-      <ClientSummaryCard activeReturn={activeReturn} />
+      {/* 3. Client Requests Widget (CPA Inquiries & Action Requests) */}
+      <ClientRequestsWidget
+        returnId={activeReturn.id}
+        onOpenUploadForMessage={scrollToUpload}
+      />
 
-      {/* 4. Document Intake & Upload Section */}
+      {/* 4. Financial Summary Card */}
+      <ClientSummaryCard
+        activeReturn={activeReturn}
+        onOpenMessages={() => setIsDiscussionOpen(true)}
+      />
+
+      {/* 5. Document Intake & Upload Section */}
       <div id="client-document-upload-section">
         <ClientDocumentUpload
           documents={returnDocuments}
@@ -96,6 +125,31 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
           blockerReason={activeReturn.blockerReason}
         />
       </div>
+
+      {/* Slide-Over Contextual Discussion Drawer (Portaled to document.body) */}
+      {isDiscussionOpen &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div className="fixed inset-0 z-50 overflow-hidden pointer-events-auto">
+            <div
+              onClick={() => setIsDiscussionOpen(false)}
+              className="fixed inset-0 bg-slate-950/50 backdrop-blur-xs transition-opacity cursor-pointer"
+              aria-label="Close discussion overlay (Esc)"
+            />
+            <div
+              role="dialog"
+              aria-modal="true"
+              className="fixed top-0 bottom-0 right-0 z-50 h-screen w-full sm:w-[480px] md:w-[560px] bg-card border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
+            >
+              <ContextualThreadDrawer
+                thread={activeReturnThread}
+                onClose={() => setIsDiscussionOpen(false)}
+                onUploadRequestedFile={scrollToUpload}
+              />
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };
