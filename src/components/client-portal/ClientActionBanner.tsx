@@ -103,7 +103,7 @@ export const ClientActionBanner: React.FC<ClientActionBannerProps> = ({
               </p>
             </div>
           </div>
-          <Badge className="bg-primary/10 text-primary border border-primary/30 font-mono text-[10px]">
+          <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 font-mono text-[10px] hover:bg-primary/10 hover:text-primary">
             Ready to Sign
           </Badge>
         </CardHeader>
