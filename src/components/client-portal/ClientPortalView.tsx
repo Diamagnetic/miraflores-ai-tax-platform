@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { SourceDocument } from '@/types';
 import { ClientMilestoneProgress } from './ClientMilestoneProgress';
@@ -18,6 +18,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
     documents,
     currentUser,
     selectedReturnId,
+    signClientForm8879,
     updateReturnStatus,
     toggleReturnBlocker,
     addUploadedDocument,
@@ -36,9 +37,9 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
   // Filter documents belonging to this return
   const returnDocuments = documents.filter((d) => d.returnId === activeReturn.id);
 
-  // E-Sign Form 8879 Handler
+  // E-Sign Form 8879 Handler (Authorizes signature, waiting for CPA EFIN transmission)
   const handleSignReturn = () => {
-    updateReturnStatus(activeReturn.id, 'E_FILED', 'SUBMITTED_TO_IRS');
+    signClientForm8879(activeReturn.id);
   };
 
   // Upload Document Handler

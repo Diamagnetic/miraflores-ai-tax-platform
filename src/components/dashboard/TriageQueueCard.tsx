@@ -238,7 +238,19 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                           }}
                           className="h-7 w-24 text-xs font-semibold gap-1 justify-center inline-flex"
                         >
-                          <span>{isBlocked ? 'Resolve' : ret.status === 'REVIEW' ? 'Review' : ret.status === 'PREPARATION' ? 'Prepare' : 'Open'}</span>
+                          <span>
+                            {isBlocked
+                              ? 'Resolve'
+                              : ret.status === 'REVIEW'
+                              ? 'Review'
+                              : ret.status === 'PREPARATION'
+                              ? 'Prepare'
+                              : ret.status === 'CLIENT_SIGN' && ret.clientSigned
+                              ? 'Transmit'
+                              : ret.status === 'E_FILED' && ret.irsApproved
+                              ? 'Ack IRS'
+                              : 'Open'}
+                          </span>
                           <ArrowRight className="h-3 w-3 shrink-0" />
                         </Button>
                       </td>

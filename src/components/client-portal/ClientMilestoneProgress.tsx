@@ -65,15 +65,22 @@ export const ClientMilestoneProgress: React.FC<ClientMilestoneProgressProps> = (
   activeReturn,
   className = '',
 }) => {
+  const isAccepted = activeReturn.status === 'ACCEPTED' || activeReturn.clientMilestone === 'ACCEPTED';
+  const isTransmitted = activeReturn.status === 'E_FILED';
+  const isSigned = Boolean(activeReturn.clientSigned);
+
   // Determine current stage index (1 to 6)
   const currentStageIndex = (() => {
-    if (activeReturn.status === 'ACCEPTED' || activeReturn.clientMilestone === 'ACCEPTED') return 6;
-    if (activeReturn.status === 'E_FILED' || activeReturn.clientMilestone === 'SUBMITTED_TO_IRS') return 5;
+    if (isAccepted) return 6;
+    if (isTransmitted) return 6; // When CPA transmits, Stage 5 (IRS Submission) is DONE and Stage 6 (Return Accepted) is current!
+    if (isSigned) return 5; // When client signs, Stage 4 is DONE and Stage 5 (IRS Submission) is current!
     if (activeReturn.status === 'CLIENT_SIGN' || activeReturn.clientMilestone === 'READY_FOR_SIGNATURE') return 4;
     if (activeReturn.status === 'REVIEW' || activeReturn.clientMilestone === 'EXPERT_REVIEW') return 3;
     if (activeReturn.status === 'PREPARATION' || activeReturn.clientMilestone === 'PREPARATION') return 2;
     return 1;
   })();
+
+  const isAllCompleted = isAccepted;
 
   return (
     <div className={`w-full max-w-4xl mx-auto ${className}`}>
@@ -82,8 +89,8 @@ export const ClientMilestoneProgress: React.FC<ClientMilestoneProgressProps> = (
           {/* 6-Stage Progress Stepper */}
           <div className="flex items-start justify-between w-full">
             {STAGES.map((stage, index) => {
-              const isCompleted = stage.id < currentStageIndex;
-              const isCurrent = stage.id === currentStageIndex;
+              const isCompleted = isAllCompleted || stage.id < currentStageIndex;
+              const isCurrent = !isAllCompleted && stage.id === currentStageIndex;
               const isBlockedCurrent = isCurrent && activeReturn.isBlocked;
               const Icon = stage.icon;
 

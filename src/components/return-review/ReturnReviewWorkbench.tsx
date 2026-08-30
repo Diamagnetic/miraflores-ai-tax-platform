@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { TaxFormViewer } from './TaxFormViewer';
@@ -7,9 +7,15 @@ import { AIExplainabilityCard } from '../ai-explainability/AIExplainabilityCard'
 import { FormulaBreakdown } from './FormulaBreakdown';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   FileSpreadsheet,
   X,
+  Send,
+  CheckCircle2,
+  Clock,
+  ShieldCheck,
+  FileCheck,
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { getTriageUrgency, getUrgencyBadgeStyle } from '@/store/triageLogic';
@@ -29,6 +35,8 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
     activeFieldId,
     activeDocumentId,
     selectDocument,
+    transmitReturnToIrs,
+    acknowledgeIrsAcceptance,
   } = usePlatformStore();
 
   // Full-height inspection drawer state
@@ -45,6 +53,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
 
   const urgency = getTriageUrgency(activeReturn?.triageScore || 0);
   const urgencyStyle = getUrgencyBadgeStyle(urgency);
+  const isRefund = (activeReturn?.refundOrDueAmount || 0) >= 0;
 
   const handleOpenInspection = (fieldId: string, initialTab: 'document' | 'explainability' = 'document', targetDocId?: string) => {
     if (targetDocId) {
@@ -111,9 +120,9 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
 
           <div className="border border-border bg-muted/20 px-3 py-1.5 text-right font-mono text-xs">
             <span className="text-[10px] text-muted-foreground block uppercase">
-              {(activeReturn?.refundOrDueAmount || 0) >= 0 ? 'Est. Refund' : 'Tax Due'}
+              {isRefund ? 'Est. Refund' : 'Tax Due'}
             </span>
-            <strong className={(activeReturn?.refundOrDueAmount || 0) >= 0 ? 'text-emerald-700 dark:text-emerald-400 font-bold' : 'text-amber-700 dark:text-amber-400 font-bold'}>
+            <strong className={isRefund ? 'text-emerald-700 dark:text-emerald-400 font-bold' : 'text-amber-700 dark:text-amber-400 font-bold'}>
               {formatCurrency(Math.abs(activeReturn?.refundOrDueAmount || 0))}
             </strong>
           </div>
@@ -123,6 +132,115 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
           </Badge>
         </div>
       </div>
+
+      {/* CPA E-Filing & IRS Transmission Action Callout */}
+      {activeReturn && activeReturn.status === 'CLIENT_SIGN' && (
+        <Card className={`border-primary/40 bg-card shadow-xs`}>
+          <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-primary/10 text-primary shrink-0">
+                <FileCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-foreground">
+                    E-File Authorization Status
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className="bg-primary/10 text-primary border-primary/30 font-mono text-[10px]"
+                  >
+                    {activeReturn.clientSigned ? 'Form 8879 Signed by Taxpayer' : 'Awaiting Taxpayer Signature'}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {activeReturn.clientSigned
+                    ? `Taxpayer ${activeReturn.taxpayerName} has signed Form 8879. The legal authorization is locked. You may now electronically submit and transmit all return documents and schedules to the IRS MeF Gateway under the firm's EFIN.`
+                    : `Form 8879 has been prepared and sent to ${activeReturn.taxpayerName}. CPA transmission will unlock once the taxpayer signs.`}
+                </p>
+              </div>
+            </div>
+
+            {activeReturn.clientSigned && (
+              <Button
+                onClick={() => transmitReturnToIrs(activeReturn.id)}
+                className="shrink-0 h-8 px-4 text-xs font-semibold gap-1.5 bg-card text-primary border border-primary/40 shadow-xs hover:bg-primary/5 hover:border-primary/70"
+              >
+                <Send className="h-3.5 w-3.5" />
+                <span>Transmit Documents to IRS MeF Gateway</span>
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* CPA IRS Acceptance Acknowledgment Callout */}
+      {activeReturn && activeReturn.status === 'E_FILED' && (
+        <Card className={`border-sky-300 dark:border-sky-800 bg-sky-50/40 dark:bg-sky-950/20 shadow-xs`}>
+          <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-sky-100 dark:bg-sky-900/60 text-sky-700 dark:text-sky-300 shrink-0">
+                {activeReturn.irsApproved ? <CheckCircle2 className="h-5 w-5" /> : <Clock className="h-5 w-5" />}
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-sky-800 dark:text-sky-300">
+                    {activeReturn.irsApproved ? 'IRS Electronic Acceptance Received (Code 0000)' : 'Transmitted to IRS MeF Gateway'}
+                  </span>
+                  <Badge className="bg-sky-100 text-sky-800 dark:bg-sky-900/60 dark:text-sky-200 border-sky-300 font-mono text-[10px]">
+                    {activeReturn.irsApproved ? 'Ready for CPA Acknowledgment' : 'In Gateway Processing'}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {activeReturn.irsApproved
+                    ? `The IRS MeF Gateway has officially accepted ${activeReturn.taxpayerName}'s return with zero discrepancies (Submission ID: ${activeReturn.irsSubmissionId || 'IRS-2026-TX-89104'}). ${isRefund ? `Refund of ${formatCurrency(Math.abs(activeReturn.refundOrDueAmount))} approved.` : `Tax due of ${formatCurrency(Math.abs(activeReturn.refundOrDueAmount))} assessed.`} Click below to acknowledge IRS approval and notify the client.`
+                    : `CPA has submitted documents (Submission ID: ${activeReturn.irsSubmissionId || 'IRS-2026-TX-89104'}). Awaiting IRS electronic acknowledgment gateway verification.`}
+                </p>
+              </div>
+            </div>
+
+            {activeReturn.irsApproved && (
+              <Button
+                onClick={() => acknowledgeIrsAcceptance(activeReturn.id)}
+                className="shrink-0 h-8 px-4 text-xs font-semibold gap-1.5 bg-card text-emerald-700 border border-emerald-400 shadow-xs hover:bg-emerald-50 hover:border-emerald-600"
+              >
+                <ShieldCheck className="h-3.5 w-3.5" />
+                <span>Acknowledge IRS Approval & Issue Notice</span>
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* CPA Completed Filing Callout */}
+      {activeReturn && activeReturn.status === 'ACCEPTED' && (
+        <Card className={`border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/20 shadow-xs`}>
+          <CardContent className="p-4 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 shrink-0">
+                <ShieldCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                    Official IRS Filing Complete
+                  </span>
+                  <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200 border-emerald-300 font-mono text-[10px]">
+                    Accepted & Acknowledged
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Submission ID: <code className="font-mono font-bold text-foreground">{activeReturn.irsSubmissionId || 'IRS-2026-TX-89104'}</code> • IRS has verified and accepted return. {isRefund ? `Refund of ${formatCurrency(Math.abs(activeReturn.refundOrDueAmount))} scheduled for client.` : `Payment schedule for ${formatCurrency(Math.abs(activeReturn.refundOrDueAmount))} generated.`} Taxpayer {activeReturn.taxpayerName} notified.
+                </p>
+              </div>
+            </div>
+
+            <Badge variant="outline" className="font-mono text-xs bg-card">
+              Lifecycle Complete
+            </Badge>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Main Full-Width Schedule Grid */}
       <div className="w-full">

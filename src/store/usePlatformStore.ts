@@ -1,4 +1,4 @@
-﻿import { create } from 'zustand';
+import { create } from 'zustand';
 import {
   TaxReturn,
   ReturnField,
@@ -69,7 +69,7 @@ export interface PlatformStoreState {
     actionRequest?: ActionRequest
   ) => void;
 
-  // Return Management Actions
+  // Return Management & E-Filing Actions
   updateReturnStatus: (
     returnId: string,
     newStatus: ReturnStatus,
@@ -77,6 +77,9 @@ export interface PlatformStoreState {
   ) => void;
   toggleReturnBlocker: (returnId: string, blockerReason?: string) => void;
   addUploadedDocument: (doc: SourceDocument) => void;
+  signClientForm8879: (returnId: string) => void;
+  transmitReturnToIrs: (returnId: string) => void;
+  acknowledgeIrsAcceptance: (returnId: string) => void;
 
   // Filter & Search Actions
   setFilterState: (partial: Partial<FilterState>) => void;
@@ -388,6 +391,82 @@ export const usePlatformStore = create<PlatformStoreState>((set, get) => ({
     });
 
     set({ documents: updatedDocuments, returns: updatedReturns, activeDocumentId: doc.id });
+  },
+
+  signClientForm8879: (returnId) => {
+    const { returns } = get();
+    const updatedReturns = returns.map((ret) => {
+      if (ret.id !== returnId) return ret;
+      const updated: TaxReturn = {
+        ...ret,
+        clientSigned: true,
+        clientSignedAt: new Date().toISOString(),
+        clientMilestone: 'SUBMITTED_TO_IRS',
+        nextActionOwner: 'preparer',
+        nextActionDescription: 'Form 8879 Signed by Client. Ready for CPA EFIN transmission.',
+      };
+      updated.triageScore = calculateTriageScore(updated);
+      return updated;
+    });
+    set({ returns: updatedReturns });
+  },
+
+  transmitReturnToIrs: (returnId) => {
+    const { returns } = get();
+    const submissionId = `IRS-2026-TX-${Math.floor(10000 + Math.random() * 90000)}`;
+
+    const updatedReturns = returns.map((ret) => {
+      if (ret.id !== returnId) return ret;
+      const updated: TaxReturn = {
+        ...ret,
+        status: 'E_FILED',
+        clientMilestone: 'SUBMITTED_TO_IRS',
+        nextActionOwner: 'irs',
+        nextActionDescription: 'Transmitted to IRS MeF Gateway. Awaiting IRS Electronic ACK.',
+        irsSubmissionId: submissionId,
+        irsApproved: false,
+      };
+      updated.triageScore = calculateTriageScore(updated);
+      return updated;
+    });
+
+    set({ returns: updatedReturns });
+
+    // 10-second automatic IRS approval simulation (invisible background timer)
+    setTimeout(() => {
+      const currentReturns = get().returns;
+      const approvalUpdated = currentReturns.map((ret) => {
+        if (ret.id !== returnId) return ret;
+        const appUpdated: TaxReturn = {
+          ...ret,
+          irsApproved: true,
+          irsApprovedAt: new Date().toISOString(),
+          nextActionOwner: 'reviewer',
+          nextActionDescription: 'IRS Accepted (Code 0000). CPA acknowledgment required to notify client.',
+        };
+        appUpdated.triageScore = calculateTriageScore(appUpdated);
+        return appUpdated;
+      });
+      set({ returns: approvalUpdated });
+    }, 10000);
+  },
+
+  acknowledgeIrsAcceptance: (returnId) => {
+    const { returns } = get();
+    const updatedReturns = returns.map((ret) => {
+      if (ret.id !== returnId) return ret;
+      const updated: TaxReturn = {
+        ...ret,
+        status: 'ACCEPTED',
+        clientMilestone: 'ACCEPTED',
+        nextActionOwner: 'client',
+        nextActionDescription: 'Return Accepted by IRS. Filing complete.',
+        cpaAcknowledgedAt: new Date().toISOString(),
+      };
+      updated.triageScore = calculateTriageScore(updated);
+      return updated;
+    });
+    set({ returns: updatedReturns });
   },
 
   setFilterState: (partial) => {

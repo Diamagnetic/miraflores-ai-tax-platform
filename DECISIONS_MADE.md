@@ -173,3 +173,12 @@
   2. *CPA-Requested Supporting Workpapers & Blocker Resolution*: Reviewers and preparers frequently request additional substantiation (e.g. donation receipts, 1099-NEC workpapers, Section 179 vehicle logs) during review, requiring client upload access to resolve blockers.
   3. *Client Document Vault & Audit-Defense Records*: Serves as a persistent digital repository for permanent taxpayer workpapers.
 - **Rationale**: Restricting uploads strictly to intake would break real-world accounting workflows where supplemental files and amended source documents are commonplace during prep and review.
+
+### Decision 5.4: 2-Step E-File Transmission, 10s Invisible IRS Gateway Simulation, and CPA Acknowledgment Lifecycle
+- **Context**: Regulatory Treasury Circular 230 and IRS Pub 1345 rules require distinct separation between Client Form 8879 Authorization and CPA EFIN transmission, followed by IRS electronic acceptance acknowledgment.
+- **Decision**: Implemented an authentic 4-step e-filing lifecycle:
+  1. *Step 1 (Client E-Sign Form 8879)*: Taxpayer electronically authorizes Form 8879 in the Client Portal. Stage 4 marks complete with a checkmark ($\checkmark$). The return moves to `CLIENT_SIGN` with `clientSigned: true`, awaiting CPA EFIN transmission.
+  2. *Step 2 (CPA EFIN Transmission)*: The CPA reviews the authorization in the Workbench/Triage Queue and clicks `[Transmit to IRS MeF Gateway ➔]`. The return advances to `E_FILED` (`SUBMITTED_TO_IRS`), making Stage 5 active in-flight on the client portal.
+  3. *Step 3 (10-Second Invisible IRS Gateway Simulation)*: An invisible 10-second timer simulates IRS electronic processing. When approval arrives (`irsApproved: true`, Code 0000), it appears strictly to the CPA first with an action banner.
+  4. *Step 4 (CPA Acknowledgment & Client Notification)*: The CPA clicks `[Acknowledge & Notify Client of IRS Acceptance ➔]`. The return updates to `ACCEPTED`, advancing Stage 5 and Stage 6 to full completed status with green checkmarks ($\checkmark$) across both CPA and Client portals.
+- **Rationale**: Complies with IRS EFIN regulatory power-of-attorney requirements while providing an interactive, verifiable multi-persona demo loop without unnatural frontend countdown timers.

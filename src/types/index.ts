@@ -187,6 +187,12 @@ export interface TaxReturn {
   documentCount: number;
   openIssueCount: number;
   aiConfidenceAvg: number;
+  clientSigned?: boolean;
+  clientSignedAt?: string;
+  irsApproved?: boolean;
+  irsApprovedAt?: string;
+  irsSubmissionId?: string;
+  cpaAcknowledgedAt?: string;
 }
 
 export interface UserSession {
