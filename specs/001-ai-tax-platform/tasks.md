@@ -93,11 +93,11 @@
 
 **Independent Test**: As Sam Wilson (Preparer), create a "Client Question" thread on Tony Stark Schedule C Line 9 travel deduction -> Switch to Tony Stark (Client) -> Verify prominent notification banner on client dashboard with reply and upload button -> Verify internal notes from Steve Rogers are strictly invisible to client.
 
-- [ ] T031 [P] [US4] Build ThreadMessageItem component with visual internal vs. client badge and permission indicators in src/components/collaboration/ThreadMessageItem.tsx
-- [ ] T032 [P] [US4] Build ActionRequestCard component (with 1-click resolve, file attach, text response) in src/components/collaboration/ActionRequestCard.tsx
-- [ ] T033 [US4] Build ContextualThreadDrawer component attached to specific fields/documents in src/components/collaboration/ContextualThreadDrawer.tsx
-- [ ] T034 [US4] Build client-facing outstanding requests widget in src/components/collaboration/ClientRequestsWidget.tsx
-- [ ] T035 [US4] Record contextual collaboration and permission boundary decisions in DECISIONS.md
+- [X] T031 [P] [US4] Build ThreadMessageItem component with visual internal vs. client badge and permission indicators in src/components/collaboration/ThreadMessageItem.tsx
+- [X] T032 [P] [US4] Build ActionRequestCard component (with 1-click resolve, file attach, text response) in src/components/collaboration/ActionRequestCard.tsx
+- [X] T033 [US4] Build ContextualThreadDrawer component attached to specific fields/documents in src/components/collaboration/ContextualThreadDrawer.tsx
+- [X] T034 [US4] Build client-facing outstanding requests widget in src/components/collaboration/ClientRequestsWidget.tsx
+- [X] T035 [US4] Record contextual collaboration and permission boundary decisions in DECISIONS.md
 
 **Checkpoint**: User Story 4 is functional with verified client/firm privacy isolation.
 

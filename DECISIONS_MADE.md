@@ -182,3 +182,21 @@
   3. *Step 3 (10-Second Invisible IRS Gateway Simulation)*: An invisible 10-second timer simulates IRS electronic processing. When approval arrives (`irsApproved: true`, Code 0000), it appears strictly to the CPA first with an action banner.
   4. *Step 4 (CPA Acknowledgment & Client Notification)*: The CPA clicks `[Acknowledge & Notify Client of IRS Acceptance ➔]`. The return updates to `ACCEPTED`, advancing Stage 5 and Stage 6 to full completed status with green checkmarks ($\checkmark$) across both CPA and Client portals.
 - **Rationale**: Complies with IRS EFIN regulatory power-of-attorney requirements while providing an interactive, verifiable multi-persona demo loop without unnatural frontend countdown timers.
+
+## Phase 6 Decisions: Contextual Collaboration & Privacy Boundaries
+
+### Decision 6.1: Strict Internal Firm Note vs. Client-Facing Communication Isolation
+- **Context**: Tax preparers and reviewers need to exchange raw calculations, audit risk notes, and IRC citations without exposing internal deliberations to taxpayers. Conversely, client questions must be prominent, actionable, and clearly distinguished.
+- **Decision**: Built `ThreadMessageItem.tsx` and `ContextualThreadDrawer.tsx` with explicit privacy scopes:
+  1. *Internal Firm Notes* (Amber Banner & Lock Icon): Visible strictly to CPA Preparers (`tax_preparer`) and Reviewers (`tax_reviewer`). If an individual client (`individual_client`) views the thread or return, internal notes are completely filtered out and never rendered into the DOM.
+  2. *Client Questions & Inquiries* (Blue/Sky Banner & Globe Icon): Visible to both firm staff and taxpayers, enabling threaded discussions directly attached to returns, fields, or source documents.
+- **Rationale**: Eliminates client confusion and liability risks by preventing internal reviewer critiques and IRC risk analyses from leaking to taxpayers.
+
+### Decision 6.2: Action-Oriented Request Cards with Direct Inline Resolution
+- **Context**: Tax inquiries frequently require discrete client actions (uploading receipts, clarifying numeric deductions, or confirming yes/no questions).
+- **Decision**: Built `ActionRequestCard.tsx` and `ClientRequestsWidget.tsx` supporting 4 actionable interaction types:
+  1. `upload_document`: Triggers immediate file dropzone upload with automatic blocker resolution.
+  2. `clarify_number`: In-line text / figure entry with instant submit.
+  3. `confirm_yes_no`: 1-click confirmation buttons.
+  4. `e_sign`: 1-click electronic acknowledgement.
+- **Rationale**: Replaces open-ended email threads with structured, 1-click resolvable tasks that directly update the return state.
