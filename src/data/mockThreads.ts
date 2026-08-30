@@ -1,6 +1,46 @@
-﻿import { CollaborationThread } from '@/types';
+import { CollaborationThread } from '@/types';
 
 export const mockThreads: CollaborationThread[] = [
+  {
+    id: 'th-tony-general',
+    returnId: 'ret-tony-1040',
+    contextType: 'return',
+    contextId: 'ret-tony-1040',
+    contextLabel: 'Tony Stark (Form 1040): Return Notes & Team Collaboration',
+    status: 'open',
+    messages: [
+      {
+        id: 'msg-tg-1',
+        threadId: 'th-tony-general',
+        senderId: 'prep-sam-wilson',
+        senderName: 'Sam Wilson',
+        senderRole: 'tax_preparer',
+        timestamp: '2026-02-11T10:00:00Z',
+        content: 'Hi Tony! Welcome to your 2025 Form 1040 portal. We have ingested your Morgan Stanley 1099s and Stark Industries W-2s. Please let us know here if you have any questions during preparation.',
+        isInternalFirmOnly: false,
+      },
+      {
+        id: 'msg-tg-2',
+        threadId: 'th-tony-general',
+        senderId: 'client-tony-stark',
+        senderName: 'Tony Stark',
+        senderRole: 'individual_client',
+        timestamp: '2026-02-11T14:15:00Z',
+        content: 'Thanks Sam. Reviewing the summary now. Let me know if you need the supplemental K-1 from the clean energy fund.',
+        isInternalFirmOnly: false,
+      },
+      {
+        id: 'msg-tg-3',
+        threadId: 'th-tony-general',
+        senderId: 'rev-steve-rogers',
+        senderName: 'Steve Rogers',
+        senderRole: 'tax_reviewer',
+        timestamp: '2026-02-12T09:30:00Z',
+        content: 'Partner review checklist started. High AGI compliance flags verified against 2024 prior year return.',
+        isInternalFirmOnly: true,
+      },
+    ],
+  },
   {
     id: 'th-tony-01',
     returnId: 'ret-tony-1040',
@@ -91,7 +131,7 @@ export const mockThreads: CollaborationThread[] = [
     returnId: 'ret-wakanda-1065',
     contextType: 'return',
     contextId: 'ret-wakanda-1065',
-    contextLabel: 'Wakanda Tech & Design LLC - 150+ Receipt Audit',
+    contextLabel: 'Wakanda Tech & Design LLC - Form 1065 Partnership Return',
     status: 'open',
     messages: [
       {
@@ -111,8 +151,8 @@ export const mockThreads: CollaborationThread[] = [
     returnId: 'ret-bruce-1040',
     contextType: 'return',
     contextId: 'ret-bruce-1040',
-    contextLabel: 'Bruce Banner - 2025 Form 1040 Signature Ready',
-    status: 'waiting_client',
+    contextLabel: 'Bruce Banner - Form 1040 Client Consultation',
+    status: 'open',
     messages: [
       {
         id: 'msg-b-1',
@@ -121,15 +161,9 @@ export const mockThreads: CollaborationThread[] = [
         senderName: 'Steve Rogers',
         senderRole: 'tax_reviewer',
         timestamp: '2026-02-12T16:30:00Z',
-        content: 'Dr. Banner, your federal return has passed senior partner review. Total refund is $2,450. Please review and electronically sign Form 8879.',
+        content: 'Dr. Banner, your federal return calculations are finalized with an estimated refund of $14,280. When ready, please review your summary and authorize Form 8879.',
         isInternalFirmOnly: false,
-        actionRequest: {
-          type: 'e_sign',
-          description: 'Review Form 1040 summary and click e-Sign Form 8879.',
-          isCompleted: false,
-        },
       },
     ],
   },
 ];
-

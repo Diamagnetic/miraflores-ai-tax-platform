@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { Header } from '@/components/common/Header';
 import { ReturnReviewWorkbench } from '@/components/return-review/ReturnReviewWorkbench';
@@ -10,6 +10,7 @@ import { LayoutDashboard, FileSpreadsheet, ArrowLeft } from 'lucide-react';
 export default function App() {
   const { currentUser, returns, selectedReturnId } = usePlatformStore();
   const [activeStaffView, setActiveStaffView] = useState<'dashboard' | 'workbench'>('dashboard');
+  const [isClientDiscussionOpen, setIsClientDiscussionOpen] = useState<boolean>(false);
 
   const isStaff =
     currentUser.role === 'tax_preparer' || currentUser.role === 'tax_reviewer';
@@ -24,7 +25,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans">
-      <Header isWorkbench={isWorkbench} />
+      <Header
+        isWorkbench={isWorkbench}
+        onOpenClientMessages={() => setIsClientDiscussionOpen(true)}
+      />
 
       {/* Staff View Navigation Bar */}
       {isStaff && (
@@ -81,7 +85,11 @@ export default function App() {
             <ReturnReviewWorkbench />
           )
         ) : (
-          <ClientPortalView />
+          <ClientPortalView
+            isDiscussionOpen={isClientDiscussionOpen}
+            onOpenDiscussion={() => setIsClientDiscussionOpen(true)}
+            onCloseDiscussion={() => setIsClientDiscussionOpen(false)}
+          />
         )}
       </main>
     </div>

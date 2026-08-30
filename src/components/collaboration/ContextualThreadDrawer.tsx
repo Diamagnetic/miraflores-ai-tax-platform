@@ -81,14 +81,26 @@ export const ContextualThreadDrawer: React.FC<ContextualThreadDrawerProps> = ({
           </div>
           <div className="min-w-0">
             <h3 className="text-xs font-bold text-foreground truncate" title={thread.contextLabel}>
-              {thread.contextLabel}
+              {isClient
+                ? thread.contextType === 'return'
+                  ? 'Discussion with Your CPA Team'
+                  : thread.contextLabel
+                : thread.contextLabel}
             </h3>
             <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono mt-0.5">
-              <span className="uppercase font-semibold">{thread.contextType} Thread</span>
-              <span>•</span>
-              <Badge variant="outline" className="text-[9px] py-0 px-1 font-mono">
-                {thread.status.replace('_', ' ')}
-              </Badge>
+              {isClient ? (
+                <Badge variant="outline" className="text-[9px] py-0 px-1.5 font-mono text-emerald-700 dark:text-emerald-400 border-emerald-300">
+                  Active Conversation
+                </Badge>
+              ) : (
+                <>
+                  <span className="uppercase font-semibold">{thread.contextType} Thread</span>
+                  <span>•</span>
+                  <Badge variant="outline" className="text-[9px] py-0 px-1 font-mono">
+                    {thread.status.replace('_', ' ')}
+                  </Badge>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -222,16 +234,12 @@ export const ContextualThreadDrawer: React.FC<ContextualThreadDrawerProps> = ({
             className="w-full p-2 bg-background border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
           />
 
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-muted-foreground font-mono">
-              Posting as <strong>{currentUser.name}</strong>
-            </span>
-
+          <div className="w-full flex items-center justify-end pt-1">
             <Button
               type="submit"
               size="sm"
               disabled={!messageText.trim()}
-              className="h-7 px-3 text-xs font-semibold gap-1 bg-card text-primary border border-primary/40 shadow-xs hover:bg-primary/5 hover:border-primary/70"
+              className="ml-auto h-7 px-3 text-xs font-semibold gap-1.5 bg-card text-primary border border-primary/40 shadow-xs hover:bg-primary/5 hover:border-primary/70"
             >
               <Send className="h-3 w-3" />
               <span>Send Message</span>

@@ -4,8 +4,6 @@ import { Badge } from '@/components/ui/badge';
 import { ActionRequestCard } from './ActionRequestCard';
 import {
   Lock,
-  Globe,
-  User,
   ShieldCheck,
   Briefcase,
 } from 'lucide-react';
@@ -50,12 +48,7 @@ export const ThreadMessageItem: React.FC<ThreadMessageItemProps> = ({
         );
       case 'individual_client':
       default:
-        return (
-          <Badge variant="outline" className="text-[10px] py-0 px-1.5 font-mono gap-1 text-muted-foreground">
-            <User className="h-2.5 w-2.5" />
-            <span>Client</span>
-          </Badge>
-        );
+        return null;
     }
   };
 
@@ -84,16 +77,11 @@ export const ThreadMessageItem: React.FC<ThreadMessageItemProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Privacy Scope Badge */}
-          {isInternal ? (
+          {/* Privacy Scope Badge: Only for internal firm notes */}
+          {isInternal && (
             <Badge className="bg-amber-100 text-amber-900 dark:bg-amber-900/60 dark:text-amber-200 border-amber-300 font-mono text-[9px] gap-1 py-0">
               <Lock className="h-2.5 w-2.5" />
-              <span>Internal Firm Note (Client Hidden)</span>
-            </Badge>
-          ) : (
-            <Badge className="bg-sky-100 text-sky-900 dark:bg-sky-950 dark:text-sky-200 border-sky-300 font-mono text-[9px] gap-1 py-0">
-              <Globe className="h-2.5 w-2.5 text-sky-600" />
-              <span>Client-Visible Message</span>
+              <span>Internal Firm Note</span>
             </Badge>
           )}
 

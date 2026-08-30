@@ -1,7 +1,8 @@
-﻿import React from 'react';
+import React from 'react';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { UserRoleType } from '@/types';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Sparkles,
   UserCheck,
@@ -10,13 +11,18 @@ import {
   Building2,
   Briefcase,
   AlertTriangle,
+  MessageSquare,
 } from 'lucide-react';
 
 interface HeaderProps {
   isWorkbench?: boolean;
+  onOpenClientMessages?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ isWorkbench = false }) => {
+export const Header: React.FC<HeaderProps> = ({
+  isWorkbench = false,
+  onOpenClientMessages,
+}) => {
   const {
     currentUser,
     setRole,
@@ -46,6 +52,8 @@ export const Header: React.FC<HeaderProps> = ({ isWorkbench = false }) => {
             : r.id === 'ret-tony-1040'
         )
       : returns.find((r) => r.id === selectedReturnId);
+
+  const isClient = currentUser.role === 'individual_client';
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background shadow-2xs">
@@ -94,8 +102,21 @@ export const Header: React.FC<HeaderProps> = ({ isWorkbench = false }) => {
           </div>
         </div>
 
-        {/* Right: Role Switcher & Persona Selector */}
+        {/* Right: Client Messages Trigger & Role Switcher */}
         <div className="flex items-center gap-3">
+          {isClient && onOpenClientMessages && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onOpenClientMessages}
+              className="h-8 px-3 text-xs font-semibold gap-1.5 border-border shadow-2xs hover:bg-muted"
+            >
+              <MessageSquare className="h-3.5 w-3.5 text-primary" />
+              <span className="hidden sm:inline">Ask CPA a Question</span>
+              <span className="sm:hidden">Messages</span>
+            </Button>
+          )}
+
           <div className="flex items-center gap-2 border border-border bg-card p-1">
             <div className="flex items-center gap-1.5 pl-2 pr-1 text-xs font-medium text-foreground">
               {currentUser.role === 'tax_reviewer' ? (

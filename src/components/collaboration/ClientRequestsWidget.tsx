@@ -84,7 +84,7 @@ export const ClientRequestsWidget: React.FC<ClientRequestsWidgetProps> = ({
                     <span>Context: {thread.contextLabel}</span>
                   </div>
                   <p className="text-xs text-foreground font-medium">
-                    "{message.content}"
+                    {message.content}
                   </p>
                   {message.actionRequest && (
                     <ActionRequestCard

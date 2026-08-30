@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Upload,
   CheckCircle2,
-  FileQuestion,
+  AlertCircle,
   Check,
   X,
   Send,
@@ -79,7 +79,7 @@ export const ActionRequestCard: React.FC<ActionRequestCardProps> = ({
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-start gap-2">
           <div className="p-1 bg-sky-100 dark:bg-sky-900/60 text-sky-700 dark:text-sky-300 shrink-0">
-            <FileQuestion className="h-4 w-4" />
+            <AlertCircle className="h-4 w-4" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">

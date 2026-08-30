@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { TaxFormViewer } from './TaxFormViewer';
@@ -46,6 +46,22 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [activeDrawerTab, setActiveDrawerTab] = useState<'document' | 'explainability' | 'thread'>('document');
 
+  // Animation state for opening/closing workbench drawer smoothly
+  const [isRendered, setIsRendered] = useState<boolean>(isDrawerOpen);
+  const [isVisible, setIsVisible] = useState<boolean>(isDrawerOpen);
+
+  useEffect(() => {
+    if (isDrawerOpen) {
+      setIsRendered(true);
+      const timer = setTimeout(() => setIsVisible(true), 20);
+      return () => clearTimeout(timer);
+    } else {
+      setIsVisible(false);
+      const timer = setTimeout(() => setIsRendered(false), 250);
+      return () => clearTimeout(timer);
+    }
+  }, [isDrawerOpen]);
+
   // Active return resolution
   const activeReturn =
     returns.find((r) => r.id === selectedReturnId) ||
@@ -58,17 +74,18 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
   const returnThreads = threads.filter((t) => t.returnId === activeReturn?.id);
   const activeThread =
     (activeFieldId ? returnThreads.find((t) => t.contextId === activeFieldId) : undefined) ||
+    returnThreads.find((t) => t.contextType === 'return') ||
     returnThreads[0] || {
       id: `th-auto-${activeReturn?.id}`,
       returnId: activeReturn?.id || 'ret-default',
       contextType: 'return' as const,
       contextId: activeReturn?.id || 'ret-default',
-      contextLabel: `${activeReturn?.taxpayerName || 'Return'} - Discussion & Internal Notes`,
+      contextLabel: `${activeReturn?.taxpayerName || 'Return'} (Form ${activeReturn?.returnType || '1040'}): Return Notes & Team Collaboration`,
       status: 'open' as const,
       messages: [],
     };
 
-  const totalThreadMessages = returnThreads.reduce((acc, t) => acc + t.messages.length, 0);
+  const openThreadMessageCount = activeThread.messages.length;
 
   const urgency = getTriageUrgency(activeReturn?.triageScore || 0);
   const urgencyStyle = getUrgencyBadgeStyle(urgency);
@@ -161,7 +178,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
             className="h-8 px-3 text-xs font-semibold gap-1.5 border-border shadow-2xs hover:bg-muted"
           >
             <MessageSquare className="h-3.5 w-3.5 text-primary" />
-            <span>Notes & Threads ({totalThreadMessages})</span>
+            <span>Notes & Threads ({openThreadMessageCount})</span>
           </Button>
         </div>
       </div>
@@ -280,15 +297,17 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
         <TaxFormViewer onOpenInspection={handleOpenInspection} />
       </div>
 
-      {/* Clean Full-Height Drawer (Portaled to document.body: renders ONLY the document/explainability/thread with zero extra wrapper divs) */}
-      {isDrawerOpen &&
+      {/* Clean Full-Height Drawer (Portaled to document.body with smooth left-to-right slide exit) */}
+      {isRendered &&
         typeof document !== 'undefined' &&
         createPortal(
           <div className="fixed inset-0 z-50 overflow-hidden pointer-events-auto">
             {/* Backdrop Blur */}
             <div
               onClick={handleCloseDrawer}
-              className="fixed inset-0 bg-slate-950/50 backdrop-blur-xs transition-opacity cursor-pointer"
+              className={`fixed inset-0 bg-slate-950/50 backdrop-blur-xs transition-opacity duration-250 ease-in-out cursor-pointer ${
+                isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
               aria-label="Close document drawer overlay (Esc)"
             />
 
@@ -297,7 +316,9 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
               role="dialog"
               aria-modal="true"
               aria-labelledby="drawer-content"
-              className="fixed top-0 bottom-0 right-0 z-50 h-screen w-full sm:w-[640px] lg:w-[740px] xl:w-[820px] bg-card border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
+              className={`fixed top-0 bottom-0 right-0 z-50 h-screen w-full sm:w-[640px] lg:w-[740px] xl:w-[820px] bg-card border-l border-border shadow-2xl flex flex-col transition-transform duration-250 ease-in-out transform ${
+                isVisible ? 'translate-x-0' : 'translate-x-full'
+              }`}
             >
               {activeDrawerTab === 'document' ? (
                 <DocumentViewer

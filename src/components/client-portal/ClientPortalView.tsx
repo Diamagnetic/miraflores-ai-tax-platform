@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { SourceDocument } from '@/types';
@@ -10,10 +10,16 @@ import { ClientRequestsWidget } from '../collaboration/ClientRequestsWidget';
 import { ContextualThreadDrawer } from '../collaboration/ContextualThreadDrawer';
 
 interface ClientPortalViewProps {
+  isDiscussionOpen?: boolean;
+  onOpenDiscussion?: () => void;
+  onCloseDiscussion?: () => void;
   className?: string;
 }
 
 export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
+  isDiscussionOpen: propIsDiscussionOpen,
+  onOpenDiscussion,
+  onCloseDiscussion,
   className = '',
 }) => {
   const {
@@ -28,7 +34,53 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
     addUploadedDocument,
   } = usePlatformStore();
 
-  const [isDiscussionOpen, setIsDiscussionOpen] = useState<boolean>(false);
+  const [localIsDiscussionOpen, setLocalIsDiscussionOpen] = useState<boolean>(false);
+
+  const isDiscussionOpen =
+    propIsDiscussionOpen !== undefined ? propIsDiscussionOpen : localIsDiscussionOpen;
+
+  // Animation state for opening/closing drawer smoothly
+  const [isRendered, setIsRendered] = useState<boolean>(isDiscussionOpen);
+  const [isVisible, setIsVisible] = useState<boolean>(isDiscussionOpen);
+
+  useEffect(() => {
+    if (isDiscussionOpen) {
+      setIsRendered(true);
+      const timer = setTimeout(() => setIsVisible(true), 20);
+      return () => clearTimeout(timer);
+    } else {
+      setIsVisible(false);
+      const timer = setTimeout(() => setIsRendered(false), 250);
+      return () => clearTimeout(timer);
+    }
+  }, [isDiscussionOpen]);
+
+  const handleOpenDiscussion = () => {
+    if (onOpenDiscussion) {
+      onOpenDiscussion();
+    } else {
+      setLocalIsDiscussionOpen(true);
+    }
+  };
+
+  const handleCloseDiscussion = () => {
+    if (onCloseDiscussion) {
+      onCloseDiscussion();
+    } else {
+      setLocalIsDiscussionOpen(false);
+    }
+  };
+
+  // Close discussion drawer on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isDiscussionOpen) {
+        handleCloseDiscussion();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isDiscussionOpen]);
 
   // Resolve active return for the client
   const activeReturn =
@@ -43,14 +95,15 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
   // Filter documents belonging to this return
   const returnDocuments = documents.filter((d) => d.returnId === activeReturn.id);
 
-  // Resolve primary return thread or fallback
+  // Resolve primary return thread or fallback for client consultation
   const activeReturnThread =
+    threads.find((t) => t.returnId === activeReturn.id && t.contextType === 'return') ||
     threads.find((t) => t.returnId === activeReturn.id) || {
       id: `th-client-${activeReturn.id}`,
       returnId: activeReturn.id,
       contextType: 'return' as const,
       contextId: activeReturn.id,
-      contextLabel: `${activeReturn.taxpayerName} - General Tax Q&A`,
+      contextLabel: `Discussion with ${activeReturn.assignedPreparerName || 'Your CPA Team'}`,
       status: 'open' as const,
       messages: [],
     };
@@ -93,7 +146,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
   };
 
   return (
-    <div className={`space-y-5 pb-10 ${className}`}>
+    <div className={`space-y-5 pb-12 relative ${className}`}>
       {/* 1. Centered 60% Width Return Progress Stepper */}
       <ClientMilestoneProgress activeReturn={activeReturn} />
 
@@ -113,7 +166,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
       {/* 4. Financial Summary Card */}
       <ClientSummaryCard
         activeReturn={activeReturn}
-        onOpenMessages={() => setIsDiscussionOpen(true)}
+        onOpenMessages={handleOpenDiscussion}
       />
 
       {/* 5. Document Intake & Upload Section */}
@@ -126,24 +179,28 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
         />
       </div>
 
-      {/* Slide-Over Contextual Discussion Drawer (Portaled to document.body) */}
-      {isDiscussionOpen &&
+      {/* Slide-Over Contextual Discussion Drawer (Portaled to document.body with smooth left-to-right slide exit) */}
+      {isRendered &&
         typeof document !== 'undefined' &&
         createPortal(
           <div className="fixed inset-0 z-50 overflow-hidden pointer-events-auto">
             <div
-              onClick={() => setIsDiscussionOpen(false)}
-              className="fixed inset-0 bg-slate-950/50 backdrop-blur-xs transition-opacity cursor-pointer"
+              onClick={handleCloseDiscussion}
+              className={`fixed inset-0 bg-slate-950/50 backdrop-blur-xs transition-opacity duration-250 ease-in-out cursor-pointer ${
+                isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
               aria-label="Close discussion overlay (Esc)"
             />
             <div
               role="dialog"
               aria-modal="true"
-              className="fixed top-0 bottom-0 right-0 z-50 h-screen w-full sm:w-[480px] md:w-[560px] bg-card border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
+              className={`fixed top-0 bottom-0 right-0 z-50 h-screen w-full sm:w-[480px] md:w-[560px] bg-card border-l border-border shadow-2xl flex flex-col transition-transform duration-250 ease-in-out transform ${
+                isVisible ? 'translate-x-0' : 'translate-x-full'
+              }`}
             >
               <ContextualThreadDrawer
                 thread={activeReturnThread}
-                onClose={() => setIsDiscussionOpen(false)}
+                onClose={handleCloseDiscussion}
                 onUploadRequestedFile={scrollToUpload}
               />
             </div>
