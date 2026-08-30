@@ -22,6 +22,8 @@ interface ActionRequestCardProps {
 
 export const ActionRequestCard: React.FC<ActionRequestCardProps> = ({
   actionRequest,
+  messageId: _messageId,
+  isClientView = false,
   onComplete,
   onUploadFile,
   className = '',
@@ -98,14 +100,20 @@ export const ActionRequestCard: React.FC<ActionRequestCardProps> = ({
       {/* Action Controls by Request Type */}
       <div className="pt-1 flex flex-wrap items-center gap-2">
         {actionRequest.type === 'upload_document' && (
-          <Button
-            size="sm"
-            onClick={onUploadFile}
-            className="h-7 text-xs font-semibold gap-1.5 bg-card text-primary border border-primary/40 shadow-xs hover:bg-primary/5 hover:border-primary/70"
-          >
-            <Upload className="h-3 w-3" />
-            <span>Upload Document</span>
-          </Button>
+          isClientView ? (
+            <Button
+              size="sm"
+              onClick={onUploadFile}
+              className="h-7 text-xs font-semibold gap-1.5 bg-card text-primary border border-primary/40 shadow-xs hover:bg-primary/5 hover:border-primary/70"
+            >
+              <Upload className="h-3 w-3" />
+              <span>Upload Document</span>
+            </Button>
+          ) : (
+            <span className="text-[11px] text-muted-foreground font-mono">
+              Awaiting client document upload
+            </span>
+          )
         )}
 
         {actionRequest.type === 'confirm_yes_no' && (

@@ -52,11 +52,17 @@ export const ClientRequestsWidget: React.FC<ClientRequestsWidgetProps> = ({
         </div>
         <div className="flex items-center gap-2">
           {pendingItems.length > 0 ? (
-            <Badge className="bg-sky-100 text-sky-900 dark:bg-sky-950 dark:text-sky-200 border-sky-300 font-mono text-xs">
+            <Badge
+              variant="outline"
+              className="bg-sky-100 text-sky-900 dark:bg-sky-950 dark:text-sky-200 border-sky-300 font-mono text-xs hover:bg-sky-100 hover:text-sky-900"
+            >
               {pendingItems.length} Pending
             </Badge>
           ) : (
-            <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200 border-emerald-300 font-mono text-xs">
+            <Badge
+              variant="outline"
+              className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200 border-emerald-300 font-mono text-xs hover:bg-emerald-100 hover:text-emerald-800"
+            >
               All Inquiries Resolved
             </Badge>
           )}
