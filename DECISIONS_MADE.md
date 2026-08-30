@@ -165,3 +165,11 @@
   - *Client Sign State*: Form 8879 IRS e-file authorization with perjury declaration, AGI & refund/tax liability summary, and typed electronic signature that transitions the return immediately to `E_FILED`.
   - *Prep/Review State*: Reassuring status notice displaying the assigned CPA contact and direct question trigger.
 - **Rationale**: Keeps the client portal actionable, transparent, and frictionless.
+
+### Decision 5.3: Document Upload Accessibility Beyond Initial Intake Stage
+- **Context**: Evaluating whether document upload capability should be restricted strictly to Stage 1 (Documents Intake) or remain accessible across later lifecycle stages.
+- **Decision**: Maintained document intake accessibility across subsequent stages (Stages 2–4: Expert Prep, Partner Review, Client Signature) for three critical tax practice reasons:
+  1. *Late-Arriving & Corrected Tax Forms*: Brokerage Form 1099-B/DIV statements and Schedule K-1s frequently arrive late (mid-March through April) or receive "Corrected 1099" amendments after preparation has already begun.
+  2. *CPA-Requested Supporting Workpapers & Blocker Resolution*: Reviewers and preparers frequently request additional substantiation (e.g. donation receipts, 1099-NEC workpapers, Section 179 vehicle logs) during review, requiring client upload access to resolve blockers.
+  3. *Client Document Vault & Audit-Defense Records*: Serves as a persistent digital repository for permanent taxpayer workpapers.
+- **Rationale**: Restricting uploads strictly to intake would break real-world accounting workflows where supplemental files and amended source documents are commonplace during prep and review.
