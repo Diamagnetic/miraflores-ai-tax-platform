@@ -89,25 +89,29 @@ export const ClientMilestoneProgress: React.FC<ClientMilestoneProgressProps> = (
 
               return (
                 <div key={stage.id} className="flex-1 flex flex-col items-center relative">
-                  {/* Connector line connecting previous node to this node */}
+                  {/* Connector line connecting previous node to this node (stops precisely outside circle edges) */}
                   {index > 0 && (
                     <div
-                      className={`absolute top-4 -left-1/2 right-1/2 h-0.5 -z-0 transition-colors duration-300 ${
+                      className={`absolute top-4 h-0.5 -z-0 transition-colors duration-300 ${
                         isCompleted || isCurrent ? 'bg-primary' : 'bg-muted'
                       }`}
+                      style={{
+                        left: 'calc(-50% + 20px)',
+                        right: 'calc(50% + 20px)',
+                      }}
                     />
                   )}
 
                   {/* Node Circle */}
                   <div
-                    className={`relative z-10 h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200 border-2 bg-card ${
+                    className={`relative z-10 h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200 border-2 ${
                       isCompleted
                         ? 'bg-primary text-primary-foreground border-primary'
                         : isBlockedCurrent
-                        ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 border-rose-500 ring-4 ring-rose-100 dark:ring-rose-900/30'
+                        ? 'bg-background text-rose-600 border-rose-500 ring-4 ring-rose-100 dark:ring-rose-900/30'
                         : isCurrent
-                        ? 'bg-primary/10 text-primary border-primary ring-4 ring-primary/15 font-extrabold'
-                        : 'bg-card text-muted-foreground border-muted'
+                        ? 'bg-background text-primary border-primary ring-4 ring-primary/15 font-extrabold shadow-xs'
+                        : 'bg-background text-muted-foreground border-muted'
                     }`}
                   >
                     {isCompleted ? (
