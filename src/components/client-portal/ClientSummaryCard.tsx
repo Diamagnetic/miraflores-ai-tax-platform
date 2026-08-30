@@ -117,7 +117,7 @@ export const ClientSummaryCard: React.FC<ClientSummaryCardProps> = ({
               className="h-8 text-xs gap-1.5 font-semibold text-foreground hover:bg-muted"
             >
               <MessageSquare className="h-3.5 w-3.5 text-primary" />
-              <span>Ask CPA a Question</span>
+              <span>Message {activeReturn.assignedPreparerName?.split(' ')[0] || 'CPA'}</span>
             </Button>
           </div>
         </div>

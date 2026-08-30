@@ -27,6 +27,7 @@ export const Header: React.FC<HeaderProps> = ({
     currentUser,
     setRole,
     returns,
+    threads,
     selectedReturnId,
     selectReturn,
   } = usePlatformStore();
@@ -54,6 +55,20 @@ export const Header: React.FC<HeaderProps> = ({
       : returns.find((r) => r.id === selectedReturnId);
 
   const isClient = currentUser.role === 'individual_client';
+
+  // Calculate unresolved actionable inquiries count for client return
+  const clientReturnThreads = threads.filter((t) => t.returnId === activeReturn?.id);
+  const pendingInquiriesCount = clientReturnThreads.reduce((total, thread) => {
+    return (
+      total +
+      thread.messages.filter(
+        (m) =>
+          !m.isInternalFirmOnly &&
+          m.actionRequest &&
+          !m.actionRequest.isCompleted
+      ).length
+    );
+  }, 0);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background shadow-2xs">
@@ -112,8 +127,9 @@ export const Header: React.FC<HeaderProps> = ({
               className="h-8 px-3 text-xs font-semibold gap-1.5 border-border shadow-2xs hover:bg-muted"
             >
               <MessageSquare className="h-3.5 w-3.5 text-primary" />
-              <span className="hidden sm:inline">Ask CPA a Question</span>
-              <span className="sm:hidden">Messages</span>
+              <span>
+                CPA Inquiries{pendingInquiriesCount > 0 ? ` (${pendingInquiriesCount})` : ''}
+              </span>
             </Button>
           )}
 
