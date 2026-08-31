@@ -160,7 +160,7 @@
 - [X] T051 [P] [US8] Build multi-faceted document filter bar (type, category, amount, AI confidence, status) in src/components/document-hub/DocumentFilters.tsx
 - [X] T052 [US8] Build virtualized/paginated document list grid with horizontal scroll container (overflow-x-auto, min-w-[900px]) and batch action toolbar in src/components/document-hub/DocumentListGrid.tsx
 - [X] T053 [US8] Assemble scalable Document Hub view in src/components/document-hub/DocumentHub.tsx
-- [ ] T054 [US8] Record progressive disclosure and scale handling decisions in DECISIONS.md
+- [X] T054 [US8] Record progressive disclosure and scale handling decisions in DECISIONS.md
 
 **Checkpoint**: User Story 8 is functional and smoothly handles 150+ documents.
 

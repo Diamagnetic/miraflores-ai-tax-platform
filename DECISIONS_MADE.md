@@ -280,3 +280,26 @@
 - **Context**: Allowing arbitrary edits to tax figures without tracking the author and justification creates severe regulatory liability during IRS audits.
 - **Decision**: Built `ManualEditModal.tsx` requiring preparers to select or write a mandatory audit justification (e.g. *"Taxpayer oral confirmation"*, *"Supporting receipt reconciliation"*, *"K-1 partner basis adjustment"*) before modifying any field.
 - **Rationale**: Captures chronological audit logs (`oldValue -> newValue`, `changedBy`, `timestamp`, `reason`) stored directly in `field.auditHistory`, ensuring full defensibility.
+
+---
+
+## 10. Scalable Navigation & Deep Search for Complex Returns (Phase 10 - US8 / Challenge 10)
+
+### Decision 10.1: Hierarchical Categorization & Progressive Disclosure Architecture (`DocumentCategoryTree.tsx`)
+- **Context**: Enterprise partnership returns like Wakanda Tech & Design LLC (Form 1065) involve 155+ high-volume receipts, invoices, and expense workpapers. Rendering flat unorganized lists causes cognitive overload and sluggish navigation.
+- **Decision**: Built `DocumentCategoryTree.tsx` providing a multi-dimensional hierarchical sidebar:
+  - *Expense Categories*: Auto-grouped by AI extraction tags (`supplies`, `cloud_infra`, `hardware`, `materials`, `rent`, `legal_professional`, `travel`, `raw_materials`).
+  - *Document Types*: Quick slicing across receipts, W-2s, 1099s, and financial statements.
+  - *Ingestion Status*: Instant filtering between `Processed` (98% OCR confidence) and `Needs Review` variance flags.
+  - Live count and monetary subtotal indicators for each node.
+- **Rationale**: Enables preparers to jump directly from macro partnership ledger categories down to individual vendor receipts in a single click.
+
+### Decision 10.2: Sub-Second Multi-Faceted Deep Search & Batch Operations (`DocumentFilters.tsx` & `DocumentListGrid.tsx`)
+- **Context**: Tax auditors and CPAs need to quickly locate specific line items (e.g. searching "Vibranium", filtering by Amount > $5,000, or identifying low-confidence OCR flags) and perform batch verifications without UI latency.
+- **Decision**: Implemented an in-memory search pipeline:
+  - Sub-second fuzzy search across vendor names, raw OCR text preview, file names, invoice IDs, and dollar amounts.
+  - Multi-faceted filter bar supporting document type, expense category, amount tiers (`<$1k`, `$1k-$5k`, `>$5k`, `>$10k`), AI confidence threshold, and status.
+  - Container-level horizontal scrolling (`overflow-x-auto min-w-[920px]`) preventing table column squeezing.
+  - High-efficiency batch action toolbar supporting 1-click **`[ Batch Verify (X) ]`** and **`[ Export CSV Ledger ]`**.
+- **Rationale**: Directly solves **Challenge 10 (Scalable Navigation & Search)** with immediate responsiveness across 150+ complex documents.
+
