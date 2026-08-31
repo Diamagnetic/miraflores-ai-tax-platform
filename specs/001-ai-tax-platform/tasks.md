@@ -156,7 +156,7 @@
 
 **Independent Test**: Select Wakanda Tech & Design LLC -> Open Document Hub -> Search for "Vibranium" -> Filter by Type = RECEIPT, Amount > $5000 -> Verify sub-second response across 150+ items -> Select all filtered items and trigger batch verification.
 
-- [ ] T050 [P] [US8] Build high-performance document tree and category sidebar in src/components/document-hub/DocumentCategoryTree.tsx
+- [X] T050 [P] [US8] Build high-performance document tree and category sidebar in src/components/document-hub/DocumentCategoryTree.tsx
 - [ ] T051 [P] [US8] Build multi-faceted document filter bar (type, category, amount, AI confidence, status) in src/components/document-hub/DocumentFilters.tsx
 - [ ] T052 [US8] Build virtualized/paginated document list grid with horizontal scroll container (overflow-x-auto, min-w-[900px]) and batch action toolbar in src/components/document-hub/DocumentListGrid.tsx
 - [ ] T053 [US8] Assemble scalable Document Hub view in src/components/document-hub/DocumentHub.tsx
