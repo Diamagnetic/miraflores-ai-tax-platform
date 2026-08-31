@@ -35,6 +35,12 @@ export interface PlatformStoreState {
   documentSearchQuery: string;
   diffMode: 'prior_year' | 'draft_vs_final' | 'none';
 
+  // Authentication & Session State
+  isAuthenticated: boolean;
+  login: (personaId: string) => void;
+  logout: () => void;
+  togglePersonalReturnView: () => void;
+
   // Role & Context Actions
   setRole: (role: UserRoleType, isPersonalReturnView?: boolean) => void;
   selectReturn: (returnId: string | null) => void;
@@ -91,6 +97,70 @@ export interface PlatformStoreState {
   resetToBaseline: () => void;
 }
 
+export interface PersonaAccount {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRoleType;
+  title: string;
+  description: string;
+  defaultReturnId: string;
+  badgeLabel: string;
+  initials: string;
+  avatarColor: string;
+}
+
+export const SAVED_PERSONAS: PersonaAccount[] = [
+  {
+    id: 'prep-sam-wilson',
+    name: 'Sam Wilson',
+    email: 'sam.wilson@miraflores.tax',
+    role: 'tax_preparer',
+    title: 'Lead Tax Preparer',
+    description: 'Prepares Form 1040, 1120-S & 1065 returns, verifies AI line items, and collaborates with clients.',
+    defaultReturnId: 'ret-tony-1040',
+    badgeLabel: 'Tax Preparer',
+    initials: 'SW',
+    avatarColor: 'bg-blue-600 text-white',
+  },
+  {
+    id: 'rev-steve-rogers',
+    name: 'Steve Rogers',
+    email: 'steve.rogers@miraflores.tax',
+    role: 'tax_reviewer',
+    title: 'Senior Reviewer & Partner',
+    description: 'Manages firm triage queue, conducts partner sign-offs, and transmits e-files to the IRS.',
+    defaultReturnId: 'ret-stark-1120s',
+    badgeLabel: 'Tax Reviewer',
+    initials: 'SR',
+    avatarColor: 'bg-emerald-600 text-white',
+  },
+  {
+    id: 'client-tony-stark',
+    name: 'Anthony E. Stark',
+    email: 'tony.stark@starkenterprises.com',
+    role: 'individual_client',
+    title: 'Individual Client (HNW)',
+    description: 'High-net-worth client with Form 1040 Schedule C business deductions, 1099-B, and Form 8879.',
+    defaultReturnId: 'ret-tony-1040',
+    badgeLabel: 'Client • Form 1040',
+    initials: 'AS',
+    avatarColor: 'bg-amber-600 text-white',
+  },
+  {
+    id: 'client-peter-parker',
+    name: 'Peter Parker',
+    email: 'peter.parker@nyu.edu',
+    role: 'individual_client',
+    title: 'Individual Client (Freelancer)',
+    description: 'Freelance photojournalist with 1099-NEC nonemployee compensation and equipment expenses.',
+    defaultReturnId: 'ret-peter-1040',
+    badgeLabel: 'Client • Freelancer',
+    initials: 'PP',
+    avatarColor: 'bg-purple-600 text-white',
+  },
+];
+
 const DEFAULT_USER: UserSession = {
   userId: 'prep-sam-wilson',
   name: 'Sam Wilson',
@@ -114,6 +184,7 @@ export const usePlatformStore = create<PlatformStoreState>((set, get) => ({
   documents: [...mockDocuments],
   threads: [...mockThreads],
   currentUser: DEFAULT_USER,
+  isAuthenticated: true,
   selectedReturnId: 'ret-tony-1040',
   activeDocumentId: 'doc-tony-w2-01',
   activeFieldId: 'fld-tony-1040-1a',
@@ -123,6 +194,101 @@ export const usePlatformStore = create<PlatformStoreState>((set, get) => ({
   selectedDocumentCategory: 'ALL',
   documentSearchQuery: '',
   diffMode: 'none',
+
+  login: (personaId: string) => {
+    const persona = SAVED_PERSONAS.find((p) => p.id === personaId) || SAVED_PERSONAS[0];
+    set({
+      isAuthenticated: true,
+      currentUser: {
+        userId: persona.id,
+        name: persona.name,
+        email: persona.email,
+        role: persona.role,
+        isPersonalReturnView: false,
+      },
+      selectedReturnId: persona.defaultReturnId,
+    });
+  },
+
+  logout: () => {
+    set({
+      isAuthenticated: false,
+    });
+  },
+
+  togglePersonalReturnView: () => {
+    const current = get().currentUser;
+    if (current.isPersonalReturnView) {
+      // Revert back to staff firm persona
+      const isReviewer = current.userId.includes('rev') || current.name.includes('Steve');
+      const staffRole: UserRoleType = isReviewer ? 'tax_reviewer' : 'tax_preparer';
+      const staffName = isReviewer ? 'Steve Rogers' : 'Sam Wilson';
+      const staffEmail = isReviewer ? 'steve.rogers@miraflores.tax' : 'sam.wilson@miraflores.tax';
+      const staffUserId = isReviewer ? 'rev-steve-rogers' : 'prep-sam-wilson';
+      const defaultReturnId = isReviewer ? 'ret-stark-1120s' : 'ret-tony-1040';
+
+      set({
+        currentUser: {
+          userId: staffUserId,
+          name: staffName,
+          email: staffEmail,
+          role: staffRole,
+          isPersonalReturnView: false,
+        },
+        selectedReturnId: defaultReturnId,
+      });
+    } else {
+      // Switch to the staff employee's OWN personal return
+      const staffName = current.name;
+      const staffEmail = current.email;
+      const staffUserId = current.userId;
+      const personalReturnId = `ret-personal-${staffUserId}`;
+
+      // Check if this personal return already exists in returns array, otherwise create it
+      const existingPersonalReturn = get().returns.find((r) => r.id === personalReturnId);
+      if (!existingPersonalReturn) {
+        const newPersonalReturn: TaxReturn = {
+          id: personalReturnId,
+          taxYear: 2025,
+          returnType: '1040',
+          taxpayerName: staffName,
+          taxpayerEmail: staffEmail,
+          assignedPreparerId: staffUserId,
+          assignedPreparerName: staffName,
+          assignedReviewerId: 'rev-steve-rogers',
+          assignedReviewerName: 'Steve Rogers',
+          status: 'CLIENT_SIGN',
+          clientMilestone: 'READY_FOR_SIGNATURE',
+          nextActionOwner: 'client',
+          nextActionDescription: 'Personal return prepared and reviewed. Ready for taxpayer electronic signature.',
+          dueDate: '2026-04-15',
+          isBlocked: false,
+          triageScore: 65,
+          totalIncome: 185000,
+          taxLiability: 36200,
+          refundOrDueAmount: 1840,
+          documentCount: 4,
+          openIssueCount: 0,
+          aiConfidenceAvg: 0.99,
+        };
+
+        set((state) => ({
+          returns: [...state.returns, newPersonalReturn],
+        }));
+      }
+
+      set({
+        currentUser: {
+          userId: staffUserId,
+          name: staffName,
+          email: staffEmail,
+          role: 'individual_client',
+          isPersonalReturnView: true,
+        },
+        selectedReturnId: personalReturnId,
+      });
+    }
+  },
 
   setRole: (role, isPersonalReturnView = false) => {
     let name = 'Sam Wilson';
@@ -134,14 +300,21 @@ export const usePlatformStore = create<PlatformStoreState>((set, get) => ({
       name = 'Steve Rogers';
       email = 'steve.rogers@miraflores.tax';
       userId = 'rev-steve-rogers';
+      defaultReturnId = 'ret-stark-1120s';
+    } else if (role === 'tax_preparer') {
+      name = 'Sam Wilson';
+      email = 'sam.wilson@miraflores.tax';
+      userId = 'prep-sam-wilson';
+      defaultReturnId = 'ret-tony-1040';
     } else if (role === 'individual_client') {
       if (isPersonalReturnView) {
-        name = 'Dr. Bruce Banner';
-        email = 'bruce.banner@culver.edu';
-        userId = 'client-bruce-banner';
-        defaultReturnId = 'ret-bruce-1040';
+        const current = get().currentUser;
+        name = current.name || 'Sam Wilson';
+        email = current.email || 'sam.wilson@miraflores.tax';
+        userId = current.userId || 'prep-sam-wilson';
+        defaultReturnId = `ret-personal-${userId}`;
       } else {
-        name = 'Tony Stark';
+        name = 'Anthony E. Stark';
         email = 'tony.stark@starkenterprises.com';
         userId = 'client-tony-stark';
         defaultReturnId = 'ret-tony-1040';
