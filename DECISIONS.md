@@ -263,5 +263,22 @@
   3. In the CPA Workbench, `ThreadAiSummaryWidget.tsx` analyzes the incoming upload, verifies that the numbers match the return schedule, and provides a 1-click **`[ 🤖 Apply Figures & Clear Blocker ]`** action that instantly resolves the blocker and updates the triage queue.
 - **Rationale**: Fully closes the collaboration loop between CPA and Client, establishing defensible AI ROI for firm efficiency.
 
+---
 
+## 9. Consistent 5-State Affordance Visual Language & Manual Override Audit System (Phase 9 - US7 / Challenge 07)
 
+### Decision 9.1: Semantic Color Tokens & Interactive Affordance Guide
+- **Context**: In high-volume tax review, CPAs must know with 100% certainty whether a dollar figure came from automated OCR, manual entry, locked calculation, or requires supervisor QA.
+- **Decision**: Standardized on 5 semantic tokens across all return tables:
+  1. `ai_extracted`: Purple (`bg-purple-100 dark:bg-purple-950/60`) with confidence score (`98%`). Clicking opens AI Explainability and source vector bounding box in split view.
+  2. `verified`: Emerald (`bg-emerald-100 dark:bg-emerald-950/60`) with `LOCKED` indicator. Signifies CPA workpaper verification sign-off.
+  3. `user_edited`: Amber (`bg-amber-100 dark:bg-amber-950/60`) with `EDITED` badge. Hovering displays CPA author, timestamp, and audit note.
+  4. `calculated_locked`: Slate (`bg-slate-100 dark:bg-slate-800`) with `FORMULA` badge. Clicking displays formula inputs and dependency breakdown.
+  5. `requires_approval`: Rose (`bg-rose-100 dark:bg-rose-950/60`) with `DISCREPANCY` badge and pulse animation.
+- **Interactive Component**: Built `AffordanceLegend.tsx` accessible in the table toolbar to inspect state definitions, regulatory defensibility, and filter table line items by state.
+- **Rationale**: Eliminates "clickable vs. editable" confusion and provides defensible audit trails required under Circular 230 regulations.
+
+### Decision 9.2: Mandatory Audit Justification for Manual Overrides (`ManualEditModal.tsx`)
+- **Context**: Allowing arbitrary edits to tax figures without tracking the author and justification creates severe regulatory liability during IRS audits.
+- **Decision**: Built `ManualEditModal.tsx` requiring preparers to select or write a mandatory audit justification (e.g. *"Taxpayer oral confirmation"*, *"Supporting receipt reconciliation"*, *"K-1 partner basis adjustment"*) before modifying any field.
+- **Rationale**: Captures chronological audit logs (`oldValue -> newValue`, `changedBy`, `timestamp`, `reason`) stored directly in `field.auditHistory`, ensuring full defensibility.

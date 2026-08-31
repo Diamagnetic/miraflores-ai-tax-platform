@@ -141,10 +141,10 @@
 
 **Independent Test**: Inspect Form 1040 line items -> Hover over calculated cell (shows lock and formula tooltip) -> Hover over human-edited cell (shows edit history) -> Click AI-extracted cell (opens explainability drawer).
 
-- [ ] T046 [P] [US7] Build interactive AffordanceLegend guide component in src/components/return-review/AffordanceLegend.tsx
-- [ ] T047 [US7] Apply 5-state affordance badges and fixed non-collapsing column widths (min-w-fit, overflow-x-auto) across all tax schedules in src/components/return-review/ScheduleTable.tsx
-- [ ] T048 [US7] Build manual value edit modal with audit reason tracking in src/components/return-review/ManualEditModal.tsx
-- [ ] T049 [US7] Record affordance design tokens and interaction standards in DECISIONS.md
+- [X] T046 [P] [US7] Build interactive AffordanceLegend guide component in src/components/return-review/AffordanceLegend.tsx
+- [X] T047 [US7] Apply 5-state affordance badges and fixed non-collapsing column widths (min-w-fit, overflow-x-auto) across all tax schedules in src/components/return-review/ScheduleTable.tsx
+- [X] T048 [US7] Build manual value edit modal with audit reason tracking in src/components/return-review/ManualEditModal.tsx
+- [X] T049 [US7] Record affordance design tokens and interaction standards in DECISIONS.md
 
 **Checkpoint**: User Story 7 is functional across all data entry surfaces.
 

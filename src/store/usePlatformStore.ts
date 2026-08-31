@@ -11,6 +11,7 @@ import {
   FilterState,
   ActionRequest,
   Message,
+  FieldAuditEntry,
 } from '@/types';
 import { mockTaxReturns, mockReturnFields } from '@/data/mockReturns';
 import { mockDocuments } from '@/data/mockDocuments';
@@ -49,7 +50,7 @@ export interface PlatformStoreState {
   setHighlightedBoundingBox: (boxId: string | null) => void;
 
   // Field Manipulation Actions
-  updateFieldValue: (fieldId: string, newValue: number | string) => void;
+  updateFieldValue: (fieldId: string, newValue: number | string, auditReason?: string) => void;
   verifyField: (fieldId: string) => void;
   flagFieldForApproval: (fieldId: string) => void;
 
@@ -386,25 +387,33 @@ export const usePlatformStore = create<PlatformStoreState>((set, get) => ({
     set({ highlightedBoundingBoxId: boxId });
   },
 
-  updateFieldValue: (fieldId, newValue) => {
+  updateFieldValue: (fieldId, newValue, auditReason) => {
     const { fields, currentUser } = get();
     const formatted =
       typeof newValue === 'number'
         ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(newValue)
         : String(newValue);
 
-    const updatedFields = fields.map((f) =>
-      f.id === fieldId
-        ? {
-            ...f,
-            value: newValue,
-            formattedValue: formatted,
-            state: 'user_edited' as const,
-            lastModifiedBy: currentUser.name,
-            lastModifiedAt: new Date().toISOString(),
-          }
-        : f
-    );
+    const updatedFields = fields.map((f) => {
+      if (f.id !== fieldId) return f;
+      const newAuditEntry: FieldAuditEntry = {
+        changedBy: currentUser.name,
+        timestamp: new Date().toISOString(),
+        reason: auditReason || 'Manual adjustment by CPA',
+        oldValue: f.value,
+        newValue: newValue,
+      };
+
+      return {
+        ...f,
+        value: newValue,
+        formattedValue: formatted,
+        state: 'user_edited' as const,
+        lastModifiedBy: currentUser.name,
+        lastModifiedAt: new Date().toISOString(),
+        auditHistory: [newAuditEntry, ...(f.auditHistory || [])],
+      };
+    });
 
     set({ fields: updatedFields });
   },

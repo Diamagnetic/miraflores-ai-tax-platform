@@ -1,8 +1,10 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ReturnField, AffordanceState, SourceDocument } from '@/types';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { AffordanceLegend } from './AffordanceLegend';
+import { ManualEditModal } from './ManualEditModal';
 import {
   FileSpreadsheet,
   CheckCheck,
@@ -47,6 +49,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
   const [activeFormTab, setActiveFormTab] = useState<string>('all');
   const [filterState, setFilterState] = useState<AffordanceState | 'all'>('all');
   const [hoveredDocInfo, setHoveredDocInfo] = useState<HoveredDocInfo | null>(null);
+  const [editingField, setEditingField] = useState<ReturnField | null>(null);
   const activeRowRef = useRef<HTMLTableRowElement | null>(null);
 
   // Filter fields belonging to the active return
@@ -179,7 +182,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
             type="button"
             onClick={() => handleOpenExplainability(field.id)}
             className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-purple-100 hover:bg-purple-200 dark:bg-purple-950/60 dark:hover:bg-purple-900/80 border border-purple-300 dark:border-purple-700 text-purple-950 dark:text-purple-200 text-[11px] font-semibold font-mono transition-colors cursor-pointer"
-            title="Click to view AI Explainability in drawer"
+            title="Click to view AI Explainability & Bounding Box in drawer"
           >
             <Sparkles className="h-3 w-3 text-purple-700 dark:text-purple-400 shrink-0" />
             <span>AI Extracted</span>
@@ -210,7 +213,11 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
             type="button"
             onClick={() => handleOpenExplainability(field.id)}
             className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/60 dark:hover:bg-amber-900/80 border border-amber-400 dark:border-amber-700 text-amber-950 dark:text-amber-200 text-[11px] font-semibold font-mono transition-colors cursor-pointer"
-            title="Click to view manual edit audit history"
+            title={
+              field.auditHistory && field.auditHistory.length > 0
+                ? `Manual Edit by ${field.auditHistory[0].changedBy}: "${field.auditHistory[0].reason || 'Manual override'}"`
+                : 'Manual Edit'
+            }
           >
             <Edit3 className="h-3 w-3 text-amber-800 dark:text-amber-400 shrink-0" />
             <span>Manual Edit</span>
@@ -289,7 +296,7 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         </div>
 
         {/* Action Controls & Affordance Filters */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {isReviewerOrPreparer && highConfidenceCount > 0 && (
             <Button
               variant="outline"
@@ -301,6 +308,12 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
               Verify High Confidence ({highConfidenceCount})
             </Button>
           )}
+
+          {/* 5-State Affordance Guide (T046) */}
+          <AffordanceLegend
+            selectedState={filterState}
+            onFilterByState={(st) => setFilterState(st)}
+          />
 
           {/* Quick Filter */}
           <div className="flex items-center gap-1 border border-border bg-card p-0.5 text-xs">
@@ -324,13 +337,13 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
 
       {/* Horizontal Scroll Safe Data Table */}
       <div className="overflow-x-auto min-w-full">
-        <table className="w-full text-left border-collapse min-w-[720px]">
+        <table className="w-full text-left border-collapse min-w-[780px]">
           <thead>
             <tr className="border-b border-border bg-muted/40 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
               <th className="py-2.5 px-3 w-16 whitespace-nowrap">Line #</th>
               <th className="py-2.5 px-3 min-w-[220px]">Description / Line Item</th>
               <th className="py-2.5 px-3 w-28">Schedule</th>
-              <th className="py-2.5 px-3 w-40 text-right whitespace-nowrap">Value</th>
+              <th className="py-2.5 px-3 w-44 text-right whitespace-nowrap">Value</th>
               <th className="py-2.5 px-3 w-44">Affordance</th>
               <th className="py-2.5 px-3 w-32 text-center whitespace-nowrap">Source Doc</th>
             </tr>
@@ -376,7 +389,9 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                         <tr
                           key={field.id}
                           ref={isSelected ? activeRowRef : null}
-                          className="transition-colors hover:bg-muted/30"
+                          className={`transition-colors hover:bg-muted/30 ${
+                            isSelected ? 'bg-primary/5' : ''
+                          }`}
                         >
                           {/* Line Number */}
                           <td className="py-2 px-3 font-mono font-bold text-foreground whitespace-nowrap select-text cursor-text">
@@ -405,9 +420,22 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
                             </Badge>
                           </td>
 
-                          {/* Separate Column: Value (Mouse Selectable) */}
+                          {/* Value with Hover Override Trigger (T048) */}
                           <td className="py-2 px-3 text-right font-mono font-bold text-xs text-foreground select-text cursor-text whitespace-nowrap">
-                            {formattedDisplayValue}
+                            <div className="flex items-center justify-end gap-1.5 group">
+                              {isReviewerOrPreparer && !field.formula && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setEditingField(field)}
+                                  className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
+                                  title="Manually override value with audit trail note"
+                                >
+                                  <Edit3 className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                                </Button>
+                              )}
+                              <span>{formattedDisplayValue}</span>
+                            </div>
                           </td>
 
                           {/* Separate Column: Affordance Badge (Opens AI Explainability tab) */}
@@ -453,48 +481,61 @@ export const TaxFormViewer: React.FC<TaxFormViewerProps> = ({
         </table>
       </div>
 
-      {/* Viewport-Safe Floating Hover Card */}
+      {/* Manual Value Override Modal (T048) */}
+      <ManualEditModal
+        field={editingField}
+        isOpen={Boolean(editingField)}
+        onClose={() => setEditingField(null)}
+      />
+
+      {/* Viewport-Safe Floating Document Preview Card on Hover */}
       {hoveredDocInfo && (
         <div
           style={{
             position: 'fixed',
             left: `${hoveredDocInfo.x}px`,
             top: `${hoveredDocInfo.y}px`,
-            transform:
-              hoveredDocInfo.placement === 'top'
-                ? 'translate(-50%, -100%)'
-                : 'translate(-50%, 0)',
+            transform: hoveredDocInfo.placement === 'top' ? 'translate(-50%, -100%)' : 'translate(-50%, 0)',
           }}
-          className="z-50 w-64 p-3 bg-card text-card-foreground shadow-2xl border border-border text-xs font-sans text-left pointer-events-none animate-in fade-in zoom-in-95 duration-100"
+          className="z-50 pointer-events-none w-72 bg-card/95 backdrop-blur-xs border border-purple-400 dark:border-purple-600 shadow-2xl p-3 text-xs animate-in fade-in zoom-in-95 duration-100"
         >
-          <div className="flex items-center gap-1.5 pb-1.5 border-b border-border">
-            <FileText className="h-3.5 w-3.5 text-primary shrink-0" />
-            <span className="font-bold truncate text-foreground">{hoveredDocInfo.doc.fileName}</span>
-          </div>
-          <div className="space-y-1 pt-1.5 text-[11px] text-muted-foreground font-mono">
-            <p>
-              <span className="text-muted-foreground font-sans">Payer:</span>{' '}
-              <strong className="text-foreground">{hoveredDocInfo.doc.vendor || 'Stark Industries Inc.'}</strong>
-            </p>
-            <p>
-              <span className="text-muted-foreground font-sans">Source:</span>{' '}
-              <strong className="text-foreground">
-                {hoveredDocInfo.doc.docType} (Page 1)
-              </strong>
-            </p>
-            <div className="flex items-center justify-between text-emerald-700 dark:text-emerald-400 font-bold pt-1 border-t border-border">
-              <span>OCR Match: 98%</span>
-              <span className="text-[10px] text-primary font-sans font-semibold">Click to view ➔</span>
+          <div className="flex items-center justify-between border-b border-border pb-1.5 mb-2">
+            <div className="flex items-center gap-1.5 font-bold text-foreground">
+              <FileText className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+              <span className="truncate max-w-[180px]">{hoveredDocInfo.doc.fileName}</span>
             </div>
+            <Badge variant="outline" className="font-mono text-[9px] py-0 bg-purple-100 dark:bg-purple-950 text-purple-900 dark:text-purple-200 border-purple-300">
+              {hoveredDocInfo.doc.docType.replace('_', '-')}
+            </Badge>
+          </div>
+
+          <div className="space-y-1 text-[11px] text-muted-foreground">
+            <div className="flex justify-between">
+              <span>Category:</span>
+              <strong className="text-foreground capitalize">{hoveredDocInfo.doc.category}</strong>
+            </div>
+            <div className="flex justify-between">
+              <span>Page Count:</span>
+              <strong className="text-foreground">{hoveredDocInfo.doc.pageCount} page(s)</strong>
+            </div>
+            <div className="flex justify-between">
+              <span>Bounding Boxes:</span>
+              <strong className="text-purple-700 dark:text-purple-300 font-mono">
+                {hoveredDocInfo.doc.boundingBoxes.length} tagged coordinates
+              </strong>
+            </div>
+            <div className="flex justify-between">
+              <span>Uploaded By:</span>
+              <strong className="text-foreground">{hoveredDocInfo.doc.uploadedBy}</strong>
+            </div>
+          </div>
+
+          <div className="mt-2 pt-1.5 border-t border-border flex items-center justify-between text-[10px] text-purple-800 dark:text-purple-300 font-mono">
+            <span>Click to open inspection</span>
+            <span>PDF Vector &rarr;</span>
           </div>
         </div>
       )}
-
-      {/* Table Footer Summary */}
-      <div className="border-t border-border bg-muted/20 p-2.5 text-xs text-muted-foreground font-mono flex items-center justify-between">
-        <span>Showing {filteredFields.length} schedule lines across {Object.keys(categoryGroups).length} categories</span>
-      </div>
     </div>
   );
 };
-
