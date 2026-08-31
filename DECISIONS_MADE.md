@@ -210,3 +210,25 @@
   4. *Client-Facing Prominence*: Maintained the clear **`[ 💬 CPA Inquiries (1) ]`** button in the top navigation bar strictly on the Client Portal side, where taxpayers (infrequent visitors) benefit directly from visible messaging access.
 - **Rationale**: Tax preparation is a document, calculation, and regulatory workflow engine, not a social messaging feed. Keeping the Triage Command Center focused on Priority, Blocker, and Immediate Next Action preserves speed and workflow clarity.
 
+---
+
+## 7. Saved Logins Account Chooser & Post-Login Personal Return Access (Phase 7 - US5)
+
+### Decision 7.1: Enterprise Saved Logins Account Chooser Landing Screen (4 Realistic Personas)
+- **Context**: Challenge 05 requires robust multi-persona role switching with strict data access boundaries, avoiding artificial or confusing generic demo modes.
+- **Decision**: Built `SavedLoginsScreen.tsx` presenting 4 authentic enterprise persona accounts:
+  1. *Sam Wilson, CPA* (`tax_preparer`): Lead Tax Preparer with access to firm returns, AI line item verification, and client collaboration.
+  2. *Steve Rogers* (`tax_reviewer`): Senior Reviewer & Managing Partner with access to firm triage, partner QA, and IRS MeF gateway transmission.
+  3. *Anthony E. Stark* (`individual_client`): High-Net-Worth client with Form 1040 Schedule C, 1099-B, and Form 8879 e-sign authorization.
+  4. *Peter Parker* (`individual_client`): Freelance photojournalist with 1099-NEC nonemployee compensation and equipment deductions.
+- **Rationale**: Eliminates fake password forms while providing an authentic enterprise SSO feel with clear role descriptions, practice areas, and 1-click authentication.
+
+### Decision 7.2: Post-Login Confidential Personal Return Sandbox for CPA Staff (Employee's Own Form 1040)
+- **Context**: Accounting firm employees frequently have their own personal tax returns prepared within the firm's ecosystem, but ethical Chinese walls and Circular 230 privacy rules require complete isolation from standard client triage queues.
+- **Decision**: Rather than showing an artificial "Personal Return" user on the login screen, we embedded a post-login **"Switch to My Personal Return"** option inside the top-right `UserAccountMenu.tsx` for authenticated staff members:
+  - Clicking switches the workspace directly into the authenticated employee's own Form 1040 return (e.g. Sam Wilson Form 1040 for Sam, Steve Rogers Form 1040 for Steve).
+  - Inside this view, firm triage queues and client switcher dropdowns are locked away.
+  - Clicking **"Return to Firm Workspace"** immediately returns the CPA to their firm practice environment.
+- **Rationale**: Models real-world firm software where employee personal return sandboxes are strictly gated behind staff credentials and isolated from firm client queues.
+
+

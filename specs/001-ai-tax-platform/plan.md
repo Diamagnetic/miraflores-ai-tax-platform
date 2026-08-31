@@ -22,7 +22,7 @@ Build an interactive, role-aware, and trustworthy AI-powered tax platform protot
 **Project Type**: Interactive Web Application Prototype (Single-Page App with client routing & view switching)  
 **Performance Goals**: < 100ms response time on search/filter across 170+ simulated documents and returns; instantaneous role and context switching; 0ms synchronous state propagation across mounted components  
 **Constraints**: Zero external backend requirement (self-contained in-memory mock engine); realistic simulated Avengers-themed tax data and bounding-box coordinates; container-level horizontal scrolling (`overflow-x-auto` with `min-w-*` preservation) to eliminate content squeezing on dense professional views; strict `--radius: 0rem` sharp-corner geometry  
-**Scale/Scope**: 10 distinct challenge workflows, 4 authentic persona logins on Saved Logins screen (Sam Wilson CPA, Steve Rogers Reviewer, Tony Stark Client, Peter Parker Client) plus in-app employee personal return mode (Dr. Bruce Banner), 8 realistic multi-schedule returns, 170+ mock source documents (including 155 expense receipts for Wakanda Tech)  
+**Scale/Scope**: 10 distinct challenge workflows, 4 authentic persona logins on Saved Logins screen (Sam Wilson CPA, Steve Rogers Reviewer, Tony Stark Client, Peter Parker Client) plus in-app employee personal return mode (authenticated employee's own Form 1040), 8 realistic multi-schedule returns, 170+ mock source documents (including 155 expense receipts for Wakanda Tech)  
 
 ---
 

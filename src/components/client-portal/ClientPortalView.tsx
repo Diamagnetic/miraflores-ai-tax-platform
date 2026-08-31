@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { SourceDocument } from '@/types';
@@ -84,13 +84,9 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
 
   // Resolve active return for the client
   const activeReturn =
-    currentUser.role === 'individual_client'
-      ? returns.find((r) =>
-          currentUser.isPersonalReturnView
-            ? r.id === 'ret-bruce-1040'
-            : r.id === 'ret-tony-1040'
-        ) || returns[0]
-      : returns.find((r) => r.id === selectedReturnId) || returns[0];
+    returns.find((r) => r.id === selectedReturnId) ||
+    returns.find((r) => r.taxpayerEmail === currentUser.email) ||
+    returns[0];
 
   // Filter documents belonging to this return
   const returnDocuments = documents.filter((d) => d.returnId === activeReturn.id);

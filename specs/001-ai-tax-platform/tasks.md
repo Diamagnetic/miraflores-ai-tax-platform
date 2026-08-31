@@ -107,13 +107,13 @@
 
 **Goal**: Deliver an authentic enterprise **"Saved Logins / Account Chooser"** landing page (`SavedLoginsScreen`) with 4 realistic persona accounts (Sam Wilson CPA, Steve Rogers Reviewer, Tony Stark Client, Peter Parker Client), coupled with a top-right Navbar Account Menu with a post-login **"Switch to My Personal Return"** toggle for staff and a `Logout` button returning to Saved Logins.
 
-**Independent Test**: On initial load or after Logout, verify Saved Logins page displays 4 authentic persona accounts (no fake "personal mode" card) -> Click Sam Wilson CPA to log in -> Open top-right Account Menu -> Click "Switch to My Personal Return" -> Verify workspace cleanly shifts to Dr. Bruce Banner's confidential employee 1040 -> Click Logout to return to Saved Logins.
+**Independent Test**: On initial load or after Logout, verify Saved Logins page displays 4 authentic persona accounts (no fake "personal mode" card) -> Click Sam Wilson CPA to log in -> Open top-right Account Menu -> Click "Switch to My Personal Return" -> Verify workspace cleanly shifts to Sam Wilson's confidential employee 1040 -> Click Logout to return to Saved Logins.
 
-- [ ] T036 [P] [US5] Build authentic corporate Saved Logins (Account Chooser) landing page with persona cards in src/components/auth/SavedLoginsScreen.tsx
-- [ ] T037 [P] [US5] Build Navbar Account Menu dropdown with Account Holder Name, Logout to Saved Logins, placeholder Settings/Help, and "Switch to My Personal Return" for staff in src/components/common/UserAccountMenu.tsx
-- [ ] T038 [US5] Update Header.tsx to integrate UserAccountMenu and display active return context in src/components/common/Header.tsx
-- [ ] T039 [US5] Wire in-memory authentication state and personal return mode toggle (Dr. Bruce Banner 1040) in src/store/usePlatformStore.ts
-- [ ] T040 [US5] Record Saved Logins architecture and post-login personal return access decisions in DECISIONS.md
+- [X] T036 [P] [US5] Build authentic corporate Saved Logins (Account Chooser) landing page with persona cards in src/components/auth/SavedLoginsScreen.tsx
+- [X] T037 [P] [US5] Build Navbar Account Menu dropdown with Account Holder Name, Logout to Saved Logins, placeholder Settings/Help, and "Switch to My Personal Return" for staff in src/components/common/UserAccountMenu.tsx
+- [X] T038 [US5] Update Header.tsx to integrate UserAccountMenu and display active return context in src/components/common/Header.tsx
+- [X] T039 [US5] Wire in-memory authentication state and personal return mode toggle (employee's own Form 1040) in src/store/usePlatformStore.ts
+- [X] T040 [US5] Record Saved Logins architecture and post-login personal return access decisions in DECISIONS.md
 
 **Checkpoint**: User Story 5 is functional with authentic login chooser and post-login personal return switching.
 
@@ -220,6 +220,6 @@ graph TD
 ### Incremental Feature Additions
 1. **MVP + Dashboard (US2)**: Actionable triage queue and manager views.
 2. **+ Onboarding & Collaboration (US3, US4)**: Peter Parker 10-second flow and contextual internal/external threads.
-3. **+ Role Architecture & Status (US5, US6, US7)**: 3-role switcher, Bruce Banner personal mode, dual status stepper, and affordance legend.
+3. **+ Role Architecture & Status (US5, US6, US7)**: 3-role switcher, employee personal return mode, dual status stepper, and affordance legend.
 4. **+ Scale & Complexity (US8)**: Wakanda Tech 150+ receipt search and batch operations.
 5. **+ Documentation (DECISIONS.md & README.md)**: Full decision rationale logging and real vs. simulated documentation.
