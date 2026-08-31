@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   FileSpreadsheet,
+  FolderOpen,
   X,
   Send,
   CheckCircle2,
@@ -22,6 +23,7 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { getTriageUrgency, getUrgencyBadgeStyle } from '@/store/triageLogic';
+import { DocumentHub } from '@/components/document-hub/DocumentHub';
 
 interface ReturnReviewWorkbenchProps {
   className?: string;
@@ -42,6 +44,8 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
     transmitReturnToIrs,
     acknowledgeIrsAcceptance,
   } = usePlatformStore();
+
+  const [workbenchView, setWorkbenchView] = useState<'schedules' | 'documents'>('schedules');
 
   // Full-height inspection drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
@@ -333,9 +337,55 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
         />
       )}
 
-      {/* Main Full-Width Schedule Grid */}
+      {/* Workbench Sub-View Navigation Tabs */}
+      <div className="flex items-center justify-between border-b border-border bg-muted/20 px-1 py-1">
+        <div className="flex items-center gap-1.5">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setWorkbenchView('schedules')}
+            className={`h-8 px-3 text-xs font-semibold gap-1.5 border transition-all ${
+              workbenchView === 'schedules'
+                ? 'bg-card text-foreground border-border shadow-2xs font-bold'
+                : 'text-muted-foreground border-transparent hover:border-border hover:bg-muted/40'
+            }`}
+          >
+            <FileSpreadsheet className="h-3.5 w-3.5 text-primary" />
+            <span>Tax Schedules & Form Lines</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setWorkbenchView('documents')}
+            className={`h-8 px-3 text-xs font-semibold gap-1.5 border transition-all ${
+              workbenchView === 'documents'
+                ? 'bg-card text-foreground border-border shadow-2xs font-bold'
+                : 'text-muted-foreground border-transparent hover:border-border hover:bg-muted/40'
+            }`}
+          >
+            <FolderOpen className="h-3.5 w-3.5 text-primary" />
+            <span>
+              Document Hub ({documents.filter((d) => d.returnId === activeReturn?.id).length} Workpapers)
+            </span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Main Full-Width Schedule Grid or Document Hub */}
       <div className="w-full">
-        <TaxFormViewer onOpenInspection={handleOpenInspection} />
+        {workbenchView === 'schedules' ? (
+          <TaxFormViewer onOpenInspection={handleOpenInspection} />
+        ) : (
+          <DocumentHub
+            activeReturn={activeReturn}
+            onOpenDocument={(doc) => {
+              selectDocument(doc.id);
+              setActiveDrawerTab('document');
+              setIsDrawerOpen(true);
+            }}
+          />
+        )}
       </div>
 
       {/* Clean Full-Height Drawer (Portaled to document.body with smooth left-to-right slide exit) */}
