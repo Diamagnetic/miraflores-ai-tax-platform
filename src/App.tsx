@@ -5,6 +5,7 @@ import { ReturnReviewWorkbench } from '@/components/return-review/ReturnReviewWo
 import { CpaDashboard } from '@/components/dashboard/CpaDashboard';
 import { ClientPortalView } from '@/components/client-portal/ClientPortalView';
 import { SavedLoginsScreen } from '@/components/auth/SavedLoginsScreen';
+import { CpaStatusStepper } from '@/components/status/CpaStatusStepper';
 import { Button } from '@/components/ui/button';
 import { LayoutDashboard, FileSpreadsheet, ArrowLeft } from 'lucide-react';
 
@@ -83,6 +84,15 @@ export default function App() {
               <span>Back to Triage Queue</span>
             </Button>
           )}
+        </div>
+      )}
+
+      {/* 7-Step Progress Stepper directly below navbar without background */}
+      {isStaff && activeStaffView === 'workbench' && activeReturn && (
+        <div className="pt-4 pb-1 px-4 sm:px-6">
+          <div className="max-w-5xl mx-auto">
+            <CpaStatusStepper activeReturn={activeReturn} />
+          </div>
         </div>
       )}
 
