@@ -231,4 +231,37 @@
   - Clicking **"Return to Firm Workspace"** immediately returns the CPA to their firm practice environment.
 - **Rationale**: Models real-world firm software where employee personal return sandboxes are strictly gated behind staff credentials and isolated from firm client queues.
 
+---
+
+## 8. Action-Oriented AI Integration & Next Action Architecture (Phase 8 - US6 / Challenges 04 & 08)
+
+### Decision 8.1: Action-Oriented AI Integration Roadmap (1A & 4 Immediate, 1C Next Step, Field/Batch in Future Scope)
+- **Context**: Evaluating where to surface proactive, action-oriented AI capabilities across the platform to transform the AI from a passive OCR reader into an active workflow driver.
+- **Decision**: Adopted a prioritized 3-tier roadmap:
+  1. *Immediate Core (Phase 8)*:
+     - **1A (Macro Return Action Banner)**: Positioned right above the line items table in the Workbench. Detects active blockers, establishes the explicit Next Action Owner (`client` vs `preparer` vs `reviewer`), and provides a 1-click **`[ 🚀 Send AI-Drafted Request to Client ]`** dispatch button.
+     - **4 (Collaboration Thread Summarizer & Blocker Auto-Resolver)**: Sits at the top of the Notes & Threads drawer. Synthesizes client uploads/answers and provides a 1-click **`[ 🤖 Apply Figures & Clear Blocker ]`** button that syncs back to the triage queue.
+  2. *Immediate Next Step*:
+     - **1C (Document Inspection Actions)**: Document-level quality defect detection (blurry scan, cropped Box 14, tax year mismatch) directly inside the PDF document viewer with 1-click re-upload requests.
+  3. *Future Scope*:
+     - Inline field discrepancy prompts (1B), Firm-wide batch action bar (2A), Smart deduction opportunities in client portal (3B).
+- **Rationale**: Directly solves **Challenge 08 (Next Action Owner & Blocker Visibility)** and **Challenge 04 (Contextual Collaboration Loop)** with maximum user experience impact, high cognitive clarity, and zero data table clutter.
+
+### Decision 8.2: Dual-Track Lifecycle Status Steppers (7-Stage CPA vs. 6-Milestone Client with Identical Rounded-Node Design)
+- **Context**: Tax preparers require deep visibility into internal technical workflows (OCR Extraction, Partner Review, IRS Schema Validation), while individual clients experience cognitive friction when exposed to internal accounting stages.
+- **Decision**: Built two synchronized status components sharing the exact same clean visual design:
+  - `CpaStatusStepper.tsx`: Displays the 7 granular internal stages (`INTAKE`, `EXTRACTION`, `PREPARATION`, `REVIEW`, `CLIENT_SIGN`, `E_FILED`, `ACCEPTED`), urgent blocker tags with pulse animations, and explicit **Next Action Owner** badges (`Client`, `Preparer`, `Reviewer`, `IRS Gateway`).
+  - `ClientMilestoneProgress.tsx`: Displays the 6 reassuring consumer milestones with friendly 2-3 word stage titles.
+  - `StatusLifecycleSync.tsx`: Deterministic bidirectional mapping ensuring state changes in one view instantly update the other.
+- **Rationale**: Completely eliminates the common tax season question "Who is waiting on whom?" while preserving design consistency across both interfaces.
+
+### Decision 8.3: Closed-Loop AI Blocker Dispatch & Auto-Resolution Loop
+- **Context**: When a tax return is blocked on missing client documents, CPAs lose significant time writing manual emails and later re-verifying incoming uploads.
+- **Decision**: Implemented a closed-loop AI action system:
+  1. `AiNextActionBanner.tsx` detects the blocker on the Workbench and generates a tailored client inquiry. The CPA clicks **`[ 🚀 1-Click Send to Client ]`**, which automatically posts a structured `ActionRequest` into the client's portal.
+  2. In the Client Portal, the taxpayer sees the action request and uploads the requested workpaper.
+  3. In the CPA Workbench, `ThreadAiSummaryWidget.tsx` analyzes the incoming upload, verifies that the numbers match the return schedule, and provides a 1-click **`[ 🤖 Apply Figures & Clear Blocker ]`** action that instantly resolves the blocker and updates the triage queue.
+- **Rationale**: Fully closes the collaboration loop between CPA and Client, establishing defensible AI ROI for firm efficiency.
+
+
 

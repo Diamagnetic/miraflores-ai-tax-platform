@@ -32,6 +32,8 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
     updateReturnStatus,
     toggleReturnBlocker,
     addUploadedDocument,
+    completeActionRequest,
+    addMessageToThread,
   } = usePlatformStore();
 
   const [localIsDiscussionOpen, setLocalIsDiscussionOpen] = useState<boolean>(false);
@@ -127,6 +129,24 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
 
     addUploadedDocument(fullDoc);
 
+    // Auto-resolve any open Document Request in the return thread (Option 2A)
+    const openDocRequest = activeReturnThread.messages.find(
+      (m) => m.actionRequest && m.actionRequest.type === 'upload_document' && !m.actionRequest.isCompleted
+    );
+
+    if (openDocRequest) {
+      completeActionRequest(
+        activeReturnThread.id,
+        openDocRequest.id,
+        `Uploaded: ${fullDoc.fileName}`
+      );
+      addMessageToThread(
+        activeReturnThread.id,
+        `I have uploaded ${fullDoc.fileName} for your review.`,
+        false
+      );
+    }
+
     // If return was blocked on missing documents, clear the blocker and advance
     if (activeReturn.isBlocked) {
       toggleReturnBlocker(activeReturn.id);
@@ -197,7 +217,10 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
               <ContextualThreadDrawer
                 thread={activeReturnThread}
                 onClose={handleCloseDiscussion}
-                onUploadRequestedFile={scrollToUpload}
+                onUploadRequestedFile={() => {
+                  handleCloseDiscussion();
+                  scrollToUpload();
+                }}
               />
             </div>
           </div>,

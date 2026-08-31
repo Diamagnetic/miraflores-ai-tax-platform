@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CollaborationThread, ActionRequest } from '@/types';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { ThreadMessageItem } from './ThreadMessageItem';
+import { ThreadAiSummaryWidget } from './ThreadAiSummaryWidget';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -11,6 +12,7 @@ import {
   Send,
   X,
   Paperclip,
+  Clock,
 } from 'lucide-react';
 
 interface ContextualThreadDrawerProps {
@@ -45,6 +47,17 @@ export const ContextualThreadDrawer: React.FC<ContextualThreadDrawerProps> = ({
     if (isClient && msg.isInternalFirmOnly) return false;
     return true;
   });
+
+  const hasPendingRequest = Boolean(
+    thread.messages.some((m) => !m.isInternalFirmOnly && m.actionRequest && !m.actionRequest.isCompleted)
+  );
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom so latest messages are visible first
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [visibleMessages.length, thread.id]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,6 +153,31 @@ export const ContextualThreadDrawer: React.FC<ContextualThreadDrawerProps> = ({
             />
           ))
         )}
+
+        {/* Dedicated In-Flight Status Row below latest message */}
+        {hasPendingRequest && (
+          <div className="flex items-center gap-2.5 p-2.5 bg-amber-500/10 border border-amber-500/30 text-xs">
+            <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+            <div className="min-w-0">
+              <span className="font-bold text-amber-900 dark:text-amber-200 block text-[11px]">
+                {isClient ? 'Action Required from You' : 'Awaiting Client Upload'}
+              </span>
+              <span className="text-[10px] text-amber-800/90 dark:text-amber-400">
+                {isClient
+                  ? 'Your CPA team is waiting on your document upload to finalize your return.'
+                  : 'Document request dispatched. Waiting for taxpayer to upload in portal.'}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Optional Action-Oriented AI Thread Summary & Blocker Auto-Resolver (4) */}
+        <ThreadAiSummaryWidget
+          thread={thread}
+          onScrollToBottom={() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })}
+        />
+
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Compose Message Box */}
@@ -158,7 +196,7 @@ export const ContextualThreadDrawer: React.FC<ContextualThreadDrawerProps> = ({
                 }`}
               >
                 <Lock className="h-3 w-3" />
-                <span>Internal Firm Note</span>
+                <span>Internal Note</span>
               </button>
 
               <button
@@ -184,7 +222,7 @@ export const ContextualThreadDrawer: React.FC<ContextualThreadDrawerProps> = ({
                 }`}
               >
                 <Paperclip className="h-3 w-3" />
-                <span>{includeActionRequest ? 'Attached Action Request' : '+ Add Action Request'}</span>
+                <span>{includeActionRequest ? 'Attached Request' : '+ Request Document/Info'}</span>
               </button>
             )}
           </div>
@@ -194,7 +232,7 @@ export const ContextualThreadDrawer: React.FC<ContextualThreadDrawerProps> = ({
         {!isClient && !isInternalNote && includeActionRequest && (
           <div className="p-2.5 bg-card border border-border space-y-2 text-xs">
             <span className="font-bold text-[10px] uppercase text-muted-foreground block">
-              Configure Client Action Request:
+              Configure Client Request:
             </span>
             <div className="flex items-center gap-2">
               <select
@@ -203,13 +241,12 @@ export const ContextualThreadDrawer: React.FC<ContextualThreadDrawerProps> = ({
                 onChange={(e) => setActionReqType(e.target.value as any)}
                 className="h-7 px-2 bg-background border border-border text-[11px] font-semibold text-foreground focus:outline-none"
               >
-                <option value="upload_document">Upload Document</option>
-                <option value="clarify_number">Clarify Amount</option>
-                <option value="confirm_yes_no">Yes / No Confirmation</option>
+                <option value="upload_document">Request Document Upload</option>
+                <option value="clarify_number">Request Written Clarification</option>
               </select>
               <input
                 type="text"
-                placeholder="Describe exact request for client..."
+                placeholder="Name requested item (e.g. Form 1099-NEC)..."
                 value={actionReqDescription}
                 onChange={(e) => setActionReqDescription(e.target.value)}
                 className="h-7 px-2 flex-1 bg-background border border-border text-[11px] text-foreground placeholder:text-muted-foreground focus:outline-none"

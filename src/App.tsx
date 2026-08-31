@@ -19,6 +19,13 @@ export default function App() {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [activeStaffView]);
 
+  // Whenever a firm employee logs in or switches user, ensure they land on the Triage Command Center
+  useEffect(() => {
+    if (currentUser.role === 'tax_preparer' || currentUser.role === 'tax_reviewer') {
+      setActiveStaffView('dashboard');
+    }
+  }, [currentUser.userId]);
+
   // If user signed out, present the authentic Saved Logins Account Chooser landing screen
   if (!isAuthenticated) {
     return <SavedLoginsScreen />;

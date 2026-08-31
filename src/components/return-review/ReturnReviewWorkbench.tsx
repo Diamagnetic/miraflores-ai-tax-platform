@@ -6,6 +6,7 @@ import { DocumentViewer } from '../document-viewer/DocumentViewer';
 import { AIExplainabilityCard } from '../ai-explainability/AIExplainabilityCard';
 import { FormulaBreakdown } from './FormulaBreakdown';
 import { ContextualThreadDrawer } from '../collaboration/ContextualThreadDrawer';
+import { AiNextActionBanner } from './AiNextActionBanner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -321,6 +322,17 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
         </Card>
       )}
 
+      {/* Action-Oriented AI Prepared Next Action Banner (1A) */}
+      {activeReturn && (
+        <AiNextActionBanner
+          activeReturn={activeReturn}
+          onOpenThreadDrawer={() => {
+            setActiveDrawerTab('thread');
+            setIsDrawerOpen(true);
+          }}
+        />
+      )}
+
       {/* Main Full-Width Schedule Grid */}
       <div className="w-full">
         <TaxFormViewer onOpenInspection={handleOpenInspection} />
@@ -345,7 +357,11 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
               role="dialog"
               aria-modal="true"
               aria-labelledby="drawer-content"
-              className={`fixed top-0 bottom-0 right-0 z-50 h-screen w-full sm:w-[640px] lg:w-[740px] xl:w-[820px] bg-card border-l border-border shadow-2xl flex flex-col transition-transform duration-250 ease-in-out transform ${
+              className={`fixed top-0 bottom-0 right-0 z-50 h-screen w-full ${
+                activeDrawerTab === 'thread'
+                  ? 'sm:w-[480px] md:w-[560px]'
+                  : 'sm:w-[640px] lg:w-[740px] xl:w-[820px]'
+              } bg-card border-l border-border shadow-2xl flex flex-col transition-all duration-250 ease-in-out transform ${
                 isVisible ? 'translate-x-0' : 'translate-x-full'
               }`}
             >
