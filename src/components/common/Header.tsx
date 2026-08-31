@@ -1,15 +1,11 @@
 import React from 'react';
 import { usePlatformStore } from '@/store/usePlatformStore';
-import { UserRoleType } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { UserAccountMenu } from './UserAccountMenu';
 import {
   Sparkles,
-  UserCheck,
-  ShieldCheck,
   User,
-  Building2,
-  Briefcase,
   AlertTriangle,
   MessageSquare,
 } from 'lucide-react';
@@ -25,34 +21,14 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const {
     currentUser,
-    setRole,
     returns,
     threads,
     selectedReturnId,
     selectReturn,
   } = usePlatformStore();
 
-  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    if (value === 'personal_return') {
-      setRole('individual_client', true);
-    } else {
-      setRole(value as UserRoleType, false);
-    }
-  };
-
-  const currentRoleValue = currentUser.isPersonalReturnView
-    ? 'personal_return'
-    : currentUser.role;
-
   const activeReturn =
-    currentUser.role === 'individual_client'
-      ? returns.find((r) =>
-          currentUser.isPersonalReturnView
-            ? r.id === 'ret-bruce-1040'
-            : r.id === 'ret-tony-1040'
-        )
-      : returns.find((r) => r.id === selectedReturnId);
+    returns.find((r) => r.id === selectedReturnId) || returns[0];
 
   const isClient = currentUser.role === 'individual_client';
 
@@ -94,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({
                 aria-label="Select active tax return"
                 value={selectedReturnId || ''}
                 onChange={(e) => selectReturn(e.target.value)}
-                className="h-8 bg-card border border-border px-2 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                className="h-8 bg-card border border-border px-2 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer"
               >
                 {returns.map((ret) => (
                   <option key={ret.id} value={ret.id}>
@@ -117,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Right: Client Messages Trigger & Role Switcher */}
+        {/* Right: Client Messages Trigger & User Account Menu */}
         <div className="flex items-center gap-3">
           {isClient && onOpenClientMessages && (
             <Button
@@ -133,32 +109,8 @@ export const Header: React.FC<HeaderProps> = ({
             </Button>
           )}
 
-          <div className="flex items-center gap-2 border border-border bg-card p-1">
-            <div className="flex items-center gap-1.5 pl-2 pr-1 text-xs font-medium text-foreground">
-              {currentUser.role === 'tax_reviewer' ? (
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-              ) : currentUser.role === 'tax_preparer' ? (
-                <Briefcase className="h-3.5 w-3.5 text-primary" />
-              ) : currentUser.isPersonalReturnView ? (
-                <Building2 className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-              ) : (
-                <UserCheck className="h-3.5 w-3.5 text-primary" />
-              )}
-              <span className="hidden sm:inline">Active Persona:</span>
-            </div>
-
-            <select
-              aria-label="Switch active persona role"
-              value={currentRoleValue}
-              onChange={handleRoleChange}
-              className="h-7 bg-muted/50 border-0 px-2 text-xs font-semibold text-foreground focus:outline-none focus:ring-0 cursor-pointer"
-            >
-              <option value="tax_preparer">Sam Wilson</option>
-              <option value="tax_reviewer">Steve Rogers</option>
-              <option value="individual_client">Tony Stark</option>
-              <option value="personal_return">Bruce Banner</option>
-            </select>
-          </div>
+          {/* User Account Menu with Avatar, Personal Return Switcher & Sign Out */}
+          <UserAccountMenu />
         </div>
       </div>
     </header>
