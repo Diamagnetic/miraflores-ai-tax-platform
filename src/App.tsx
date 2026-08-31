@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePlatformStore } from '@/store/usePlatformStore';
 import { Header } from '@/components/common/Header';
 import { ReturnReviewWorkbench } from '@/components/return-review/ReturnReviewWorkbench';
@@ -17,7 +17,13 @@ export default function App() {
 
   const activeReturn = returns.find((r) => r.id === selectedReturnId) || returns[0];
 
+  // Reset scroll whenever switching between dashboard and workbench
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [activeStaffView]);
+
   const handleOpenReturn = (_returnId: string) => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setActiveStaffView('workbench');
   };
 

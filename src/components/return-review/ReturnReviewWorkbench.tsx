@@ -62,6 +62,11 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
     }
   }, [isDrawerOpen]);
 
+  // Always start at top of page when opening or switching returns in workbench
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [selectedReturnId]);
+
   // Active return resolution
   const activeReturn =
     returns.find((r) => r.id === selectedReturnId) ||
