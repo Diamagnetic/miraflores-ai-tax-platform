@@ -85,7 +85,24 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
       messages: [],
     };
 
-  const openThreadMessageCount = activeThread.messages.length;
+  // Calculate pending client actionable requests & recent client responses
+  const pendingClientRequestsCount = returnThreads.reduce((total, thread) => {
+    return (
+      total +
+      thread.messages.filter(
+        (m) =>
+          !m.isInternalFirmOnly &&
+          m.actionRequest &&
+          !m.actionRequest.isCompleted
+      ).length
+    );
+  }, 0);
+
+  const lastMessage = activeThread.messages[activeThread.messages.length - 1];
+  const hasRecentClientReply =
+    lastMessage &&
+    lastMessage.senderRole === 'individual_client' &&
+    pendingClientRequestsCount === 0;
 
   const urgency = getTriageUrgency(activeReturn?.triageScore || 0);
   const urgencyStyle = getUrgencyBadgeStyle(urgency);
@@ -178,7 +195,14 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
             className="h-8 px-3 text-xs font-semibold gap-1.5 border-border shadow-2xs hover:bg-muted"
           >
             <MessageSquare className="h-3.5 w-3.5 text-primary" />
-            <span>Notes & Threads ({openThreadMessageCount})</span>
+            <span>
+              Notes & Threads
+              {pendingClientRequestsCount > 0
+                ? ` (${pendingClientRequestsCount} Open ${pendingClientRequestsCount === 1 ? 'Request' : 'Requests'})`
+                : hasRecentClientReply
+                ? ' (New Client Reply)'
+                : ''}
+            </span>
           </Button>
         </div>
       </div>
