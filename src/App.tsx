@@ -4,23 +4,29 @@ import { Header } from '@/components/common/Header';
 import { ReturnReviewWorkbench } from '@/components/return-review/ReturnReviewWorkbench';
 import { CpaDashboard } from '@/components/dashboard/CpaDashboard';
 import { ClientPortalView } from '@/components/client-portal/ClientPortalView';
+import { SavedLoginsScreen } from '@/components/auth/SavedLoginsScreen';
 import { Button } from '@/components/ui/button';
 import { LayoutDashboard, FileSpreadsheet, ArrowLeft } from 'lucide-react';
 
 export default function App() {
-  const { currentUser, returns, selectedReturnId } = usePlatformStore();
+  const { currentUser, returns, selectedReturnId, isAuthenticated } = usePlatformStore();
   const [activeStaffView, setActiveStaffView] = useState<'dashboard' | 'workbench'>('dashboard');
   const [isClientDiscussionOpen, setIsClientDiscussionOpen] = useState<boolean>(false);
-
-  const isStaff =
-    currentUser.role === 'tax_preparer' || currentUser.role === 'tax_reviewer';
-
-  const activeReturn = returns.find((r) => r.id === selectedReturnId) || returns[0];
 
   // Reset scroll whenever switching between dashboard and workbench
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [activeStaffView]);
+
+  // If user signed out, present the authentic Saved Logins Account Chooser landing screen
+  if (!isAuthenticated) {
+    return <SavedLoginsScreen />;
+  }
+
+  const isStaff =
+    currentUser.role === 'tax_preparer' || currentUser.role === 'tax_reviewer';
+
+  const activeReturn = returns.find((r) => r.id === selectedReturnId) || returns[0];
 
   const handleOpenReturn = (_returnId: string) => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
