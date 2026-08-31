@@ -119,20 +119,19 @@
 
 ---
 
-## Phase 8: User Story 6 - Shared Return Status & Progress (Priority: P3)
+## Phase 8: User Story 6 - Shared Return Status & Action-Oriented AI Next Actions (Priority: P3)
 
-**Goal**: Deliver an unambiguous status experience with dual views: granular 7-stage internal tracking for CPAs (Intake, Extraction, Prep, Review, Client Sign, E-Filed, Accepted) vs. 6 reassuring milestone stages for clients, featuring explicit Next Action Owner and blocker badges.
+**Goal**: Deliver an unambiguous status experience with dual views: granular 7-stage internal tracking for CPAs vs. 6 reassuring milestone stages for clients, featuring explicit Next Action Owner and two core Action-Oriented AI capabilities (1A Workbench Macro Action Banner & 4 Collaboration Thread Summarizer/Auto-Resolver).
 
-**Independent Test**: View Tony Stark return as CPA (shows 7 granular stages with blocker flag) -> View as Client (shows Step 3: "Partner Review" with centered 60% progress bar and explicit Next Action: "CPA preparing Schedule C").
+**Independent Test**: View Tony Stark return as CPA (shows 7 granular stages, Next Action Owner = Preparer, and AI Prepared Next Action Banner above table) -> Dispatch pre-drafted upload request to client in 1 click -> View as Client (shows Step 3: "Partner Review" with centered 60% progress bar and explicit Next Action card) -> Client uploads document -> Open Thread Drawer as CPA -> Click 1-click AI "Apply Figures & Clear Blocker".
 
-- [ ] T041 [P] [US6] Build CPA Granular Lifecycle Stepper with blocker indicators in src/components/status/CpaStatusStepper.tsx
-- [ ] T042 [P] [US6] Build StatusLifecycleSync logic connecting CPA stages with the 6 Client progress milestones in src/components/status/StatusLifecycleSync.tsx
-- [ ] T043 [US6] Build Next Action Owner & Blocker Callout Banner in src/components/status/NextActionBanner.tsx
-- [ ] T044 [US6] Record status legibility and shared mental model decisions in DECISIONS.md
+- [X] T041 [P] [US6] Build CPA Granular Lifecycle Stepper with blocker indicators in src/components/status/CpaStatusStepper.tsx
+- [X] T042 [P] [US6] Build StatusLifecycleSync logic connecting CPA 7-stages with the 6 Client progress milestones in src/components/status/StatusLifecycleSync.tsx
+- [X] T043 [P] [US6] Build Action-Oriented AI Prepared Next Action Banner (1A) with 1-click client request dispatch in src/components/return-review/AiNextActionBanner.tsx and mount above workbench table in src/components/return-review/ReturnReviewWorkbench.tsx
+- [X] T044 [P] [US6] Build AI Thread Summarizer & Blocker Auto-Resolver widget (4) in src/components/collaboration/ThreadAiSummaryWidget.tsx and integrate inside src/components/collaboration/ThreadDrawer.tsx
+- [X] T045 [US6] Record status legibility, Next Action Owner, and AI workflow integration decisions in DECISIONS.md
 
-**Checkpoint**: User Story 6 is functional with zero status ambiguity.
-
-**Checkpoint**: User Story 6 is functional with zero status ambiguity.
+**Checkpoint**: User Story 6 is functional with zero status ambiguity and interactive AI-driven blocker dispatch/resolution loops.
 
 ---
 
@@ -142,10 +141,10 @@
 
 **Independent Test**: Inspect Form 1040 line items -> Hover over calculated cell (shows lock and formula tooltip) -> Hover over human-edited cell (shows edit history) -> Click AI-extracted cell (opens explainability drawer).
 
-- [ ] T045 [P] [US7] Build interactive AffordanceLegend guide component in src/components/return-review/AffordanceLegend.tsx
-- [ ] T046 [US7] Apply 5-state affordance badges and fixed non-collapsing column widths (min-w-fit, overflow-x-auto) across all tax schedules in src/components/return-review/ScheduleTable.tsx
-- [ ] T047 [US7] Build manual value edit modal with audit reason tracking in src/components/return-review/ManualEditModal.tsx
-- [ ] T048 [US7] Record affordance design tokens and interaction standards in DECISIONS.md
+- [ ] T046 [P] [US7] Build interactive AffordanceLegend guide component in src/components/return-review/AffordanceLegend.tsx
+- [ ] T047 [US7] Apply 5-state affordance badges and fixed non-collapsing column widths (min-w-fit, overflow-x-auto) across all tax schedules in src/components/return-review/ScheduleTable.tsx
+- [ ] T048 [US7] Build manual value edit modal with audit reason tracking in src/components/return-review/ManualEditModal.tsx
+- [ ] T049 [US7] Record affordance design tokens and interaction standards in DECISIONS.md
 
 **Checkpoint**: User Story 7 is functional across all data entry surfaces.
 
@@ -157,11 +156,11 @@
 
 **Independent Test**: Select Wakanda Tech & Design LLC -> Open Document Hub -> Search for "Vibranium" -> Filter by Type = RECEIPT, Amount > $5000 -> Verify sub-second response across 150+ items -> Select all filtered items and trigger batch verification.
 
-- [ ] T049 [P] [US8] Build high-performance document tree and category sidebar in src/components/document-hub/DocumentCategoryTree.tsx
-- [ ] T050 [P] [US8] Build multi-faceted document filter bar (type, category, amount, AI confidence, status) in src/components/document-hub/DocumentFilters.tsx
-- [ ] T051 [US8] Build virtualized/paginated document list grid with horizontal scroll container (overflow-x-auto, min-w-[900px]) and batch action toolbar in src/components/document-hub/DocumentListGrid.tsx
-- [ ] T052 [US8] Assemble scalable Document Hub view in src/components/document-hub/DocumentHub.tsx
-- [ ] T053 [US8] Record progressive disclosure and scale handling decisions in DECISIONS.md
+- [ ] T050 [P] [US8] Build high-performance document tree and category sidebar in src/components/document-hub/DocumentCategoryTree.tsx
+- [ ] T051 [P] [US8] Build multi-faceted document filter bar (type, category, amount, AI confidence, status) in src/components/document-hub/DocumentFilters.tsx
+- [ ] T052 [US8] Build virtualized/paginated document list grid with horizontal scroll container (overflow-x-auto, min-w-[900px]) and batch action toolbar in src/components/document-hub/DocumentListGrid.tsx
+- [ ] T053 [US8] Assemble scalable Document Hub view in src/components/document-hub/DocumentHub.tsx
+- [ ] T054 [US8] Record progressive disclosure and scale handling decisions in DECISIONS.md
 
 **Checkpoint**: User Story 8 is functional and smoothly handles 150+ documents.
 
@@ -171,10 +170,10 @@
 
 **Purpose**: Assemble the master App shell, wire all challenge views together, complete DECISIONS.md and README.md, and run end-to-end quickstart validation.
 
-- [ ] T054 [P] Wire all domain views, role routes, and context drawers in src/App.tsx and src/main.tsx
-- [ ] T055 [P] Complete master decision log documenting pure in-memory ephemeral store architecture, horizontal scrolling strategy, and all 10 challenge solutions in DECISIONS.md
-- [ ] T056 [P] Complete README.md detailing what is reactive in the UI vs. what is simulated behind the scenes
-- [ ] T057 Run end-to-end interactive validation against all 10 scenarios in quickstart.md including responsive viewport and horizontal scroll test
+- [ ] T055 [P] Wire all domain views, role routes, and context drawers in src/App.tsx and src/main.tsx
+- [ ] T056 [P] Complete master decision log documenting pure in-memory ephemeral store architecture, horizontal scrolling strategy, and all 10 challenge solutions in DECISIONS.md
+- [ ] T057 [P] Complete README.md detailing what is reactive in the UI vs. what is simulated behind the scenes
+- [ ] T058 Run end-to-end interactive validation against all 10 scenarios in quickstart.md including responsive viewport and horizontal scroll test
 
 ---
 
