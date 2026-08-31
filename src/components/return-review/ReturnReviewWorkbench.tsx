@@ -47,8 +47,8 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
   const [activeDrawerTab, setActiveDrawerTab] = useState<'document' | 'explainability' | 'thread'>('document');
 
   // Animation state for opening/closing workbench drawer smoothly
-  const [isRendered, setIsRendered] = useState<boolean>(isDrawerOpen);
-  const [isVisible, setIsVisible] = useState<boolean>(isDrawerOpen);
+  const [isRendered, setIsRendered] = useState<boolean>(false);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
 
   useEffect(() => {
     if (isDrawerOpen) {

@@ -200,3 +200,13 @@
   3. `confirm_yes_no`: 1-click confirmation buttons.
   4. `e_sign`: 1-click electronic acknowledgement.
 - **Rationale**: Replaces open-ended email threads with structured, 1-click resolvable tasks that directly update the return state.
+
+### Decision 6.3: Priority-Driven Triage Architecture & In-Context Workbench Collaboration (No Redundant Unread Chat Inboxes)
+- **Context**: Evaluating whether to introduce a global unread-messages notification feed / dropdown in the staff navigation bar and a dedicated "Messages" column in the Triage Command Center table.
+- **Decision**: Deliberately avoided turning the CPA experience into a chat messenger inbox. Decided that:
+  1. *Priority & Blocker State Decide CPA Next Action*: In professional tax practice, returns are prioritized by deterministic urgency score, statutory filing deadline, and blocker severity (`⚠️ BLOCKED: Missing 1099-B`) rather than chat unread timestamps.
+  2. *Contextual Collaboration Inside the Workbench*: CPA staff inspect discussions directly attached to the return workpaper via the clean **`[ 💬 Notes & Threads ]`** drawer (with dynamic indicator `(1 Open Request)` when an action item is awaiting client response).
+  3. *Zero Read-Receipt Overhead*: Eliminates complex multi-user read/unread state machines and notification fatigue, keeping the CPA interface dense, focused, and professional.
+  4. *Client-Facing Prominence*: Maintained the clear **`[ 💬 CPA Inquiries (1) ]`** button in the top navigation bar strictly on the Client Portal side, where taxpayers (infrequent visitors) benefit directly from visible messaging access.
+- **Rationale**: Tax preparation is a document, calculation, and regulatory workflow engine, not a social messaging feed. Keeping the Triage Command Center focused on Priority, Blocker, and Immediate Next Action preserves speed and workflow clarity.
+
