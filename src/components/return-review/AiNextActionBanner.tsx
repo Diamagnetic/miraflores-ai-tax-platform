@@ -17,7 +17,7 @@ import {
 
 interface AiNextActionBannerProps {
   activeReturn: TaxReturn;
-  onOpenThreadDrawer?: () => void;
+  onOpenThreadDrawer?: (targetThreadId?: string) => void;
   className?: string;
 }
 
@@ -220,8 +220,8 @@ export const AiNextActionBanner: React.FC<AiNextActionBannerProps> = ({
           req
         );
 
-        // Automatically switch context to message drawer
-        onOpenThreadDrawer?.();
+        // Automatically switch context to message drawer targeting the thread that received the message
+        onOpenThreadDrawer?.(existingThread.id);
       } else if (aiProposal.type === 'advance') {
         if (isReadyForReview) {
           updateReturnStatus(activeReturn.id, 'REVIEW', 'EXPERT_REVIEW');
@@ -303,7 +303,7 @@ export const AiNextActionBanner: React.FC<AiNextActionBannerProps> = ({
             <Button
               size="sm"
               variant="outline"
-              onClick={onOpenThreadDrawer}
+              onClick={() => onOpenThreadDrawer?.(existingThread.id)}
               className="h-8 px-3 text-xs font-semibold gap-1.5 border-border shadow-2xs hover:bg-muted"
             >
               <MessageSquare className="h-3.5 w-3.5 text-primary" />
@@ -343,7 +343,7 @@ export const AiNextActionBanner: React.FC<AiNextActionBannerProps> = ({
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={onOpenThreadDrawer}
+                  onClick={() => onOpenThreadDrawer(existingThread.id)}
                   className="h-8 px-2.5 text-xs font-medium gap-1 text-muted-foreground hover:text-foreground"
                   title="Edit in Notes Drawer"
                 >

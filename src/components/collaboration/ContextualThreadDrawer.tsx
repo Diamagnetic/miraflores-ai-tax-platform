@@ -17,6 +17,8 @@ import {
 
 interface ContextualThreadDrawerProps {
   thread: CollaborationThread;
+  availableThreads?: CollaborationThread[];
+  onSelectThread?: (threadId: string) => void;
   onClose?: () => void;
   onUploadRequestedFile?: (messageId: string) => void;
   className?: string;
@@ -24,6 +26,8 @@ interface ContextualThreadDrawerProps {
 
 export const ContextualThreadDrawer: React.FC<ContextualThreadDrawerProps> = ({
   thread,
+  availableThreads,
+  onSelectThread,
   onClose,
   onUploadRequestedFile,
   className = '',
@@ -130,6 +134,26 @@ export const ContextualThreadDrawer: React.FC<ContextualThreadDrawerProps> = ({
           </Button>
         )}
       </div>
+
+      {/* Optional Thread Switcher (when multiple threads exist for this return) */}
+      {availableThreads && availableThreads.length > 1 && (
+        <div className="flex items-center gap-1.5 px-4 py-2 border-b border-border bg-muted/30 overflow-x-auto shrink-0">
+          {availableThreads.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => onSelectThread?.(t.id)}
+              className={`px-2.5 py-1 text-[11px] font-semibold transition-all shrink-0 cursor-pointer ${
+                t.id === thread.id
+                  ? 'bg-primary text-primary-foreground shadow-2xs font-bold'
+                  : 'bg-card text-muted-foreground hover:text-foreground border border-border'
+              }`}
+            >
+              {t.contextType === 'return' ? 'Return Discussion' : t.contextLabel.split('-')[0].trim() || 'Schedule Note'} ({t.messages.length})
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Messages List Container */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">

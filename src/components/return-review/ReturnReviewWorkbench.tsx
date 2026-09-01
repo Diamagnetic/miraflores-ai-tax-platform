@@ -50,6 +50,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
   // Full-height inspection drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [activeDrawerTab, setActiveDrawerTab] = useState<'document' | 'explainability' | 'thread'>('document');
+  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
 
   // Animation state for opening/closing workbench drawer smoothly
   const [isRendered, setIsRendered] = useState<boolean>(false);
@@ -70,6 +71,7 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
   // Always start at top of page when opening or switching returns in workbench
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    setSelectedThreadId(null);
   }, [selectedReturnId]);
 
   // Active return resolution
@@ -80,11 +82,15 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
   const activeField = fields.find((f) => f.id === activeFieldId);
   const activeDoc = documents.find((d) => d.id === activeDocumentId) || documents[0];
 
-  // Resolve collaboration thread for this return / field
+  // Resolve collaboration threads for this return (prioritizing primary return thread)
   const returnThreads = threads.filter((t) => t.returnId === activeReturn?.id);
-  const activeThread =
-    (activeFieldId ? returnThreads.find((t) => t.contextId === activeFieldId) : undefined) ||
+  const primaryReturnThread =
     returnThreads.find((t) => t.contextType === 'return') ||
+    returnThreads[0];
+
+  const activeThread =
+    (selectedThreadId ? returnThreads.find((t) => t.id === selectedThreadId) : undefined) ||
+    primaryReturnThread ||
     returnThreads[0] || {
       id: `th-auto-${activeReturn?.id}`,
       returnId: activeReturn?.id || 'ret-default',
@@ -131,6 +137,8 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
         selectDocument(field.sourceDocumentIds[0]);
       }
     }
+    const fieldThread = fieldId ? returnThreads.find((t) => t.contextId === fieldId) : undefined;
+    setSelectedThreadId(fieldThread ? fieldThread.id : primaryReturnThread?.id || null);
     setActiveDrawerTab(initialTab);
     setIsDrawerOpen(true);
   };
@@ -201,7 +209,11 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => handleOpenInspection('', 'thread')}
+            onClick={() => {
+              setSelectedThreadId(primaryReturnThread?.id || null);
+              setActiveDrawerTab('thread');
+              setIsDrawerOpen(true);
+            }}
             className="h-8 px-3 text-xs font-semibold gap-1.5 border-border shadow-2xs hover:bg-muted"
           >
             <MessageSquare className="h-3.5 w-3.5 text-primary" />
@@ -330,7 +342,8 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
       {activeReturn && (
         <AiNextActionBanner
           activeReturn={activeReturn}
-          onOpenThreadDrawer={() => {
+          onOpenThreadDrawer={(targetThreadId?: string) => {
+            setSelectedThreadId(targetThreadId || primaryReturnThread?.id || null);
             setActiveDrawerTab('thread');
             setIsDrawerOpen(true);
           }}
@@ -424,6 +437,8 @@ export const ReturnReviewWorkbench: React.FC<ReturnReviewWorkbenchProps> = ({
               ) : activeDrawerTab === 'thread' ? (
                 <ContextualThreadDrawer
                   thread={activeThread}
+                  availableThreads={returnThreads}
+                  onSelectThread={(tId) => setSelectedThreadId(tId)}
                   onClose={handleCloseDrawer}
                   className="h-full border-0 shadow-none"
                 />
