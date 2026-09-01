@@ -51,6 +51,13 @@ export const AiNextActionBanner: React.FC<AiNextActionBannerProps> = ({
     )
   );
 
+  // Check if client has already completed / uploaded the requested documentation
+  const hasCompletedClientRequest = Boolean(
+    existingThread?.messages.some(
+      (m) => !m.isInternalFirmOnly && m.actionRequest && m.actionRequest.isCompleted
+    )
+  );
+
   // Determine the AI suggested scenario based on return metadata
   const isBlocked = activeReturn.isBlocked;
   const isPeterParker = activeReturn.taxpayerName.includes('Parker');
@@ -61,6 +68,20 @@ export const AiNextActionBanner: React.FC<AiNextActionBannerProps> = ({
   // Pre-drafted inquiry configuration
   const aiProposal = (() => {
     if (isBlocked) {
+      if (hasCompletedClientRequest) {
+        return {
+          type: 'advance' as const,
+          title: 'Client Responded: Requested Documentation Received',
+          reason: `${activeReturn.taxpayerName} has uploaded the requested documentation in response to your inquiry. Ready for preparer verification.`,
+          suggestedAction: 'Review uploaded workpapers in Document Hub.',
+          draftMessage: '',
+          actionLabel: '',
+          actionType: null,
+          targetOwner: 'preparer' as const,
+          isDispatched: true,
+        };
+      }
+
       if (hasPendingClientRequest || dispatchedSuccess) {
         return {
           type: 'blocker' as const,
@@ -103,6 +124,20 @@ export const AiNextActionBanner: React.FC<AiNextActionBannerProps> = ({
     }
 
     if (isTonyStark) {
+      if (hasCompletedClientRequest) {
+        return {
+          type: 'advance' as const,
+          title: 'Client Responded: Meal Substantiation Received',
+          reason: 'Tony Stark uploaded supporting meal expense receipts in response to your inquiry. AI analyzed the document with 99% concordance. Ready for preparer verification.',
+          suggestedAction: 'Review uploaded receipts in Document Hub.',
+          draftMessage: '',
+          actionLabel: '',
+          actionType: null,
+          targetOwner: 'preparer' as const,
+          isDispatched: true,
+        };
+      }
+
       if (hasPendingClientRequest || dispatchedSuccess) {
         return {
           type: 'advisory' as const,
