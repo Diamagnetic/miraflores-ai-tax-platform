@@ -1,4 +1,4 @@
-﻿import { SourceDocument, BoundingBox } from '@/types';
+import { SourceDocument, BoundingBox } from '@/types';
 
 function createBox(
   id: string,
@@ -42,7 +42,7 @@ const tonyDocuments: SourceDocument[] = [
     },
     boundingBoxes: [
       createBox('box-t-w2-1', 1, 15, 25, 30, 8, 'Employer EIN', 'ein', '12-3456789', 0.99),
-      createBox('box-t-w2-2', 1, 55, 35, 35, 10, 'Box 1 Wages & Tips', 'wagesBox1', '$1,450,000.00', 0.98),
+      createBox('box-t-w2-2', 1, 55, 35, 35, 10, 'Box 1 Wages & Tips', 'wagesBox1', '$1,450,000.00', 0.99),
       createBox('box-t-w2-3', 1, 55, 48, 35, 10, 'Box 2 Federal Withholding', 'fedWithholdingBox2', '$522,000.00', 0.99),
     ],
     rawTextPreview: 'STARK INDUSTRIES INC - FORM W-2 WAGE AND TAX STATEMENT 2025\nEmployee: Anthony E. Stark\nSSN: ***-**-9999\nBox 1 Wages: $1,450,000.00\nBox 2 Fed Tax Withheld: $522,000.00',
@@ -164,7 +164,7 @@ const peterDocuments: SourceDocument[] = [
       payerTin: '13-9876543',
     },
     boundingBoxes: [
-      createBox('box-p-nec-1', 1, 50, 40, 40, 10, 'Box 1 Nonemployee Compensation', 'nonemployeeCompensation', '$18,200.00', 0.98),
+      createBox('box-p-nec-1', 1, 50, 40, 40, 10, 'Box 1 Nonemployee Compensation', 'nonemployeeCompensation', '$18,200.00', 0.88),
     ],
   },
   {
@@ -234,6 +234,27 @@ const natashaDocuments: SourceDocument[] = [
     boundingBoxes: [
       createBox('box-n-2555-1', 1, 15, 50, 50, 12, 'Line 45 Foreign Earned Income Exclusion', 'foreignExclusionAmount', '$120,000.00', 0.91),
     ],
+  },
+  {
+    id: 'doc-natasha-1099int-01',
+    returnId: 'ret-natasha-1040',
+    fileName: 'Budapest_Offshore_Interest_Statement_1099INT.pdf',
+    docType: '1099_DIV',
+    category: 'income',
+    pageCount: 2,
+    uploadedAt: '2026-02-08T16:00:00Z',
+    uploadedBy: 'n.romanoff@shield.gov',
+    status: 'needs_review',
+    amount: 3200,
+    vendor: 'Swiss Banking Union Zurich',
+    taxYear: 2025,
+    extractedFields: {
+      interestIncome: 3200,
+    },
+    boundingBoxes: [
+      createBox('box-n-int-1', 1, 20, 40, 45, 10, 'Box 1 Taxable Interest Income', 'interestIncome', '$3,200.00', 0.74),
+    ],
+    rawTextPreview: 'SWISS BANKING UNION ZURICH - FORM 1099-INT INTEREST INCOME\nAccount: HU-89104-ZUR\nTaxable Interest: $3,200.00 (Handwritten offshore adjustment note on page 2)',
   },
 ];
 
@@ -427,7 +448,7 @@ for (let i = 1; i <= 155; i++) {
         'Vendor Name',
         'vendor',
         vendorConfig.vendor,
-        0.99
+        i % 19 === 0 ? 0.78 : 0.99
       ),
       createBox(
         `box-wk-rec-${i}-2`,
@@ -439,7 +460,7 @@ for (let i = 1; i <= 155; i++) {
         'Invoice Total USD',
         'amount',
         `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
-        i % 19 === 0 ? 0.82 : 0.98
+        i % 19 === 0 ? 0.74 : 0.98
       ),
     ],
     rawTextPreview: `INVOICE #${8000 + i}\nVendor: ${vendorConfig.vendor}\nDate: ${dateStr}\nCategory: ${vendorConfig.cat}\nTotal Amount Due: $${amount.toFixed(2)} USD`,
