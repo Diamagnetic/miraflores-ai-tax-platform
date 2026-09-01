@@ -121,6 +121,16 @@ export const DocumentHub: React.FC<DocumentHubProps> = ({
     });
   }, [returnDocs, treeSelection, filters]);
 
+  // Action-oriented priority ordering: Receipts requiring QA attention ('needs_review') appear at the very top
+  const actionOrientedDocuments = useMemo(() => {
+    return [...filteredDocuments].sort((a, b) => {
+      const aNeeds = a.status === 'needs_review' ? 1 : 0;
+      const bNeeds = b.status === 'needs_review' ? 1 : 0;
+      if (aNeeds !== bNeeds) return bNeeds - aNeeds; // Flagged QA items at top of view
+      return 0;
+    });
+  }, [filteredDocuments]);
+
   // Statistics
   const totalMatchAmount = useMemo(() => {
     return filteredDocuments.reduce((sum, d) => sum + (d.amount || 0), 0);
@@ -151,12 +161,13 @@ export const DocumentHub: React.FC<DocumentHubProps> = ({
     );
   };
 
-  const handleToggleSelectAll = (filteredIds: string[]) => {
-    const allSelected = filteredIds.every((id) => selectedDocIds.includes(id));
-    if (allSelected) {
-      setSelectedDocIds((prev) => prev.filter((id) => !filteredIds.includes(id)));
+  // Select all scoped to current view / page
+  const handleToggleSelectAll = (visiblePageIds: string[]) => {
+    const allVisibleSelected = visiblePageIds.every((id) => selectedDocIds.includes(id));
+    if (allVisibleSelected) {
+      setSelectedDocIds((prev) => prev.filter((id) => !visiblePageIds.includes(id)));
     } else {
-      setSelectedDocIds((prev) => Array.from(new Set([...prev, ...filteredIds])));
+      setSelectedDocIds((prev) => Array.from(new Set([...prev, ...visiblePageIds])));
     }
   };
 
@@ -269,7 +280,7 @@ export const DocumentHub: React.FC<DocumentHubProps> = ({
 
           {/* Scalable Document List Grid */}
           <DocumentListGrid
-            documents={filteredDocuments}
+            documents={actionOrientedDocuments}
             selectedDocIds={selectedDocIds}
             onToggleSelectDoc={handleToggleSelectDoc}
             onToggleSelectAll={handleToggleSelectAll}

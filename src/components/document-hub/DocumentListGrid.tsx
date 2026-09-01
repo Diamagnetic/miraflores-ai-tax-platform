@@ -36,7 +36,7 @@ export const DocumentListGrid: React.FC<DocumentListGridProps> = ({
   onBatchVerify,
   className = '',
 }) => {
-  const [pageSize, setPageSize] = useState<number>(25);
+  const [pageSize, setPageSize] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [batchActionSuccess, setBatchActionSuccess] = useState<string | null>(null);
 
@@ -49,12 +49,12 @@ export const DocumentListGrid: React.FC<DocumentListGridProps> = ({
     return documents.slice(start, start + pageSize);
   }, [documents, validCurrentPage, pageSize]);
 
-  // Checkbox calculations
-  const allFilteredIds = useMemo(() => documents.map((d) => d.id), [documents]);
-  const isAllSelected =
-    documents.length > 0 && allFilteredIds.every((id) => selectedDocIds.includes(id));
-  const isSomeSelected =
-    documents.some((d) => selectedDocIds.includes(d.id)) && !isAllSelected;
+  // Checkbox calculations (Scoped to CURRENT PAGE / VIEW)
+  const currentPageIds = useMemo(() => paginatedDocs.map((d) => d.id), [paginatedDocs]);
+  const isCurrentPageAllSelected =
+    paginatedDocs.length > 0 && currentPageIds.every((id) => selectedDocIds.includes(id));
+  const isCurrentPageSomeSelected =
+    currentPageIds.some((id) => selectedDocIds.includes(id)) && !isCurrentPageAllSelected;
 
   const selectedDocs = useMemo(
     () => documents.filter((d) => selectedDocIds.includes(d.id)),
@@ -118,25 +118,25 @@ export const DocumentListGrid: React.FC<DocumentListGridProps> = ({
         <div className="flex items-center gap-2.5">
           <input
             type="checkbox"
-            checked={isAllSelected}
+            checked={isCurrentPageAllSelected}
             ref={(el) => {
-              if (el) el.indeterminate = isSomeSelected;
+              if (el) el.indeterminate = isCurrentPageSomeSelected;
             }}
-            onChange={() => onToggleSelectAll(allFilteredIds)}
-            aria-label="Select all filtered documents"
+            onChange={() => onToggleSelectAll(currentPageIds)}
+            aria-label="Select all visible documents on this page"
             className="h-4 w-4 rounded-none border-border accent-primary cursor-pointer"
           />
 
           <div className="font-mono text-xs">
             {selectedDocIds.length > 0 ? (
               <span className="font-bold text-foreground">
-                {selectedDocIds.length} Selected{' '}
+                {selectedDocIds.length} Selected in Page{' '}
                 <span className="text-muted-foreground font-normal">
                   ({formatCurrency(selectedAmount)})
                 </span>
               </span>
             ) : (
-              <span className="text-muted-foreground">Select items for batch operations</span>
+              <span className="text-muted-foreground">Select items on this page for batch operations</span>
             )}
           </div>
         </div>
@@ -198,6 +198,7 @@ export const DocumentListGrid: React.FC<DocumentListGridProps> = ({
               aria-label="Rows per page"
               className="h-6 px-1.5 bg-background border border-border text-xs font-mono font-medium text-foreground focus:outline-none cursor-pointer"
             >
+              <option value={10}>10</option>
               <option value={25}>25</option>
               <option value={50}>50</option>
               <option value={100}>100</option>
@@ -208,15 +209,15 @@ export const DocumentListGrid: React.FC<DocumentListGridProps> = ({
 
       {/* Scalable Data Table with Container Horizontal Scroll */}
       <div className="overflow-x-auto min-w-full">
-        <table className="w-full text-left border-collapse min-w-[920px]">
+        <table className="w-full text-left border-collapse min-w-[1100px]">
           <thead>
             <tr className="border-b border-border bg-muted/40 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
               <th className="py-2.5 px-3 w-10 text-center">
                 <span className="sr-only">Select</span>
               </th>
-              <th className="py-2.5 px-3 min-w-[200px]">Document / File Name</th>
-              <th className="py-2.5 px-3 min-w-[180px]">Vendor / Payer</th>
-              <th className="py-2.5 px-3 w-32">Expense Category</th>
+              <th className="py-2.5 px-3 min-w-[300px]">Document / File Name</th>
+              <th className="py-2.5 px-3 min-w-[240px]">Vendor / Payer</th>
+              <th className="py-2.5 px-3 w-40">Expense Category</th>
               <th className="py-2.5 px-3 w-28 whitespace-nowrap">Date</th>
               <th className="py-2.5 px-3 w-32 text-right whitespace-nowrap">Amount</th>
               <th className="py-2.5 px-3 w-32 text-center whitespace-nowrap">AI OCR</th>
@@ -255,11 +256,11 @@ export const DocumentListGrid: React.FC<DocumentListGridProps> = ({
                   <tr
                     key={doc.id}
                     className={`transition-colors hover:bg-muted/30 ${
-                      isSelected ? 'bg-primary/5' : ''
-                    }`}
+                      isNeedsReview ? 'bg-rose-50/25 dark:bg-rose-950/20' : ''
+                    } ${isSelected ? 'bg-primary/5' : ''}`}
                   >
                     {/* Checkbox */}
-                    <td className="py-2 px-3 text-center">
+                    <td className="py-2.5 px-3 text-center">
                       <input
                         type="checkbox"
                         checked={isSelected}
@@ -270,19 +271,19 @@ export const DocumentListGrid: React.FC<DocumentListGridProps> = ({
                     </td>
 
                     {/* File Name & Type */}
-                    <td className="py-2 px-3">
+                    <td className="py-2.5 px-3">
                       <div className="flex items-center gap-2">
                         <FileText className="h-4 w-4 text-primary shrink-0" />
                         <div className="min-w-0">
                           <button
                             type="button"
                             onClick={() => onOpenDocument(doc)}
-                            className="font-semibold text-foreground hover:text-primary hover:underline truncate max-w-xs block text-left cursor-pointer"
+                            className="font-semibold text-foreground hover:text-primary hover:underline block text-left cursor-pointer break-all sm:break-normal"
                             title={doc.fileName}
                           >
                             {doc.fileName}
                           </button>
-                          <span className="font-mono text-[10px] text-muted-foreground block">
+                          <span className="font-mono text-[10px] text-muted-foreground block mt-0.5">
                             {doc.docType.replace(/_/g, '-')} • {doc.pageCount} page(s)
                           </span>
                         </div>
@@ -290,18 +291,18 @@ export const DocumentListGrid: React.FC<DocumentListGridProps> = ({
                     </td>
 
                     {/* Vendor / Payer */}
-                    <td className="py-2 px-3">
-                      <div className="flex items-center gap-1.5 text-foreground truncate max-w-[180px]">
-                        <Building2 className="h-3 w-3 text-muted-foreground shrink-0" />
-                        <span className="truncate">{doc.vendor || 'Unknown Vendor'}</span>
+                    <td className="py-2.5 px-3">
+                      <div className="flex items-center gap-1.5 text-foreground font-medium">
+                        <Building2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <span>{doc.vendor || 'Unknown Vendor'}</span>
                       </div>
                     </td>
 
                     {/* Expense Category */}
-                    <td className="py-2 px-3">
+                    <td className="py-2.5 px-3">
                       <Badge
                         variant="outline"
-                        className="font-mono text-[10px] py-0 bg-muted/20 capitalize truncate max-w-[120px]"
+                        className="font-mono text-[10px] py-0.5 bg-muted/20 capitalize"
                       >
                         <Tag className="h-2.5 w-2.5 mr-1 text-muted-foreground" />
                         {expenseCat.replace(/_/g, ' ')}
