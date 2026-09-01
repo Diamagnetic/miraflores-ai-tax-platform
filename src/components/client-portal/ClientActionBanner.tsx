@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TaxReturn } from '@/types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import {
   Send,
   Lock,
   ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
@@ -18,6 +19,7 @@ interface ClientActionBannerProps {
   activeReturn: TaxReturn;
   onSignReturn?: () => void;
   onOpenUpload?: () => void;
+  onUploadSampleW2?: () => void;
   className?: string;
 }
 
@@ -25,6 +27,7 @@ export const ClientActionBanner: React.FC<ClientActionBannerProps> = ({
   activeReturn,
   onSignReturn,
   onOpenUpload,
+  onUploadSampleW2,
   className = '',
 }) => {
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false);
@@ -54,6 +57,108 @@ export const ClientActionBanner: React.FC<ClientActionBannerProps> = ({
       }
     }, 600);
   };
+
+  // 0. NEW CLIENT INTAKE State (0 documents uploaded yet - 10-second first-time start)
+  if (activeReturn.status === 'INTAKE' && activeReturn.documentCount === 0) {
+    return (
+      <Card className={`border-primary/40 bg-card shadow-sm ${className}`}>
+        <CardHeader className="p-4 sm:p-5 border-b border-border bg-primary/5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-primary/10 text-primary shrink-0">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div>
+                <CardTitle className="text-base font-bold text-foreground">
+                  Welcome to Your 2025 Tax Portal, {activeReturn.taxpayerName}!
+                </CardTitle>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Get started in under 10 seconds. Complete Step 2 to begin your return preparation.
+                </p>
+              </div>
+            </div>
+            <Badge variant="outline" className="font-mono text-xs bg-card hidden sm:inline-flex">
+              Step 1 of 3 Active
+            </Badge>
+          </div>
+        </CardHeader>
+
+        <CardContent className="p-5 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Step 1 */}
+            <div className="p-3.5 border border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/20 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                    Step 1 • Profile
+                  </span>
+                  <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200 border-emerald-300 text-[10px] py-0">
+                    Ready
+                  </Badge>
+                </div>
+                <p className="text-xs font-semibold text-foreground">Tax Year 2025 Filing</p>
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  Single Filer • Standard Deduction profile initialized.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="p-3.5 border-2 border-primary bg-primary/5 flex flex-col justify-between shadow-xs">
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
+                    Step 2 • Action Required
+                  </span>
+                  <Badge className="bg-primary text-primary-foreground text-[10px] py-0">
+                    Next Action
+                  </Badge>
+                </div>
+                <p className="text-xs font-semibold text-foreground">Upload 2025 Tax Forms</p>
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  Upload your W-2 or 1099 to trigger automatic AI extraction.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="p-3.5 border border-border bg-muted/30 flex flex-col justify-between opacity-80">
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                    Step 3 • CPA Review
+                  </span>
+                  <Badge variant="outline" className="text-[10px] py-0 text-muted-foreground">
+                    Upcoming
+                  </Badge>
+                </div>
+                <p className="text-xs font-semibold text-foreground">Expert Verification</p>
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  {activeReturn.assignedPreparerName || 'Sam Wilson, CPA'} will verify your numbers.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Start Action Bar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-border">
+            <p className="text-xs text-muted-foreground">
+              Have your 2025 W-2 ready? Drag and drop below or click the quick simulation button:
+            </p>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                onClick={onUploadSampleW2 || onOpenUpload}
+                className="h-9 px-4 text-xs font-semibold gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 shadow-2xs"
+              >
+                <Upload className="h-3.5 w-3.5" />
+                <span>Upload Sample 2025 W-2 Form</span>
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   // 1. BLOCKED State: Urgent call to action
   if (activeReturn.isBlocked) {

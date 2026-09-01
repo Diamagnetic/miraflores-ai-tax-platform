@@ -161,6 +161,18 @@ export const SAVED_PERSONAS: PersonaAccount[] = [
     initials: 'PP',
     avatarColor: 'bg-purple-600 text-white',
   },
+  {
+    id: 'client-kamala-khan',
+    name: 'Kamala Khan',
+    email: 'kamala.khan@jerseycity.edu',
+    role: 'individual_client',
+    title: 'Brand-New Client (First-Time Filer)',
+    description: 'First-time tax filer with a blank return, ready to start onboarding in under 10 seconds.',
+    defaultReturnId: 'ret-kamala-1040',
+    badgeLabel: 'New Client • First-Time Filer',
+    initials: 'KK',
+    avatarColor: 'bg-rose-600 text-white',
+  },
 ];
 
 const DEFAULT_USER: UserSession = {
@@ -186,7 +198,7 @@ export const usePlatformStore = create<PlatformStoreState>((set, get) => ({
   documents: [...mockDocuments],
   threads: [...mockThreads],
   currentUser: DEFAULT_USER,
-  isAuthenticated: true,
+  isAuthenticated: false,
   selectedReturnId: 'ret-tony-1040',
   activeDocumentId: 'doc-tony-w2-01',
   activeFieldId: 'fld-tony-1040-1a',

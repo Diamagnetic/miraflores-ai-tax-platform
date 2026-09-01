@@ -57,7 +57,11 @@ export const ClientSummaryCard: React.FC<ClientSummaryCardProps> = ({
               </span>
             </div>
             <span className="text-[10px] text-muted-foreground block">
-              {isRefund ? 'Direct deposit to bank on file' : 'IRS payment due by April 15'}
+              {activeReturn.documentCount === 0
+                ? 'Calculated after document upload'
+                : isRefund
+                ? 'Direct deposit to bank on file'
+                : 'IRS payment due by April 15'}
             </span>
           </div>
 
@@ -70,7 +74,7 @@ export const ClientSummaryCard: React.FC<ClientSummaryCardProps> = ({
               {formatCurrency(activeReturn.totalIncome)}
             </span>
             <span className="text-[10px] text-muted-foreground block">
-              W-2 wages, 1099 freelance, & investments
+              {activeReturn.documentCount === 0 ? 'Pending document upload' : 'W-2 wages, 1099 freelance, & investments'}
             </span>
           </div>
 
@@ -83,7 +87,7 @@ export const ClientSummaryCard: React.FC<ClientSummaryCardProps> = ({
               {formatCurrency(activeReturn.taxLiability)}
             </span>
             <span className="text-[10px] text-muted-foreground block">
-              IRS statutory brackets & credits applied
+              {activeReturn.documentCount === 0 ? 'Pending CPA preparation' : 'IRS statutory brackets & credits applied'}
             </span>
           </div>
         </div>

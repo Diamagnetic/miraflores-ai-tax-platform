@@ -154,6 +154,38 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
     }
   };
 
+  const handleUploadSampleW2 = () => {
+    handleUploadDocument({
+      id: `doc-${activeReturn.id}-w2-01`,
+      fileName: `2025_${activeReturn.taxpayerName.replace(/\s+/g, '_')}_W2.pdf`,
+      docType: 'W2',
+      category: 'income',
+      amount: 42000,
+      vendor: 'Jersey City Youth Services Dept',
+      extractedFields: {
+        wagesBox1: 42000,
+        fedWithholdingBox2: 4800,
+        ssWagesBox3: 42000,
+        medicareWagesBox5: 42000,
+      },
+      boundingBoxes: [
+        {
+          id: `box-${activeReturn.id}-1`,
+          pageNumber: 1,
+          x: 55,
+          y: 35,
+          width: 35,
+          height: 10,
+          label: 'Box 1 Wages',
+          fieldKey: 'wagesBox1',
+          extractedValue: '$42,000.00',
+          confidence: 0.99,
+        },
+      ],
+    });
+    updateReturnStatus(activeReturn.id, 'PREPARATION', 'PREPARATION');
+  };
+
   const scrollToUpload = () => {
     const uploadEl = document.getElementById('client-document-upload-section');
     if (uploadEl) {
@@ -166,11 +198,12 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
       {/* 1. Centered 60% Width Return Progress Stepper */}
       <ClientMilestoneProgress activeReturn={activeReturn} />
 
-      {/* 2. Primary Immediate Action Banner (E-Sign Form 8879 / Blocked Alert) */}
+      {/* 2. Primary Immediate Action Banner (E-Sign Form 8879 / Blocked Alert / New Client Onboarding) */}
       <ClientActionBanner
         activeReturn={activeReturn}
         onSignReturn={handleSignReturn}
         onOpenUpload={scrollToUpload}
+        onUploadSampleW2={handleUploadSampleW2}
       />
 
       {/* 3. Client Requests Widget (CPA Inquiries & Action Requests) */}

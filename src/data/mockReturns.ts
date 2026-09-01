@@ -1,4 +1,4 @@
-﻿import { TaxReturn, ReturnField } from '@/types';
+import { TaxReturn, ReturnField } from '@/types';
 
 export const mockTaxReturns: TaxReturn[] = [
   {
@@ -198,6 +198,30 @@ export const mockTaxReturns: TaxReturn[] = [
     documentCount: 5,
     openIssueCount: 2,
     aiConfidenceAvg: 0.92,
+  },
+  {
+    id: 'ret-kamala-1040',
+    taxYear: 2025,
+    returnType: '1040',
+    taxpayerName: 'Kamala Khan',
+    taxpayerEmail: 'kamala.khan@jerseycity.edu',
+    assignedPreparerId: 'prep-sam-wilson',
+    assignedPreparerName: 'Sam Wilson',
+    assignedReviewerId: 'rev-steve-rogers',
+    assignedReviewerName: 'Steve Rogers',
+    status: 'INTAKE',
+    clientMilestone: 'DOCUMENTS_NEEDED',
+    nextActionOwner: 'client',
+    nextActionDescription: 'Welcome! Get started by uploading your 2025 W-2 or tax documents.',
+    dueDate: '2026-04-15',
+    isBlocked: false,
+    triageScore: 40,
+    totalIncome: 0,
+    taxLiability: 0,
+    refundOrDueAmount: 0,
+    documentCount: 0,
+    openIssueCount: 0,
+    aiConfidenceAvg: 0.0,
   },
 ];
 
