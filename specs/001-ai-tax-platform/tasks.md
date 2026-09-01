@@ -171,7 +171,7 @@
 **Purpose**: Assemble the master App shell, wire all challenge views together, complete DECISIONS.md and README.md, and run end-to-end quickstart validation.
 
 - [X] T055 [P] Wire all domain views, role routes, and context drawers in src/App.tsx and src/main.tsx
-- [ ] T056 [P] Complete master decision log documenting pure in-memory ephemeral store architecture, horizontal scrolling strategy, and all 10 challenge solutions in DECISIONS.md
+- [X] T056 [P] Complete master decision log documenting pure in-memory ephemeral store architecture, horizontal scrolling strategy, and all 10 challenge solutions in DECISIONS.md
 - [ ] T057 [P] Complete README.md detailing what is reactive in the UI vs. what is simulated behind the scenes
 - [ ] T058 Run end-to-end interactive validation against all 10 scenarios in quickstart.md including responsive viewport and horizontal scroll test
 
