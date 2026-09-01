@@ -58,9 +58,14 @@ export const SavedLoginsScreen: React.FC<SavedLoginsScreenProps> = ({
                       {persona.initials}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                        {persona.name}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                          {persona.name}
+                        </p>
+                        <span className="text-[10px] font-mono px-1.5 py-0 bg-muted border border-border text-muted-foreground shrink-0 font-medium">
+                          {persona.badgeLabel}
+                        </span>
+                      </div>
                       <p className="text-xs text-muted-foreground font-mono truncate mt-0.5">
                         {persona.email}
                       </p>
