@@ -1,11 +1,11 @@
-# MiraFlores AI Tax Platform 🏛️💼
+# MiraFlores AI Tax Platform
 
 > **Enterprise AI-Powered Tax Preparation, Review & Collaboration Platform**  
 > Built for High-Volume CPA Firms, Cross-Entity Complex Filings, and Frictionless Client Experience.
 
 ---
 
-## 📖 Overview
+## Overview
 
 The **MiraFlores AI Tax Platform** is a specialized tax review, triage, and taxpayer collaboration workspace designed for complex individual (Form 1040), corporate (Form 1120-S), and partnership (Form 1065) returns. 
 
@@ -13,7 +13,7 @@ It solves the critical human-AI collaboration challenges in professional tax acc
 
 ---
 
-## 🚀 Key Highlights & The 10 Challenges Solved
+## Key Highlights & The 10 Challenges Solved
 
 | # | Challenge | Implemented Solution & Key Components |
 | :-: | :--- | :--- |
@@ -30,11 +30,11 @@ It solves the critical human-AI collaboration challenges in professional tax acc
 
 ---
 
-## ⚡ What is Live & Reactive vs. What is Simulated
+## What is Live & Reactive vs. What is Simulated
 
 To deliver an authentic, interactive tax software experience, the application distinguishes clearly between real in-memory computation and realistic mock simulation:
 
-### 🟢 100% Live & Reactive in the UI (Zustand In-Memory Store)
+### Live & Reactive in the UI (Zustand In-Memory Store)
 - **Mathematical Recalculations**: Modifying Schedule C gross receipts or deductions instantly re-sums total income, adjusted gross income (AGI), tax liability, and refund/due balances across all schedules in real time.
 - **5-State Affordance System**: Field edits dynamically transition field affordances from `ai_extracted` to `user_edited`, recording chronological audit trail entries (`oldValue -> newValue`, `changedBy`, `timestamp`, `reason`).
 - **Coordinate Bounding Box Highlights**: Clicking table cells dynamically activates source document overlays and draws SVG bounding box geometry over the document canvas.
@@ -43,13 +43,13 @@ To deliver an authentic, interactive tax software experience, the application di
 - **Bidirectional Status Sync**: Client Form 8879 signatures instantly advance the CPA stepper to `CLIENT_SIGN` and unlock MeF transmission buttons for the tax preparer.
 - **Internal / Client Thread Messaging**: Sending messages appends chronological entries, resolves actionable document requests, and recalculates unresolved inquiry badges.
 
-### 🟡 Realistic Mock Baseline (Simulated Data Fixtures)
+### Realistic Mock Baseline (Simulated Data Fixtures)
 - **IRS MeF Gateway**: Generates authentic mock Submission IDs (`IRS-2026-TX-89104`) with realistic electronic acknowledgment latency.
 - **OCR Vector Pre-Extraction**: Document bounding boxes, confidence percentages, and OCR previews are pre-extracted from representative tax documents and receipts.
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## Tech Stack & Architecture
 
 - **Framework**: React 19 + TypeScript + Vite
 - **State Management**: Zustand (Pure in-memory ephemeral store for clean demo resets)
@@ -59,7 +59,7 @@ To deliver an authentic, interactive tax software experience, the application di
 
 ---
 
-## 💻 Getting Started Locally
+## Getting Started Locally
 
 ### Prerequisites
 - Node.js (v18 or higher)
@@ -78,7 +78,7 @@ npm install
 npm run dev
 
 # 4. Open browser
-# Navigate to http://localhost:5173
+# Navigate to http://localhost:3000
 ```
 
 ### Production Build & Typecheck
@@ -89,7 +89,7 @@ npm run build
 
 ---
 
-## 👥 Personas & Demo Walkthrough Guide
+## Personas & Demo Walkthrough Guide
 
 Use the **Saved Logins Account Chooser** (or the User Account menu in the top-right header) to explore all roles:
 
@@ -103,7 +103,7 @@ Use the **Saved Logins Account Chooser** (or the User Account menu in the top-ri
 
 ---
 
-## 📜 Architectural Decisions Log
+## Architectural Decisions Log
 
 For in-depth rationale, alternatives considered, and trade-off analysis across all 10 product challenges, see:
 - [`DECISIONS.md`](DECISIONS.md) - Complete 11-Section Architectural & Product Decision Log.
