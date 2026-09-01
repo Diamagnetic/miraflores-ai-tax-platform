@@ -21,7 +21,7 @@ It solves the critical human-AI collaboration challenges in professional tax acc
 | **02** | **Triage Command Center** | **Deterministic Urgency Scoring & Work Queue**: Composite algorithm factoring IRS deadlines, missing document blockers, review readiness, and AI confidence into a 0–100 priority score with traffic light badges. [`CpaDashboard.tsx`](src/components/dashboard/CpaDashboard.tsx) |
 | **03** | **Client Onboarding (10-Sec Flow)** | **Frictionless Taxpayer Experience**: Peter Parker onboarding hero with drag-and-drop receipt simulation, instant progress indicators, and auto-closing document requests. [`PeterParkerOnboardingHero.tsx`](src/components/client-portal/PeterParkerOnboardingHero.tsx) |
 | **04** | **Contextual Collaboration** | **Field-Level In-App Discussions**: Thread drawers anchored to specific return line items with internal firm vs. client-visible channel toggling and pure-text AI thread synthesis. [`ContextualThreadDrawer.tsx`](src/components/collaboration/ContextualThreadDrawer.tsx) |
-| **05** | **Persona Role Switcher** | **Dual-Role Switching & Staff Personal Mode**: Instant 1-click persona switching (Sam Wilson CPA, Steve Rogers Reviewer, Tony Stark Client, Bruce Banner Employee Personal Return Mode). [`UserAccountMenu.tsx`](src/components/common/UserAccountMenu.tsx) |
+| **05** | **Persona Role Switcher** | **Dual-Role Switching & Staff Personal Mode**: Instant 1-click persona switching (Sam Wilson CPA, Steve Rogers Reviewer, Tony Stark Client, Firm Employee Personal Return Mode). [`UserAccountMenu.tsx`](src/components/common/UserAccountMenu.tsx) |
 | **06** | **Dual Lifecycle Steppers** | **Synchronized Lifecycle Stages**: 7-stage internal CPA workflow vs. 6-milestone consumer progress sharing identical rounded-node design with deterministic bidirectional mapping. [`CpaStatusStepper.tsx`](src/components/status/CpaStatusStepper.tsx) |
 | **07** | **5-State Affordance Language** | **Semantic Color Tokens & Audit Justification**: Visual contract (`ai_extracted`, `verified`, `user_edited`, `calculated_locked`, `requires_approval`) with mandatory Circular 230 audit reason tracking. [`AffordanceLegend.tsx`](src/components/return-review/AffordanceLegend.tsx) |
 | **08** | **IRS MeF Gateway & E-Sign** | **Form 8879 Workflow & Transmissions**: Interactive e-signature modal with canvas signature pad, instant submission ID generation, and partner sign-off acknowledgment. [`Form8879SignatureModal.tsx`](src/components/client-portal/Form8879SignatureModal.tsx) |
@@ -99,7 +99,7 @@ Use the **Saved Logins Account Chooser** (or the User Account menu in the top-ri
 | **Steve Rogers, CPA** | *Partner / Reviewer* | • Filter queue by **Ready for Review**.<br>• Review Stark Industries Form 1120-S shareholder K-1 allocations.<br>• Acknowledge IRS MeF electronic acceptance. |
 | **Tony Stark** | *High-Net-Worth Client* | • View personal Form 1040 milestone progress.<br>• Review Schedule C / Schedule D summary.<br>• Review CPA inquiry messages and upload requested workpapers. |
 | **Peter Parker** | *Student / Freelancer Client* | • Experience the **10-Second Frictionless Onboarding Hero**.<br>• 1-click upload missing 1099-NEC workpapers to clear blockers. |
-| **Dr. Bruce Banner** | *Employee Personal Return* | • Switch to **Employee Personal Return Mode** to review internal staff return privacy and Form 8879 e-signing. |
+| **Firm Employee** | *Personal Return Mode* | • Switch to **Employee Personal Return Mode** to review internal staff return privacy and Form 8879 e-signing. |
 
 ---
 

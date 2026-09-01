@@ -51,19 +51,19 @@
   - Peter Parker (Form 1040 W-2 + Freelance 1099-NEC)
   - Natasha Romanoff (Form 1040 Foreign Earned Income Form 2555)
   - Wakanda Tech & Design LLC (Form 1065 + 150+ receipt ledger items)
-  - Dr. Bruce Banner (Form 1040 Personal Return Mode)
+  - Firm Employee Personal Return (Form 1040 Personal Return Mode)
   - Pym Quantum Solutions Inc. (Form 1120-S R&D credit)
   - Avengers Compound LLC (Form 1065 multi-partner facility)
 - **Rationale**: Provides immediate, tangible testing ground for all 10 product challenges with deterministic numbers and coordinates.
 
-### Decision 2.2: Dual-Role Mode Switching (Preparer, Reviewer, Client, Personal Return)
-- **Context**: CPAs also file their own personal tax returns as employees of the firm, creating a distinct user experience need.
+### Decision 2.2: Dual-Role Mode Switching (Preparer, Reviewer, Client, Firm Employee Personal Return)
+- **Context**: CPAs and firm staff also file their own personal tax returns as employees of the firm, creating a distinct user experience need.
 - **Decision**: Implemented 4 switcher options in `Header.tsx`:
   1. `tax_preparer` (Sam Wilson CPA - firm workspace)
   2. `tax_reviewer` (Steve Rogers Senior Tax Director - firm workspace)
   3. `individual_client` (Tony Stark - external taxpayer portal)
-  4. `personal_return` (Dr. Bruce Banner - firm employee personal return portal)
-- **Rationale**: Demonstrates clear role-gated UI boundaries and prevents confidential internal firm notes from leaking into client views while allowing staff to file their personal returns.
+  4. `personal_return` (Firm employee personal return mode with strict client roster isolation)
+- **Rationale**: Demonstrates clear role-gated UI boundaries and prevents confidential internal firm notes and client rosters from leaking into employee personal views while allowing staff to file their personal returns.
 
 ### Decision 2.3: Deterministic Triage Scoring Algorithm
 - **Context**: Preparers and Reviewers need automated work queue prioritization without manual sorting.
@@ -313,7 +313,7 @@
 | **02** | **Triage Command Center** | [`CpaDashboard.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/dashboard/CpaDashboard.tsx), [`TriageQueueCard.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/dashboard/TriageQueueCard.tsx) | Deterministic composite urgency score ($0-100$); traffic light badges; zero-icon typography. |
 | **03** | **Client Onboarding (10-Sec Flow)** | [`ClientPortalView.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/client-portal/ClientPortalView.tsx), [`PeterParkerOnboardingHero.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/client-portal/PeterParkerOnboardingHero.tsx) | Instant 1-click document upload simulation with auto-closing requests; immediate progress feedback. |
 | **04** | **Contextual Collaboration** | [`ContextualThreadDrawer.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/collaboration/ContextualThreadDrawer.tsx), [`ThreadAiSummaryWidget.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/collaboration/ThreadAiSummaryWidget.tsx) | Dual internal vs client-visible threads attached to exact return field IDs; pure-text AI thread synthesis. |
-| **05** | **Persona Role Switcher & Personal Mode** | [`UserAccountMenu.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/common/UserAccountMenu.tsx), [`SavedLoginsScreen.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/auth/SavedLoginsScreen.tsx) | Instant persona switcher (Sam Wilson CPA, Steve Rogers Partner, Tony Stark Client, Bruce Banner Personal Return). |
+| **05** | **Persona Role Switcher & Personal Mode** | [`UserAccountMenu.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/common/UserAccountMenu.tsx), [`SavedLoginsScreen.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/auth/SavedLoginsScreen.tsx) | Instant persona switcher (Sam Wilson CPA, Steve Rogers Partner, Tony Stark Client, Firm Employee Personal Return Mode). |
 | **06** | **Dual Lifecycle Steppers** | [`CpaStatusStepper.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/status/CpaStatusStepper.tsx), [`ClientMilestoneProgress.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/status/ClientMilestoneProgress.tsx) | 7-stage CPA stepper vs 6-milestone consumer progress sharing identical rounded-node visual design and bidirectional sync. |
 | **07** | **5-State Affordance Language** | [`AffordanceLegend.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/return-review/AffordanceLegend.tsx), [`ManualEditModal.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/return-review/ManualEditModal.tsx) | 5 semantic color tokens (`ai_extracted`, `verified`, `user_edited`, `calculated_locked`, `requires_approval`) + Circular 230 audit log. |
 | **08** | **IRS MeF Gateway & E-Sign** | [`ReturnReviewWorkbench.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/return-review/ReturnReviewWorkbench.tsx), [`Form8879SignatureModal.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/client-portal/Form8879SignatureModal.tsx) | Form 8879 electronic signature workflow, IRS MeF gateway transmission, and partner acknowledgment. |
