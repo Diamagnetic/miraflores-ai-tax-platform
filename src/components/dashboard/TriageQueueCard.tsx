@@ -179,14 +179,19 @@ export const TriageQueueCard: React.FC<TriageQueueCardProps> = ({
                       {/* Taxpayer / Entity (No icons) */}
                       <td className="py-3 px-3">
                         <div className="space-y-0.5">
-                          <p className="font-bold text-foreground group-hover:text-primary transition-colors truncate max-w-[220px]" title={ret.taxpayerName}>
-                            {ret.taxpayerName}
+                          <p className="font-bold text-foreground group-hover:text-primary transition-colors truncate max-w-[220px]" title={ret.entityName ? `${ret.entityName} (${ret.taxpayerName})` : ret.taxpayerName}>
+                            {ret.entityName || ret.taxpayerName}
                           </p>
 
                           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-mono">
                             <Badge variant="secondary" className="text-[10px] px-1 py-0 font-bold">
                               {ret.returnType}
                             </Badge>
+                            {ret.entityName && (
+                              <span className="truncate max-w-[120px]" title={`Managing Partner / Officer: ${ret.taxpayerName}`}>
+                                • {ret.taxpayerName}
+                              </span>
+                            )}
                             <span>•</span>
                             <span>TY {ret.taxYear}</span>
                           </div>
