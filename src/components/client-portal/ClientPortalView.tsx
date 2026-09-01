@@ -208,17 +208,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
         onUploadInitialW2={handleUploadInitialW2}
       />
 
-      {/* 3. Document Intake & Upload Section */}
-      <div id="client-document-upload-section">
-        <ClientDocumentUpload
-          documents={returnDocuments}
-          onUploadDocument={handleUploadDocument}
-          isBlocked={activeReturn.isBlocked}
-          blockerReason={activeReturn.blockerReason}
-        />
-      </div>
-
-      {/* 4. Client Requests & Financial Summary (Deferred until documents are uploaded and preparation begins) */}
+      {/* 3. Client Requests & Tax Return Summary (Hidden for brand-new client until documents are uploaded) */}
       {!isBrandNewClient && (
         <>
           <ClientRequestsWidget
@@ -231,6 +221,16 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
           />
         </>
       )}
+
+      {/* 4. Document Intake & Upload Section */}
+      <div id="client-document-upload-section">
+        <ClientDocumentUpload
+          documents={returnDocuments}
+          onUploadDocument={handleUploadDocument}
+          isBlocked={activeReturn.isBlocked}
+          blockerReason={activeReturn.blockerReason}
+        />
+      </div>
 
       {/* Slide-Over Contextual Discussion Drawer (Portaled to document.body with smooth left-to-right slide exit) */}
       {isRendered &&
