@@ -64,6 +64,10 @@ export const DocumentListGrid: React.FC<DocumentListGridProps> = ({
     () => selectedDocs.reduce((sum, d) => sum + (d.amount || 0), 0),
     [selectedDocs]
   );
+  const unverifiedSelectedCount = useMemo(
+    () => selectedDocs.filter((d) => d.status === 'needs_review').length,
+    [selectedDocs]
+  );
 
   const handleBatchVerifyClick = () => {
     if (selectedDocIds.length === 0) return;
@@ -147,15 +151,27 @@ export const DocumentListGrid: React.FC<DocumentListGridProps> = ({
 
           {selectedDocIds.length > 0 && (
             <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleBatchVerifyClick}
-                className="h-7 px-2.5 text-xs font-semibold gap-1.5 border-emerald-600/40 text-emerald-700 hover:bg-emerald-50 bg-emerald-50/40 dark:bg-emerald-950/40 dark:text-emerald-300"
-              >
-                <CheckCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span>Batch Verify ({selectedDocIds.length})</span>
-              </Button>
+              {unverifiedSelectedCount > 0 ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleBatchVerifyClick}
+                  className="h-7 px-2.5 text-xs font-semibold gap-1.5 border-emerald-600/40 text-emerald-700 hover:bg-emerald-50 bg-emerald-50/40 dark:bg-emerald-950/40 dark:text-emerald-300 shadow-2xs"
+                >
+                  <CheckCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span>Batch Verify ({unverifiedSelectedCount})</span>
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled
+                  className="h-7 px-2.5 text-xs font-semibold gap-1.5 border-emerald-600/30 text-emerald-700 dark:text-emerald-300 bg-emerald-50/20 opacity-80"
+                >
+                  <CheckCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span>All Selected Verified</span>
+                </Button>
+              )}
 
               <Button
                 variant="outline"
@@ -233,7 +249,7 @@ export const DocumentListGrid: React.FC<DocumentListGridProps> = ({
                       )
                     : 98;
 
-                const isNeedsReview = doc.status === 'needs_review' || avgConfidence < 90;
+                const isNeedsReview = doc.status === 'needs_review';
 
                 return (
                   <tr

@@ -84,6 +84,7 @@ export interface PlatformStoreState {
   ) => void;
   toggleReturnBlocker: (returnId: string, blockerReason?: string) => void;
   addUploadedDocument: (doc: SourceDocument) => void;
+  batchVerifyDocuments: (docIds: string[]) => void;
   signClientForm8879: (returnId: string) => void;
   transmitReturnToIrs: (returnId: string) => void;
   acknowledgeIrsAcceptance: (returnId: string) => void;
@@ -573,6 +574,22 @@ export const usePlatformStore = create<PlatformStoreState>((set, get) => ({
     });
 
     set({ documents: updatedDocuments, returns: updatedReturns, activeDocumentId: doc.id });
+  },
+
+  batchVerifyDocuments: (docIds) => {
+    const { documents } = get();
+    const updatedDocs = documents.map((doc) => {
+      if (!docIds.includes(doc.id)) return doc;
+      return {
+        ...doc,
+        status: 'processed' as const,
+        boundingBoxes: doc.boundingBoxes.map((b) => ({
+          ...b,
+          confidence: Math.max(0.98, b.confidence),
+        })),
+      };
+    });
+    set({ documents: updatedDocs });
   },
 
   signClientForm8879: (returnId) => {

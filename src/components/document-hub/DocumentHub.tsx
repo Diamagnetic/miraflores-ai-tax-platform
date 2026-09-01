@@ -22,7 +22,7 @@ export const DocumentHub: React.FC<DocumentHubProps> = ({
   onOpenDocument,
   className = '',
 }) => {
-  const { documents, selectedReturnId, returns } = usePlatformStore();
+  const { documents, selectedReturnId, returns, batchVerifyDocuments } = usePlatformStore();
 
   const currentReturn =
     activeReturn || returns.find((r) => r.id === selectedReturnId) || returns[0];
@@ -39,7 +39,6 @@ export const DocumentHub: React.FC<DocumentHubProps> = ({
   });
   const [filters, setFilters] = useState<DocumentFilterCriteria>(INITIAL_DOC_FILTERS);
   const [selectedDocIds, setSelectedDocIds] = useState<string[]>([]);
-  const [localProcessedDocs, setLocalProcessedDocs] = useState<{ [id: string]: boolean }>({});
 
   // Collect all available categories for dropdown
   const availableCategories = useMemo(() => {
@@ -53,12 +52,7 @@ export const DocumentHub: React.FC<DocumentHubProps> = ({
 
   // Filter pipeline
   const filteredDocuments = useMemo(() => {
-    return returnDocs
-      .map((doc) => ({
-        ...doc,
-        status: localProcessedDocs[doc.id] ? ('processed' as const) : doc.status,
-      }))
-      .filter((doc) => {
+    return returnDocs.filter((doc) => {
         // 1. Sidebar Tree Selection
       if (treeSelection.type === 'category') {
         const cat = (doc.extractedFields?.expenseCategory as string) || doc.category;
@@ -167,13 +161,7 @@ export const DocumentHub: React.FC<DocumentHubProps> = ({
   };
 
   const handleBatchVerify = (docIds: string[]) => {
-    setLocalProcessedDocs((prev) => {
-      const updated = { ...prev };
-      docIds.forEach((id) => {
-        updated[id] = true;
-      });
-      return updated;
-    });
+    batchVerifyDocuments(docIds);
     setSelectedDocIds([]);
   };
 
