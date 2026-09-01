@@ -154,7 +154,7 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
     }
   };
 
-  const handleUploadSampleW2 = () => {
+  const handleUploadInitialW2 = () => {
     handleUploadDocument({
       id: `doc-${activeReturn.id}-w2-01`,
       fileName: `2025_${activeReturn.taxpayerName.replace(/\s+/g, '_')}_W2.pdf`,
@@ -193,6 +193,8 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
     }
   };
 
+  const isBrandNewClient = activeReturn.status === 'INTAKE' && returnDocuments.length === 0;
+
   return (
     <div className={`space-y-5 pb-12 relative ${className}`}>
       {/* 1. Centered 60% Width Return Progress Stepper */}
@@ -203,22 +205,10 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
         activeReturn={activeReturn}
         onSignReturn={handleSignReturn}
         onOpenUpload={scrollToUpload}
-        onUploadSampleW2={handleUploadSampleW2}
+        onUploadInitialW2={handleUploadInitialW2}
       />
 
-      {/* 3. Client Requests Widget (CPA Inquiries & Action Requests) */}
-      <ClientRequestsWidget
-        returnId={activeReturn.id}
-        onOpenUploadForMessage={scrollToUpload}
-      />
-
-      {/* 4. Financial Summary Card */}
-      <ClientSummaryCard
-        activeReturn={activeReturn}
-        onOpenMessages={handleOpenDiscussion}
-      />
-
-      {/* 5. Document Intake & Upload Section */}
+      {/* 3. Document Intake & Upload Section */}
       <div id="client-document-upload-section">
         <ClientDocumentUpload
           documents={returnDocuments}
@@ -227,6 +217,20 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
           blockerReason={activeReturn.blockerReason}
         />
       </div>
+
+      {/* 4. Client Requests & Financial Summary (Deferred until documents are uploaded and preparation begins) */}
+      {!isBrandNewClient && (
+        <>
+          <ClientRequestsWidget
+            returnId={activeReturn.id}
+            onOpenUploadForMessage={scrollToUpload}
+          />
+          <ClientSummaryCard
+            activeReturn={activeReturn}
+            onOpenMessages={handleOpenDiscussion}
+          />
+        </>
+      )}
 
       {/* Slide-Over Contextual Discussion Drawer (Portaled to document.body with smooth left-to-right slide exit) */}
       {isRendered &&
