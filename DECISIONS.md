@@ -2,7 +2,9 @@
 
 **Repository**: `miraflores_ai_case_study`  
 **Project**: AI-Powered Tax Platform (10 Challenges)  
-**Governing Constitution**: `.specify/memory/constitution.md` (v1.0.0)
+- **Hosted Live Prototype**: [https://diamagnetic.github.io/miraflores-ai-tax-platform/](https://diamagnetic.github.io/miraflores-ai-tax-platform/)  
+- **Video Walkthrough**: [https://drive.google.com/file/d/1unzmiPfHdSeFvM-Zyp7J28jtDCB4eA-1/view](https://drive.google.com/file/d/1unzmiPfHdSeFvM-Zyp7J28jtDCB4eA-1/view)  
+- **Quick Reference README**: [`README.md`](README.md)
 
 ---
 
@@ -44,8 +46,9 @@
 ## 2. Foundational Data Modeling & State Management (Phase 2)
 
 ### Decision 2.1: Unified Multi-Entity Avengers Dataset Model
-- **Context**: The platform needs realistic, diverse tax scenarios covering individuals, high-net-worth investors, S-Corporations, and partnerships with high document volume.
-- **Decision**: Created 8 interconnected returns:
+- **Context**: The platform needs realistic, diverse tax scenarios covering first-time filers, high-net-worth investors, S-Corporations, and partnerships with high document volume.
+- **Decision**: Created 9 interconnected returns:
+  - Kamala Khan (Form 1040 first-time client onboarding, 0 initial workpapers, 10-second upload hero)
   - Tony Stark (Form 1040 / Schedule C / Schedule D / 1099-DIV / 1099-B)
   - Stark Industries Inc. (Form 1120-S)
   - Peter Parker (Form 1040 W-2 + Freelance 1099-NEC)
@@ -81,9 +84,9 @@
 
 ## 3. Source Document Traceability, AI Defensibility & Review Workbench (Phase 3 - US1 MVP)
 
-### Decision 3.1: Coordinate-Based Vector Document Viewer with Interactive Bounding Boxes
+### Decision 3.1: Document Bounding Boxes with Interactive Provenance Highlights
 - **Context**: Challenge 01 requires connecting any number on the return back to its source document, page, and exact coordinates.
-- **Decision**: Implemented an SVG/Vector-based authentic tax document renderer (`DocumentViewer.tsx`) with coordinate-based bounding box overlays (`{ x, y, width, height }`).
+- **Decision**: Implemented an authentic vector tax document renderer (`DocumentViewer.tsx`) with interactive document bounding box overlays (`{ x, y, width, height }`).
 - **Rationale**:
   - Delivers zero-latency click-throughs from Form 1040 fields directly into source W-2s, 1099-NECs, and receipts without external PDF rendering delays or CORS quirks.
   - Bi-directional interactivity: clicking a return field highlights the document bounding box with high contrast; clicking a document box selects the return line in the global store.
@@ -214,13 +217,14 @@
 
 ## 7. Saved Logins Account Chooser & Post-Login Personal Return Access (Phase 7 - US5)
 
-### Decision 7.1: Enterprise Saved Logins Account Chooser Landing Screen (4 Realistic Personas)
+### Decision 7.1: Enterprise Saved Logins Account Chooser Landing Screen (5 Authentic Personas)
 - **Context**: Challenge 05 requires robust multi-persona role switching with strict data access boundaries, avoiding artificial or confusing generic demo modes.
-- **Decision**: Built `SavedLoginsScreen.tsx` presenting 4 authentic enterprise persona accounts:
+- **Decision**: Built `SavedLoginsScreen.tsx` presenting 5 authentic enterprise persona accounts:
   1. *Sam Wilson, CPA* (`tax_preparer`): Lead Tax Preparer with access to firm returns, AI line item verification, and client collaboration.
   2. *Steve Rogers* (`tax_reviewer`): Senior Reviewer & Managing Partner with access to firm triage, partner QA, and IRS MeF gateway transmission.
   3. *Anthony E. Stark* (`individual_client`): High-Net-Worth client with Form 1040 Schedule C, 1099-B, and Form 8879 e-sign authorization.
   4. *Peter Parker* (`individual_client`): Freelance photojournalist with 1099-NEC nonemployee compensation and equipment deductions.
+  5. *Kamala Khan* (`individual_client` - New Client): First-time filer with 0 initial documents, experiencing the 10-second frictionless intake hero.
 - **Rationale**: Eliminates fake password forms while providing an authentic enterprise SSO feel with clear role descriptions, practice areas, and 1-click authentication.
 
 ### Decision 7.2: Post-Login Confidential Personal Return Sandbox for CPA Staff (Employee's Own Form 1040)
@@ -311,15 +315,15 @@
 
 | # | Product Challenge | Primary Component(s) | Key Architectural Decision & Verification |
 | :-: | :--- | :--- | :--- |
-| **01** | **Traceability & AI Trust** | [`AIExplainabilityCard.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/ai-explainability/AIExplainabilityCard.tsx), [`VectorDocumentViewer.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/document-viewer/VectorDocumentViewer.tsx) | SVG coordinate overlay; clicking line item highlights source document bounding box with 100% concordance. |
-| **02** | **Triage Command Center** | [`CpaDashboard.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/dashboard/CpaDashboard.tsx), [`TriageQueueCard.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/dashboard/TriageQueueCard.tsx) | Deterministic composite urgency score ($0-100$); traffic light badges; zero-icon typography. |
-| **03** | **Client Onboarding (10-Sec Flow)** | [`ClientPortalView.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/client-portal/ClientPortalView.tsx), [`PeterParkerOnboardingHero.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/client-portal/PeterParkerOnboardingHero.tsx) | Instant 1-click document upload simulation with auto-closing requests; immediate progress feedback. |
-| **04** | **Contextual Collaboration** | [`ContextualThreadDrawer.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/collaboration/ContextualThreadDrawer.tsx), [`ThreadAiSummaryWidget.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/collaboration/ThreadAiSummaryWidget.tsx) | Dual internal vs client-visible threads attached to exact return field IDs; pure-text AI thread synthesis. |
-| **05** | **Persona Role Switcher & Personal Mode** | [`UserAccountMenu.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/common/UserAccountMenu.tsx), [`SavedLoginsScreen.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/auth/SavedLoginsScreen.tsx) | Instant persona switcher (Sam Wilson CPA, Steve Rogers Partner, Tony Stark Client, Firm Employee Personal Return Mode). |
-| **06** | **Dual Lifecycle Steppers** | [`CpaStatusStepper.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/status/CpaStatusStepper.tsx), [`ClientMilestoneProgress.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/status/ClientMilestoneProgress.tsx) | 7-stage CPA stepper vs 6-milestone consumer progress sharing identical rounded-node visual design and bidirectional sync. |
-| **07** | **5-State Affordance Language** | [`AffordanceLegend.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/return-review/AffordanceLegend.tsx), [`ManualEditModal.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/return-review/ManualEditModal.tsx) | 5 semantic color tokens (`ai_extracted`, `verified`, `user_edited`, `calculated_locked`, `requires_approval`) + Circular 230 audit log. |
-| **08** | **IRS MeF Gateway & E-Sign** | [`ReturnReviewWorkbench.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/return-review/ReturnReviewWorkbench.tsx), [`Form8879SignatureModal.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/client-portal/Form8879SignatureModal.tsx) | Form 8879 electronic signature workflow, IRS MeF gateway transmission, and partner acknowledgment. |
-| **09** | **Closed-Loop AI Next Actions** | [`AiNextActionBanner.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/return-review/AiNextActionBanner.tsx), [`ThreadAiSummaryWidget.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/collaboration/ThreadAiSummaryWidget.tsx) | 1-click blocker dispatch from CPA Workbench to Client Portal, with AI receipt auto-analysis on taxpayer upload. |
-| **10** | **Scalable Deep Search (150+ Docs)** | [`DocumentHub.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/document-hub/DocumentHub.tsx), [`DocumentCategoryTree.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/document-hub/DocumentCategoryTree.tsx), [`DocumentListGrid.tsx`](file:///D:/E/Dhamange/Chirag/dev/miraflores_ai_case_study/src/components/document-hub/DocumentListGrid.tsx) | Sub-second fuzzy search for "Vibranium", multi-attribute filter bar, category sidebar tree, batch verification, and CSV export. |
+| **01** | **Source Document Traceability** | [`AIExplainabilityCard.tsx`](src/components/ai-explainability/AIExplainabilityCard.tsx), [`VectorDocumentViewer.tsx`](src/components/document-viewer/VectorDocumentViewer.tsx) | Document bounding box overlays; clicking line item highlights source document bounding box with 100% concordance. |
+| **02** | **Client & CPA Collaboration** | [`ContextualThreadDrawer.tsx`](src/components/collaboration/ContextualThreadDrawer.tsx), [`ThreadAiSummaryWidget.tsx`](src/components/collaboration/ThreadAiSummaryWidget.tsx) | Dual internal vs client-visible threads attached to return/field contexts; pure-text AI thread synthesis. |
+| **03** | **Where to Start (10-Sec Flow)** | [`ClientPortalView.tsx`](src/components/client-portal/ClientPortalView.tsx), [`ClientActionBanner.tsx`](src/components/client-portal/ClientActionBanner.tsx) | 10-second time-to-first-action for first-time filers (Kamala Khan); 1-click W-2 upload with deferred summary until intake. |
+| **04** | **Getting Lost Between Parts of the App** | [`ReturnReviewWorkbench.tsx`](src/components/return-review/ReturnReviewWorkbench.tsx), [`ContextualThreadDrawer.tsx`](src/components/collaboration/ContextualThreadDrawer.tsx) | Non-modal slide-over drawers with sticky backdrop blur; preserves workbench scroll position and context across connected items. |
+| **05** | **Role-Aware Experiences** | [`UserAccountMenu.tsx`](src/components/common/UserAccountMenu.tsx), [`SavedLoginsScreen.tsx`](src/components/auth/SavedLoginsScreen.tsx) | Instant persona switcher (Sam Wilson CPA, Steve Rogers Partner, Tony Stark Client, Kamala Khan New Client, Staff Personal Return Mode). |
+| **06** | **Return Status & Progress** | [`CpaStatusStepper.tsx`](src/components/status/CpaStatusStepper.tsx), [`ClientMilestoneProgress.tsx`](src/components/status/ClientMilestoneProgress.tsx) | Synchronized dual-audience lifecycles: 7-stage CPA pipeline vs 6-milestone client progress with deterministic bidirectional sync. |
+| **07** | **An Actionable Dashboard** | [`CpaDashboard.tsx`](src/components/dashboard/CpaDashboard.tsx), [`TriageQueueCard.tsx`](src/components/dashboard/TriageQueueCard.tsx) | Deterministic composite urgency scoring (0–100); traffic light priority badges; 1-click transition into return review. |
+| **08** | **Clickable vs. Editable** | [`AffordanceLegend.tsx`](src/components/return-review/AffordanceLegend.tsx), [`ManualEditModal.tsx`](src/components/return-review/ManualEditModal.tsx) | 5-state semantic affordance contract (ai_extracted, verified, user_edited, calculated_locked, requires_approval) with Circular 230 audit log. |
+| **09** | **Complexity Made Navigable** | [`DocumentHub.tsx`](src/components/document-hub/DocumentHub.tsx), [`DocumentCategoryTree.tsx`](src/components/document-hub/DocumentCategoryTree.tsx), [`DocumentListGrid.tsx`](src/components/document-hub/DocumentListGrid.tsx) | Progressive disclosure and hierarchical taxonomy across 158 receipts; sub-second deep search ("Vibranium"), batch verify, and CSV export. |
+| **10** | **Trustworthy AI** | [`AiNextActionBanner.tsx`](src/components/return-review/AiNextActionBanner.tsx), [`AIExplainabilityCard.tsx`](src/components/ai-explainability/AIExplainabilityCard.tsx) | 4-pillar AI explainability card + closed-loop next actions; 1-click blocker dispatch from CPA Workbench to Client Portal. |
 
 
